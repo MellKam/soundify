@@ -7,5 +7,7 @@
 	],
 	"deno.lint": true,
 	"deno.config": "./deno.jsonc",
-	"editor.defaultFormatter": "denoland.vscode-deno"
+	"[typescript]": {
+		"editor.defaultFormatter": "denoland.vscode-deno"
+	}
 }

@@ -27,7 +27,9 @@ router
       state,
     });
 
-    ctx.cookies.set("state", state);
+    ctx.cookies.set("state", state, {
+      httpOnly: true,
+    });
     ctx.response.redirect(redirectURL);
   })
   .get("/callback", async (ctx) => {
@@ -52,10 +54,10 @@ router
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.addEventListener("listen", ({ secure, hostname }) => {
-  const protocol = secure ? "https://" : "http://";
-  const url = `${protocol}${hostname ?? "localhost"}:${env.PORT}`;
-  console.log(`To get OAuth tokens, navigate to: ${url}/login`);
+app.addEventListener("listen", () => {
+  console.log(
+    `To get OAuth tokens, navigate to: http://localhost:${env.PORT}/login`,
+  );
 });
 
 async function main() {
