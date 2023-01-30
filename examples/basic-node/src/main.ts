@@ -1,4 +1,4 @@
-import { SpotifyAuthService } from "spotify-web-api";
+import { SpotifyAuthService } from "soundify-web-api";
 import { webcrypto } from "node:crypto";
 import cookieParser from "cookie-parser";
 

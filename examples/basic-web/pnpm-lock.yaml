@@ -1,12 +1,12 @@
 lockfileVersion: 5.4
 
 specifiers:
-  spotify-web-api: link:../../
+  soundify-web-api: link:../../
   typescript: ^4.9.4
   vite: ^4.0.4
 
 dependencies:
-  spotify-web-api: link:../..
+  soundify-web-api: link:../..
 
 devDependencies:
   typescript: 4.9.4

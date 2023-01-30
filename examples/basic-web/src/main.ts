@@ -1,3 +1,3 @@
-import { AUTH_SCOPES } from "spotify-web-api/web";
+import { AUTH_SCOPES } from "soundify-web-api/web";
 
 console.log(AUTH_SCOPES.PLAYLIST_READ_PRIVATE);

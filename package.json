@@ -1,13 +1,19 @@
 {
-	"name": "spotify-web-api",
+	"name": "soundify-web-api",
 	"type": "module",
+	"version": "0.0.2",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/MellKam/spotify-web-api"
+	},
 	"description": "Spotify web-api wrapper for node, deno and web",
 	"author": {
 		"name": "Artem Melnyk",
 		"url": "https://github.com/MellKam"
 	},
 	"files": [
-		"./dist"
+		"./dist",
+		"./src"
 	],
 	"exports": {
 		".": {
