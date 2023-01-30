@@ -1,0 +1,11 @@
+{
+	"deno.enablePaths": [
+		"./src",
+		"./scripts",
+		"./tests",
+		"./examples/basic-deno"
+	],
+	"deno.lint": true,
+	"deno.config": "./deno.jsonc",
+	"editor.defaultFormatter": "denoland.vscode-deno"
+}

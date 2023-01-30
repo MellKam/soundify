@@ -1,0 +1,7 @@
+deno.jsonc
+deno.lock
+tests
+scripts
+examples
+.vscode
+node_modules

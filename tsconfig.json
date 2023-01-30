@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUnusedParameters": true,
+		"strict": true,
+		"declaration": true,
+		"moduleResolution": "node",
+		"module": "ESNext",
+		"rootDir": "./src/",
+		"outDir": "./dist/",
+		"target": "ESNext"
+	},
+	"include": ["./src/**/*.ts"]
+}

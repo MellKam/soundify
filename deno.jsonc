@@ -1,0 +1,6 @@
+{
+	"lint": {},
+	"tasks": {
+		"build": "pnpx deno2node && deno run -A ./scripts/bundle_web.ts"
+	}
+}

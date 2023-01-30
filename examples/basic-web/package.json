@@ -1,0 +1,14 @@
+{
+	"name": "@examples/basic-web",
+	"private": "true",
+	"scripts": {
+		"dev": "vite"
+	},
+	"devDependencies": {
+		"vite": "^4.0.4",
+		"typescript": "^4.9.4"
+	},
+	"dependencies": {
+		"spotify-web-api": "link:../../"
+	}
+}

@@ -1,0 +1,49 @@
+{
+	"name": "spotify-web-api",
+	"type": "module",
+	"description": "Spotify web-api wrapper for node, deno and web",
+	"author": {
+		"name": "Artem Melnyk",
+		"url": "https://github.com/MellKam"
+	},
+	"files": [
+		"./dist"
+	],
+	"exports": {
+		".": {
+			"import": {
+				"default": "./dist/mod.js",
+				"types": "./dist/mod.d.ts"
+			}
+		},
+		"./web": {
+			"import": {
+				"default": "./dist/web.mjs",
+				"types": "./dist/web.d.ts"
+			}
+		}
+	},
+	"typesVersions": {
+		"*": {
+			"index": [
+				"./dist/mod.d.ts"
+			],
+			"web": [
+				"./dist/web.d.ts"
+			]
+		}
+	},
+	"keywords": [
+		"spotify",
+		"web api",
+		"api",
+		"wrapper",
+		"client",
+		"music"
+	],
+	"devDependencies": {
+		"@types/node": "^18.11.18",
+		"deno2node": "^1.7.1"
+	},
+	"packageManager": "pnpm@7.26.2"
+}
