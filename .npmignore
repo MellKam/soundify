@@ -4,4 +4,5 @@ tests
 scripts
 examples
 .vscode
+.github
 node_modules

@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"forceConsistentCasingInFileNames": true,
+		"allowSyntheticDefaultImports": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
 		"noUnusedParameters": true,
@@ -11,7 +12,5 @@
 		"rootDir": "./src/",
 		"outDir": "./dist/",
 		"target": "ESNext"
-	},
-	"include": ["./src/**/*.ts"],
-	"exclude": ["./src/**/*.web.ts"]
+	}
 }

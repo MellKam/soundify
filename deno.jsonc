@@ -1,6 +1,35 @@
 {
-	"lint": {},
+	"fmt": {
+		"options": {
+			"useTabs": true,
+			"indentWidth": 2,
+			"lineWidth": 80,
+			"semiColons": true,
+			"singleQuote": false
+		},
+		"files": {
+			"exclude": [
+				"./node_modules/",
+				"./dist/",
+				"./pnpm-lock.yaml",
+				"./deno.lock"
+			]
+		}
+	},
+	"lint": {
+		"files": {
+			"exclude": [
+				"./node_modules/",
+				"./dist/",
+				"./pnpm-lock.yaml",
+				"./deno.lock"
+			]
+		}
+	},
 	"tasks": {
-		"build": "pnpx deno2node && deno run -A ./scripts/bundle_web.ts"
+		"cache": "deno cache ./src/mod.ts",
+		"lint": "deno fmt && deno lint",
+		"lint:check": "deno lint && deno fmt  --check",
+		"build": "deno run --no-prompt --allow-read=. --allow-write=. https://deno.land/x/deno2node/src/cli.ts tsconfig.json && deno run -A ./scripts/bundle_web.ts"
 	}
 }
