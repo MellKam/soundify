@@ -27,7 +27,6 @@ jobs:
         with:
           cache: "pnpm"
           node-version: "18.x"
-          registry-url: "https://registry.npmjs.org"
 
       - name: Install deps
         run: pnpm i 
@@ -38,10 +37,6 @@ jobs:
       - name: Build
         run: deno task build
 
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Publish to npm
         run: |
             npm config set //registry.npmjs.org/:_authToken '${NPM_TOKEN}'
