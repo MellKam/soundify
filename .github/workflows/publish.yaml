@@ -21,22 +21,7 @@ jobs:
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 7
           run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install
@@ -44,7 +29,6 @@ jobs:
       - name: Setup node 
         uses: actions/setup-node@v3
         with:
-          cache: "pnpm"
           node-version: "18.x"
 
       - name: Install deps
