@@ -16,6 +16,20 @@ jobs:
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
+
+      - name: Setup pnpm
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: "pnpm"
+          node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install deps
+        run: pnpm i 
         
       - name: Check lint
         run: deno task lint:check
