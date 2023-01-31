@@ -18,11 +18,12 @@ jobs:
           deno-version: v1.x
 
       - name: Setup pnpm
-      - uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v2
         with:
           version: latest
 
-      - uses: actions/setup-node@v3
+      - name: Setup node 
+        uses: actions/setup-node@v3
         with:
           cache: "pnpm"
           node-version: "18.x"
