@@ -46,8 +46,3 @@ jobs:
             npm publish --ignore-scripts --access public
         env:
             NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # - name: Release
-        # uses: softprops/action-gh-release@v1
-        # with:
-            # generate_release_notes: true
