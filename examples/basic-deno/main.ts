@@ -5,7 +5,7 @@ import {
 	str,
 	url,
 } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { SpotifyAuthService } from "../../src/mod.ts";
+import { AUTH_SCOPES, SpotifyAuthService } from "../../src/mod.ts";
 
 const env = cleanEnv(Deno.env.toObject(), {
 	PORT: num(),
@@ -23,7 +23,7 @@ router
 		const state = crypto.randomUUID();
 
 		const redirectURL = spotifyAuthService.getRedirectAuthURI({
-			scopes: ["user-read-email"],
+			scopes: Object.values(AUTH_SCOPES),
 			state,
 		});
 

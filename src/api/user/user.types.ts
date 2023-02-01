@@ -1,10 +1,16 @@
+import {
+	type ExternalUrls,
+	type Followers,
+	type Image,
+} from "../shared/index.ts";
+
 export interface UserPublic {
 	display_name?: string;
-	// external_urls: ExternalUrls;
-	// followers: Followers;
+	external_urls: ExternalUrls;
+	followers: Followers;
 	href: string;
 	id: string;
-	// images: Image[];
+	images: Image[];
 	type: string;
 	uri: string;
 }
@@ -17,11 +23,11 @@ export interface UserPrivate {
 		filter_enabled: boolean;
 		filter_locked: boolean;
 	};
-	// external_urls: ExternalUrls;
-	// followers: Followers;
+	external_urls: ExternalUrls;
+	followers: Followers;
 	href: string;
 	id: string;
-	// images: Image[];
+	images: Image[];
 	product: string;
 	type: string;
 	uri: string;

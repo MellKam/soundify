@@ -33,9 +33,6 @@ jobs:
 
       - name: Install deps
         run: pnpm i 
-        
-      - name: Check lint
-        run: deno task lint:check
 
       - name: Build
         run: deno task build

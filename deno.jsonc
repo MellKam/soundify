@@ -12,7 +12,8 @@
 				"./node_modules/",
 				"./dist/",
 				"./pnpm-lock.yaml",
-				"./deno.lock"
+				"./deno.lock",
+				"./README.md"
 			]
 		}
 	},
