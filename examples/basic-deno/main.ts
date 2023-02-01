@@ -5,7 +5,7 @@ import {
 	str,
 	url,
 } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { SpotifyAuthService } from "../../src/mod.ts";
+import { spotifyAPI, SpotifyAuthService } from "../../src/mod.ts";
 
 const env = cleanEnv(Deno.env.toObject(), {
 	PORT: num(),
@@ -48,7 +48,9 @@ router
 		}
 
 		const data = await spotifyAuthService.getKeypairByAuthCode(code);
-		ctx.response.body = data;
+		spotifyAPI.setAccessToken(data.access_token);
+		const userData = await spotifyAPI.getMe();
+		ctx.response.body = userData;
 	});
 
 app.use(router.routes());
