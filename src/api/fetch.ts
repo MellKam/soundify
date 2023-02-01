@@ -1,17 +1,16 @@
 import { API_PREFIX } from "./consts.ts";
-import { SpotifyError } from "./errors.ts";
+import { SpotifyError, SpotifyRawError } from "./errors.ts";
 
 export const spotifyFetch = async <
 	// deno-lint-ignore no-explicit-any
-	R extends Record<string, any>,
-	// deno-lint-ignore no-explicit-any
-	B extends Record<string, any>,
-	Q extends Record<string, string | number | boolean | undefined>,
+	Response extends Record<string, any>,
 >(
 	baseURL: string | URL,
-	{ body, query, accessToken }: {
-		body?: B;
-		query?: Q;
+	{ body, query, headers, accessToken }: {
+		// deno-lint-ignore no-explicit-any
+		body?: Record<string, any>;
+		query?: Record<string, string | number | boolean | undefined>;
+		headers?: HeadersInit;
 		accessToken: string;
 	},
 ) => {
@@ -19,7 +18,7 @@ export const spotifyFetch = async <
 	if (query) {
 		Object.keys(query).forEach((key) => {
 			const value = query[key];
-			if (value) {
+			if (typeof value !== "undefined") {
 				url.searchParams.set(key, value.toString());
 			}
 		});
@@ -27,6 +26,7 @@ export const spotifyFetch = async <
 
 	const res = await fetch(url, {
 		headers: {
+			...headers,
 			"Authorization": accessToken,
 			"Content-Type": "application/json",
 		},
@@ -34,11 +34,9 @@ export const spotifyFetch = async <
 	});
 
 	if (!res.ok) {
-		const data = await res.json() as {
-			error: { message: string; status: number };
-		};
+		const data = await res.json() as SpotifyRawError;
 		throw new SpotifyError(data.error.message, data.error.status);
 	}
 
-	return await res.json() as R;
+	return await res.json() as Response;
 };

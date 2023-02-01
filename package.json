@@ -54,8 +54,7 @@
 		"music"
 	],
 	"devDependencies": {
-		"@types/node": "^18.11.18",
-		"deno2node": "^1.7.1"
+		"@types/node": "^18.11.18"
 	},
-	"packageManager": "pnpm@7.26.2"
+	"packageManager": "pnpm@7.26.3"
 }

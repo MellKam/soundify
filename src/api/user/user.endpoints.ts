@@ -1,11 +1,12 @@
 import { spotifyFetch } from "../fetch.ts";
+import { UserPrivate } from "./user.types.ts";
 
 /**
  * Get detailed profile information about the current user
  * (including the current user's username).
  */
-export const GET_ME = (accessToken: string) => {
-	return spotifyFetch("/me", { accessToken });
+export const getCurrentUserProfile = (accessToken: string) => {
+	return spotifyFetch<UserPrivate>("/me", { accessToken });
 };
 
 /**

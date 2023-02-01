@@ -1,3 +1,7 @@
+export interface SpotifyRawError {
+	error: { message: string; status: number };
+}
+
 export interface SpoitfyErrorInterface extends Error {
 	readonly status: number;
 	readonly message: string;
