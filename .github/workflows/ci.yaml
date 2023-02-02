@@ -33,6 +33,9 @@ jobs:
         with:
           deno-version: v1.x
 
+      - name: Check
+        run: deno check ./src/mod.ts
+
       - name: Test
         run: deno test -A
         env:

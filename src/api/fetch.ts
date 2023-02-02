@@ -12,7 +12,7 @@ export const spotifyFetch = async <
 		query?: Record<string, string | number | boolean | undefined>;
 		headers?: HeadersInit;
 		accessToken: string;
-		method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+		method?: "GET" | "POST" | "PUT" | "DELETE";
 	},
 ) => {
 	const url = new URL(API_PREFIX + baseURL);

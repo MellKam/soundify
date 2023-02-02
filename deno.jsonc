@@ -10,6 +10,7 @@
 		"files": {
 			"exclude": [
 				"./node_modules/",
+				"./**/dist/",
 				"./dist/",
 				"./pnpm-lock.yaml",
 				"./deno.lock",
@@ -19,11 +20,10 @@
 	},
 	"lint": {
 		"files": {
-			"exclude": [
-				"./node_modules/",
-				"./dist/",
-				"./pnpm-lock.yaml",
-				"./deno.lock"
+			"include": [
+				"./src",
+				"./tests",
+				"./scripts"
 			]
 		}
 	},

@@ -1,8 +1,9 @@
 import { cleanEnv, str } from "https://deno.land/x/envalid@0.1.2/mod.ts";
 import {
+	AuthorizationCodeFlow,
+	ClientCredentialsFlow,
 	getUserProfile,
 	getUserTopItems,
-	SpotifyAuthService,
 } from "../../src/mod.ts";
 
 const env = cleanEnv(Deno.env.toObject(), {
@@ -11,14 +12,13 @@ const env = cleanEnv(Deno.env.toObject(), {
 	SPOTIFY_REFRESH_TOKEN: str(),
 });
 
-const authService = new SpotifyAuthService({
-	SPOTIFY_CLIENT_ID: env.SPOTIFY_CLIENT_ID,
-	SPOTIFY_CLIENT_SECRET: env.SPOTIFY_CLIENT_SECRET,
-	SPOTIFY_REDIRECT_URI: "",
-});
-
 Deno.test("Test client credentials flow and get user profile", async () => {
-	const { access_token } = await authService.getAccessToken();
+	const CCFlow = new ClientCredentialsFlow({
+		SPOTIFY_CLIENT_ID: env.SPOTIFY_CLIENT_ID,
+		SPOTIFY_CLIENT_SECRET: env.SPOTIFY_CLIENT_SECRET,
+	});
+
+	const { access_token } = await CCFlow.getAccessToken();
 
 	const user = await getUserProfile({
 		accessToken: `Bearer ${access_token}`,
@@ -29,7 +29,13 @@ Deno.test("Test client credentials flow and get user profile", async () => {
 });
 
 Deno.test("Test auth code flow and get user's top artist", async () => {
-	const { access_token } = await authService.getAccessByRefreshToken(
+	const authCodeFlow = new AuthorizationCodeFlow({
+		SPOTIFY_CLIENT_ID: env.SPOTIFY_CLIENT_ID,
+		SPOTIFY_CLIENT_SECRET: env.SPOTIFY_CLIENT_SECRET,
+		SPOTIFY_REDIRECT_URI: "",
+	});
+
+	const { access_token } = await authCodeFlow.getAccessByRefreshToken(
 		env.SPOTIFY_REFRESH_TOKEN,
 	);
 

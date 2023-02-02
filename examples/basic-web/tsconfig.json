@@ -9,8 +9,9 @@
 		"declaration": true,
 		"moduleResolution": "node",
 		"module": "ESNext",
-		"rootDir": "./src/",
+		"rootDir": ".",
 		"outDir": "./dist/",
-		"target": "ESNext"
+		"target": "ESNext",
+		"jsx": "preserve"
 	}
 }

@@ -1,4 +1,4 @@
-import { AuthScope } from "./auth.scopes.ts";
+import { type AuthScope } from "./auth.consts.ts";
 
 export interface KeypairResponse {
 	access_token: string;
@@ -21,20 +21,7 @@ export interface ClientCredentialsResponse {
 	expires_in: number;
 }
 
-/**
- * Query parameters for the `GET` request to the `/authorize` endpoint
- */
-export interface RequestUserAuthParams
-	extends Record<string, string | undefined | boolean> {
-	client_id: string;
-	response_type: "code" | "token";
-	redirect_uri: string;
-	state?: string;
-	scope?: string;
-	show_dialog?: boolean;
-}
-
-export interface GetRedirectURIParams {
+export interface GetAuthURLOptions {
 	/**
 	 * @description This provides protection against attacks such as
 	 * cross-site request forgery.
@@ -60,4 +47,28 @@ export interface GetRedirectURIParams {
 	 * @default false
 	 */
 	show_dialog?: boolean;
+}
+
+/**
+ * Query parameters for the `GET` request to the `/authorize` endpoint
+ */
+export interface RequestUserAuthParams
+	extends Record<string, string | undefined | boolean> {
+	client_id: string;
+	response_type: "code" | "token";
+	redirect_uri: string;
+	state?: string;
+	scope?: string;
+	show_dialog?: boolean;
+}
+
+/**
+ * Query parameters for the `GET` request to the `/api/token` endpoint
+ */
+export interface ApiTokenRequestParams
+	extends Record<string, string | undefined> {
+	refresh_token?: string;
+	code?: string;
+	redirect_uri?: string;
+	grant_type: "refresh_token" | "client_credentials" | "authorization_code";
 }

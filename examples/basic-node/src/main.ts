@@ -1,4 +1,4 @@
-import { SpotifyAuthService } from "soundify-web-api";
+import { AuthorizationCodeFlow } from "soundify-web-api";
 import { webcrypto } from "node:crypto";
 import cookieParser from "cookie-parser";
 
@@ -6,7 +6,7 @@ import express from "express";
 const app = express();
 app.use(cookieParser("secret"));
 
-const spotifyAuthService = new SpotifyAuthService({
+const spotifyAuthService = new AuthorizationCodeFlow({
 	SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID!,
 	SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET!,
 	SPOTIFY_REDIRECT_URI: process.env.SPOTIFY_REDIRECT_URI!,
@@ -15,7 +15,7 @@ const spotifyAuthService = new SpotifyAuthService({
 app.get("/login", (_req, res) => {
 	const state = webcrypto.randomUUID();
 
-	const redirectURL = spotifyAuthService.getAuthCodeRedirectURI({
+	const redirectURL = spotifyAuthService.getAuthURL({
 		scopes: ["user-read-email"],
 		state,
 	});

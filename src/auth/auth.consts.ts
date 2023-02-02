@@ -1,3 +1,8 @@
+const AUTH_API_ORIGIN = "https://accounts.spotify.com";
+
+export const AUTHORIZE_URL = `${AUTH_API_ORIGIN}/authorize` as const;
+export const API_TOKEN_URL = `${AUTH_API_ORIGIN}/api/token` as const;
+
 /**
  * Scopes provide Spotify users using third-party apps the confidence that only
  * the information they choose to share will be shared, and nothing more.
