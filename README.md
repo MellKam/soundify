@@ -13,3 +13,29 @@
 This package is in active development now. All API may be not stable and this is
 not recemended to use in production.
 
+# NPM
+
+Lint to package - [soundify-web-api](https://www.npmjs.com/package/soundify-web-api)
+
+```bash
+npm i soundify-web-api
+```
+
+```typescript
+// For nodejs
+import { ... } from "soundify-web-api"
+
+// For client-side javascript
+import { ... } from "soundify-web-api/web"
+```
+
+# Deno 
+
+Link to package - [soundify](https://deno.land/x/soundify)
+
+```bash
+import { ... } from "https://deno.land/x/soundify/mod.ts"
+```
+
+
+
