@@ -22,7 +22,7 @@ router
 	.get("/login", (ctx) => {
 		const state = crypto.randomUUID();
 
-		const redirectURL = spotifyAuthService.getRedirectAuthURI({
+		const redirectURL = spotifyAuthService.getAuthCodeRedirectURI({
 			scopes: Object.values(AUTH_SCOPES),
 			state,
 		});
@@ -47,8 +47,7 @@ router
 			return;
 		}
 
-		const data = await spotifyAuthService.getKeypairByAuthCode(code);
-		ctx.response.body = data;
+		ctx.response.body = await spotifyAuthService.getKeypairByAuthCode(code);
 	});
 
 app.use(router.routes());

@@ -6,12 +6,13 @@ export const spotifyFetch = async <
 	Response extends Record<string, any>,
 >(
 	baseURL: string | URL,
-	{ body, query, headers, accessToken }: {
+	{ body, query, headers, accessToken, method }: {
 		// deno-lint-ignore no-explicit-any
 		body?: Record<string, any>;
 		query?: Record<string, string | number | boolean | undefined>;
 		headers?: HeadersInit;
 		accessToken: string;
+		method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 	},
 ) => {
 	const url = new URL(API_PREFIX + baseURL);
@@ -25,10 +26,12 @@ export const spotifyFetch = async <
 	}
 
 	const res = await fetch(url, {
+		method,
 		headers: {
 			...headers,
 			"Authorization": accessToken,
 			"Content-Type": "application/json",
+			"Accept": "application/json",
 		},
 		body: body ? JSON.stringify(body) : undefined,
 	});

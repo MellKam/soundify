@@ -1,3 +1,3 @@
-export { SpotifyAuthService } from "./auth.service.ts";
-export { type SpotifyTokensResponse } from "./auth.types.ts";
+export * from "./auth.service.ts";
+export * from "./auth.types.ts";
 export * from "./auth.scopes.ts";

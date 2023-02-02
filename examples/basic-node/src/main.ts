@@ -15,7 +15,7 @@ const spotifyAuthService = new SpotifyAuthService({
 app.get("/login", (_req, res) => {
 	const state = webcrypto.randomUUID();
 
-	const redirectURL = spotifyAuthService.getRedirectAuthURI({
+	const redirectURL = spotifyAuthService.getAuthCodeRedirectURI({
 		scopes: ["user-read-email"],
 		state,
 	});

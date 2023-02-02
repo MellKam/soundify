@@ -1,5 +1,8 @@
+import { Artist } from "../artist/index.ts";
 import { spotifyFetch } from "../fetch.ts";
-import { UserPrivate } from "./user.types.ts";
+import { Track } from "../track/track.types.ts";
+import { UserPrivate, UserPublic } from "./user.types.ts";
+import { PagingObject, PagingOptions } from "../shared/index.ts";
 
 /**
  * Get detailed profile information about the current user
@@ -9,35 +12,41 @@ export const getCurrentUserProfile = (accessToken: string) => {
 	return spotifyFetch<UserPrivate>("/me", { accessToken });
 };
 
+type GetUserTopItemsOpts = {
+	accessToken: string;
+	query?: PagingOptions & {
+		time_range?: "long_term" | "medium_term" | "short_term";
+	};
+};
+
 /**
  * Get the current user's top artists or tracks
  * based on calculated affinity.
  */
-export const GET_TOP_ITEMS = ({
-	type,
+export function getUserTopItems(
+	type: "artists",
+	{ query, accessToken }: GetUserTopItemsOpts,
+): Promise<PagingObject<Artist>>;
+export function getUserTopItems(
+	type: "tracks",
+	{ query, accessToken }: GetUserTopItemsOpts,
+): Promise<PagingObject<Track>>;
+
+export function getUserTopItems(type: "artists" | "tracks", {
 	query,
 	accessToken,
-}: {
-	type: "artists" | "tracks";
-	accessToken: string;
-	query?: {
-		limit?: number;
-		offset?: number;
-		time_range?: "long_term" | "medium_term" | "short_term";
-	};
-}) => {
-	return spotifyFetch(`/me/top/${type}`, { query, accessToken });
-};
+}: GetUserTopItemsOpts) {
+	return spotifyFetch<PagingObject<Artist | Track>>(`/me/top/${type}`, {
+		query,
+		accessToken,
+	});
+}
 
 /**
  * Get public profile information about a Spotify user.
  */
-export const GET_USER_PROFILE = (
+export const getUserProfile = (
 	{ user_id, accessToken }: { user_id: string; accessToken: string },
 ) => {
-	return spotifyFetch(`/users/${user_id}`, { accessToken });
-};
-
-export const FOLLOW_PLAYLIST = () => {
-	return new URL(``);
+	return spotifyFetch<UserPublic>(`/users/${user_id}`, { accessToken });
 };

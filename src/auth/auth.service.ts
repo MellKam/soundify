@@ -1,11 +1,12 @@
 import { createURLWithParams } from "../utils.ts";
 import { encodeBase64 } from "../platform.deno.ts";
 import {
+	type AccessTokenResponse,
+	type ClientCredentialsResponse,
+	GetRedirectURIParams,
+	type KeypairResponse,
 	type RequestUserAuthParams,
-	type SpotifyAccessTokenResponse,
-	type SpotifyTokensResponse,
 } from "./auth.types.ts";
-import { AuthScope } from "./auth.scopes.ts";
 
 export const AUTH_API_PREFIX = "https://accounts.spotify.com";
 
@@ -25,43 +26,34 @@ export class SpotifyAuthService {
 			);
 	}
 
-	getRedirectAuthURI(
-		opts: {
-			/**
-			 * @description This provides protection against attacks such as
-			 * cross-site request forgery.
-			 */
-			state?: string;
-			/**
-			 * @description List of scopes.
-			 *
-			 * @default
-			 * If no scopes are specified, authorization will be granted
-			 * only to access publicly available information
-			 */
-			scopes?: AuthScope[];
-			/**
-			 * @description Whether or not to force the user to approve the app again
-			 * if they’ve already done so.
-			 *
-			 * - If false, a user who has already approved the application
-			 *  may be automatically redirected to the URI specified by `redirect_uri`.
-			 * - If true, the user will not be automatically redirected and will have
-			 *  to approve the app again.
-			 *
-			 * @default false
-			 */
-			show_dialog?: boolean;
-		},
+	getAuthCodeRedirectURI(
+		opts: GetRedirectURIParams,
 	) {
-		return createURLWithParams(`${AUTH_API_PREFIX}/authorize`, {
-			response_type: "code",
-			client_id: this.config.SPOTIFY_CLIENT_ID,
-			scope: opts.scopes?.join(" "),
-			redirect_uri: this.config.SPOTIFY_REDIRECT_URI,
-			state: opts.state,
-			show_dialog: opts.show_dialog,
-		} as RequestUserAuthParams);
+		return createURLWithParams<RequestUserAuthParams>(
+			`${AUTH_API_PREFIX}/authorize`,
+			{
+				response_type: "code",
+				client_id: this.config.SPOTIFY_CLIENT_ID,
+				scope: opts.scopes?.join(" "),
+				redirect_uri: this.config.SPOTIFY_REDIRECT_URI,
+				state: opts.state,
+				show_dialog: opts.show_dialog,
+			},
+		);
+	}
+
+	getImplicitGrantRedirectURI(opts: GetRedirectURIParams) {
+		return createURLWithParams<RequestUserAuthParams>(
+			`${AUTH_API_PREFIX}/authorize`,
+			{
+				response_type: "token",
+				client_id: this.config.SPOTIFY_CLIENT_ID,
+				scope: opts.scopes?.join(" "),
+				redirect_uri: this.config.SPOTIFY_REDIRECT_URI,
+				state: opts.state,
+				show_dialog: opts.show_dialog,
+			},
+		);
 	}
 
 	async getKeypairByAuthCode(code: string) {
@@ -83,10 +75,10 @@ export class SpotifyAuthService {
 			throw new Error(await res.text());
 		}
 
-		return (await res.json()) as SpotifyTokensResponse;
+		return (await res.json()) as KeypairResponse;
 	}
 
-	async refreshAccessToken(refreshToken: string) {
+	async getAccessByRefreshToken(refreshToken: string) {
 		const res = await fetch(`${AUTH_API_PREFIX}/api/token`, {
 			headers: {
 				Authorization: this.AUTH_HEADER,
@@ -104,6 +96,26 @@ export class SpotifyAuthService {
 			throw new Error(await res.text());
 		}
 
-		return (await res.json()) as SpotifyAccessTokenResponse;
+		return (await res.json()) as AccessTokenResponse;
+	}
+
+	async getAccessToken() {
+		const res = await fetch(`${AUTH_API_PREFIX}/api/token`, {
+			headers: {
+				Authorization: this.AUTH_HEADER,
+				"Content-Type": "application/x-www-form-urlencoded",
+				Accept: "application/json",
+			},
+			method: "POST",
+			body: new URLSearchParams({
+				grant_type: "client_credentials",
+			}),
+		});
+
+		if (!res.ok) {
+			throw new Error(await res.text());
+		}
+
+		return (await res.json()) as ClientCredentialsResponse;
 	}
 }
