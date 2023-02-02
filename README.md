@@ -21,7 +21,7 @@ Lint to package - [soundify-web-api](https://www.npmjs.com/package/soundify-web-
 npm i soundify-web-api
 ```
 
-```typescript
+```ts
 // For nodejs
 import { ... } from "soundify-web-api"
 
@@ -33,7 +33,7 @@ import { ... } from "soundify-web-api/web"
 
 Link to package - [soundify](https://deno.land/x/soundify)
 
-```bash
+```ts
 import { ... } from "https://deno.land/x/soundify/mod.ts"
 ```
 
