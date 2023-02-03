@@ -5,7 +5,7 @@ import {
 	str,
 	url,
 } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { AUTH_SCOPES, AuthorizationCodeFlow } from "../../src/mod.ts";
+import { AuthCodeService } from "../../src/mod.ts";
 
 const env = cleanEnv(Deno.env.toObject(), {
 	PORT: num(),
@@ -16,38 +16,40 @@ const env = cleanEnv(Deno.env.toObject(), {
 
 const app = new Application();
 const router = new Router();
-const spotifyAuthService = new AuthorizationCodeFlow(env);
+
+const authService = new AuthCodeService(env);
 
 router
 	.get("/login", (ctx) => {
 		const state = crypto.randomUUID();
 
-		const redirectURL = spotifyAuthService.getAuthURL({
-			scopes: Object.values(AUTH_SCOPES),
+		const authURL = authService.getAuthURL({
+			scopes: ["user-read-email"],
 			state,
 		});
 
 		ctx.cookies.set("state", state, {
 			httpOnly: true,
 		});
-		ctx.response.redirect(redirectURL);
+		ctx.response.redirect(authURL);
 	})
 	.get("/callback", async (ctx) => {
-		const code = ctx.request.url.searchParams.get("code");
-		if (!code) {
-			ctx.response.body = "No code provided";
-			return;
-		}
-
 		const state = await ctx.cookies.get("state");
-		const expectedState = ctx.request.url.searchParams.get("state");
-
-		if (!state || !expectedState || state != expectedState) {
-			ctx.response.body = "Wrong state";
+		if (!state) {
+			ctx.response.body = "Can't find state";
 			return;
 		}
 
-		ctx.response.body = await spotifyAuthService.getKeypairByAuthCode(code);
+		try {
+			const keypairData = await authService.getGrantData(
+				ctx.request.url.searchParams,
+				state,
+			);
+
+			ctx.response.body = keypairData;
+		} catch (error) {
+			ctx.response.body = String(error);
+		}
 	});
 
 app.use(router.routes());
@@ -59,10 +61,4 @@ app.addEventListener("listen", () => {
 	);
 });
 
-async function main() {
-	await app.listen({ port: env.PORT });
-}
-
-if (import.meta.main) {
-	await main();
-}
+await app.listen({ port: env.PORT });

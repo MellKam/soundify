@@ -1,21 +1,22 @@
 import { createURLWithParams } from "../utils.ts";
-import { API_TOKEN_URL, AUTHORIZE_URL } from "./auth.consts.ts";
-import { getBasicAuthHeader } from "./auth.helpers.ts";
+import { AUTHORIZE_URL } from "./auth.consts.ts";
+import { getBasicAuthHeader, postApiTokenRoute } from "./auth.helpers.ts";
 import {
 	AccessTokenResponse,
-	ApiTokenRequestParams,
 	GetAuthURLOptions,
 	KeypairResponse,
 	RequestUserAuthParams,
 } from "./auth.types.ts";
 
 /**
+ * Spotify auth service that uses "Authorization Code Flow"
+ *
  * The authorization code flow is suitable for long-running applications
  * (e.g. web and mobile apps) where the user grants permission only once.
  *
  * @link https://developer.spotify.com/documentation/general/guides/authorization/code-flow/
  */
-export class AuthorizationCodeFlow {
+export class AuthCodeService {
 	private readonly BASIC_AUTH_HEADER: string;
 	constructor(
 		private readonly config: {
@@ -46,25 +47,29 @@ export class AuthorizationCodeFlow {
 		);
 	}
 
-	async getKeypairByAuthCode(code: string) {
-		const res = await fetch(
-			createURLWithParams<ApiTokenRequestParams>(
-				API_TOKEN_URL,
-				{
-					code,
-					redirect_uri: this.config.SPOTIFY_REDIRECT_URI,
-					grant_type: "authorization_code",
-				},
-			),
-			{
-				headers: {
-					Authorization: this.BASIC_AUTH_HEADER,
-					"Content-Type": "application/x-www-form-urlencoded",
-					Accept: "application/json",
-				},
-				method: "POST",
-			},
-		);
+	async getGrantData(searchParams: URLSearchParams, state?: string) {
+		if (state) {
+			const expectedState = searchParams.get("state");
+
+			if (expectedState === null) {
+				throw new Error("Can't find 'state' in query params");
+			}
+
+			if (state !== expectedState) {
+				throw new Error("State from url does not match the passed state");
+			}
+		}
+
+		const code = searchParams.get("code");
+		if (code === null) {
+			throw new Error("Can't find 'code' in query params");
+		}
+
+		const res = await postApiTokenRoute(this.BASIC_AUTH_HEADER, {
+			code,
+			redirect_uri: this.config.SPOTIFY_REDIRECT_URI,
+			grant_type: "authorization_code",
+		});
 
 		if (!res.ok) {
 			throw new Error(await res.text());
@@ -74,23 +79,10 @@ export class AuthorizationCodeFlow {
 	}
 
 	async getAccessByRefreshToken(refreshToken: string) {
-		const res = await fetch(
-			createURLWithParams<ApiTokenRequestParams>(
-				API_TOKEN_URL,
-				{
-					refresh_token: refreshToken,
-					grant_type: "refresh_token",
-				},
-			),
-			{
-				headers: {
-					Authorization: this.BASIC_AUTH_HEADER,
-					"Content-Type": "application/x-www-form-urlencoded",
-					Accept: "application/json",
-				},
-				method: "POST",
-			},
-		);
+		const res = await postApiTokenRoute(this.BASIC_AUTH_HEADER, {
+			refresh_token: refreshToken,
+			grant_type: "refresh_token",
+		});
 
 		if (!res.ok) {
 			throw new Error(await res.text());

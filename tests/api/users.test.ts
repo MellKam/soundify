@@ -1,7 +1,7 @@
 import { cleanEnv, str } from "https://deno.land/x/envalid@0.1.2/mod.ts";
 import {
-	AuthorizationCodeFlow,
-	ClientCredentialsFlow,
+	AuthCodeService,
+	ClientCredentialsService,
 	getUserProfile,
 	getUserTopItems,
 } from "../../src/mod.ts";
@@ -13,12 +13,12 @@ const env = cleanEnv(Deno.env.toObject(), {
 });
 
 Deno.test("Test client credentials flow and get user profile", async () => {
-	const CCFlow = new ClientCredentialsFlow({
+	const authService = new ClientCredentialsService({
 		SPOTIFY_CLIENT_ID: env.SPOTIFY_CLIENT_ID,
 		SPOTIFY_CLIENT_SECRET: env.SPOTIFY_CLIENT_SECRET,
 	});
 
-	const { access_token } = await CCFlow.getAccessToken();
+	const { access_token } = await authService.getAccessToken();
 
 	const user = await getUserProfile({
 		accessToken: `Bearer ${access_token}`,
@@ -29,13 +29,13 @@ Deno.test("Test client credentials flow and get user profile", async () => {
 });
 
 Deno.test("Test auth code flow and get user's top artist", async () => {
-	const authCodeFlow = new AuthorizationCodeFlow({
+	const authService = new AuthCodeService({
 		SPOTIFY_CLIENT_ID: env.SPOTIFY_CLIENT_ID,
 		SPOTIFY_CLIENT_SECRET: env.SPOTIFY_CLIENT_SECRET,
 		SPOTIFY_REDIRECT_URI: "",
 	});
 
-	const { access_token } = await authCodeFlow.getAccessByRefreshToken(
+	const { access_token } = await authService.getAccessByRefreshToken(
 		env.SPOTIFY_REFRESH_TOKEN,
 	);
 

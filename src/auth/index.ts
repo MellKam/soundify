@@ -1,11 +1,12 @@
 export { AUTH_SCOPES, type AuthScope } from "./auth.consts.ts";
 export {
 	type AccessTokenResponse,
-	type ClientCredentialsResponse,
+	type AccessTokenWithScope,
 	type GetAuthURLOptions,
 	type KeypairResponse,
 } from "./auth.types.ts";
 
-export { AuthorizationCodeFlow } from "./authorization_code.flow.ts";
-export { ImplicitGrantFlow } from "./implicit_grant_flow.ts";
-export { ClientCredentialsFlow } from "./client_credentials.flow.ts";
+// Auth Services
+export { AuthCodeService } from "./auth_code.service.ts";
+export { ImplicitGrantService } from "./implicit_grant.service.ts";
+export { ClientCredentialsService } from "./client_credentials.service.ts";

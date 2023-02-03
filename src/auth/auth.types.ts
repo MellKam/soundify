@@ -1,24 +1,17 @@
 import { type AuthScope } from "./auth.consts.ts";
 
-export interface KeypairResponse {
-	access_token: string;
-	token_type: "Bearer";
-	expires_in: number;
-	refresh_token: string;
-	scope: string;
-}
-
 export interface AccessTokenResponse {
 	access_token: string;
 	token_type: "Bearer";
 	expires_in: number;
+}
+
+export interface AccessTokenWithScope extends AccessTokenResponse {
 	scope: string;
 }
 
-export interface ClientCredentialsResponse {
-	access_token: string;
-	token_type: "Bearer";
-	expires_in: number;
+export interface KeypairResponse extends AccessTokenWithScope {
+	refresh_token: string;
 }
 
 export interface GetAuthURLOptions {

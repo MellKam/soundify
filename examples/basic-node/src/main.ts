@@ -1,4 +1,4 @@
-import { AuthorizationCodeFlow } from "soundify-web-api";
+import { AuthCodeService } from "soundify-web-api";
 import { webcrypto } from "node:crypto";
 import cookieParser from "cookie-parser";
 
@@ -6,7 +6,7 @@ import express from "express";
 const app = express();
 app.use(cookieParser("secret"));
 
-const spotifyAuthService = new AuthorizationCodeFlow({
+const authService = new AuthCodeService({
 	SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID!,
 	SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET!,
 	SPOTIFY_REDIRECT_URI: process.env.SPOTIFY_REDIRECT_URI!,
@@ -15,7 +15,7 @@ const spotifyAuthService = new AuthorizationCodeFlow({
 app.get("/login", (_req, res) => {
 	const state = webcrypto.randomUUID();
 
-	const redirectURL = spotifyAuthService.getAuthURL({
+	const redirectURL = authService.getAuthURL({
 		scopes: ["user-read-email"],
 		state,
 	});
@@ -25,22 +25,22 @@ app.get("/login", (_req, res) => {
 });
 
 app.get("/callback", async (req, res) => {
-	const code = req.query["code"] as string | undefined;
-	if (!code) {
-		res.status(400).send("No code provided");
-		return;
-	}
-
 	const state = req.cookies["state"];
-	const expectedState = req.query["state"];
-
-	if (!state || !expectedState || state != expectedState) {
-		res.status(400).send("Wrong state");
+	if (!state) {
+		res.status(400).send("Can't find state");
 		return;
 	}
 
-	const data = await spotifyAuthService.getKeypairByAuthCode(code);
-	res.status(200).json(data);
+	try {
+		const keypairData = await authService.getGrantData(
+			new URL(req.url).searchParams,
+			state,
+		);
+
+		res.status(200).json(keypairData);
+	} catch (error) {
+		res.status(400).send(String(error));
+	}
 });
 
 const port = process.env.PORT;
