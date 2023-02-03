@@ -40,11 +40,11 @@ export const App = () => {
 
 	return (
 		<>
-			{userProfile === null ? (
-				"Loading..."
-			) : (
-				<div>Logged as {userProfile.display_name}</div>
-			)}
+			{userProfile === null
+				? (
+					"Loading..."
+				)
+				: <div>Logged as {userProfile.display_name}</div>}
 		</>
 	);
 };
