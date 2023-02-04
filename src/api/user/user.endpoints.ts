@@ -19,24 +19,27 @@ type GetUserTopItemsOpts = {
 	};
 };
 
+type TopItemType = "artists" | "tracks";
+type TopItem = Artist | Track;
+
 /**
  * Get the current user's top artists or tracks
  * based on calculated affinity.
  */
-export function getUserTopItems(
-	type: "artists",
-	{ query, accessToken }: GetUserTopItemsOpts,
-): Promise<PagingObject<Artist>>;
-export function getUserTopItems(
-	type: "tracks",
-	{ query, accessToken }: GetUserTopItemsOpts,
-): Promise<PagingObject<Track>>;
-
-export function getUserTopItems(type: "artists" | "tracks", {
-	query,
-	accessToken,
-}: GetUserTopItemsOpts) {
-	return spotifyFetch<PagingObject<Artist | Track>>(`/me/top/${type}`, {
+export function getUserTopItems<
+	T extends TopItemType,
+	M extends Record<TopItemType, TopItem> = {
+		artists: Artist;
+		tracks: Track;
+	},
+>(
+	type: T,
+	{
+		query,
+		accessToken,
+	}: GetUserTopItemsOpts,
+) {
+	return spotifyFetch<PagingObject<M[T]>>(`/me/top/${type}`, {
 		query,
 		accessToken,
 	});

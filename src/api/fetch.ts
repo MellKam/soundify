@@ -29,7 +29,7 @@ export const spotifyFetch = async <
 		method,
 		headers: {
 			...headers,
-			"Authorization": accessToken,
+			"Authorization": `Bearer ${accessToken}`,
 			"Content-Type": "application/json",
 			"Accept": "application/json",
 		},

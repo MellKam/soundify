@@ -12,6 +12,7 @@ const authService = new ImplicitGrantService({
 
 const useSpotifyProfile = () => {
 	const [userProfile, setUserProfile] = useState<UserPrivate | null>(null);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (userProfile !== null) return;
@@ -20,8 +21,12 @@ const useSpotifyProfile = () => {
 			const { access_token } = authService.getGrantData(location.hash);
 
 			(async () => {
-				const result = await getCurrentUserProfile(`Bearer ${access_token}`);
-				setUserProfile(result);
+				try {
+					const user = await getCurrentUserProfile(access_token);
+					setUserProfile(user);
+				} catch (error) {
+					setError(String(error));
+				}
 			})();
 		} catch (error) {
 			const authURL = authService.getAuthURL({
@@ -32,19 +37,19 @@ const useSpotifyProfile = () => {
 		}
 	}, []);
 
-	return userProfile;
+	return { userProfile, error };
 };
 
 export const App = () => {
-	const userProfile = useSpotifyProfile();
+	const { userProfile, error } = useSpotifyProfile();
 
 	return (
 		<>
-			{userProfile === null
-				? (
-					"Loading..."
-				)
-				: <div>Logged as {userProfile.display_name}</div>}
+			{error
+				? <h1>{error}</h1>
+				: userProfile === null
+				? <div>Redirecting to login...</div>
+				: <h1>Welcome {userProfile.display_name}!</h1>}
 		</>
 	);
 };

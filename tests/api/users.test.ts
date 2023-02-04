@@ -21,7 +21,7 @@ Deno.test("Test client credentials flow and get user profile", async () => {
 	const { access_token } = await authService.getAccessToken();
 
 	const user = await getUserProfile({
-		accessToken: `Bearer ${access_token}`,
+		accessToken: access_token,
 		user_id: "zksczw19rao4pcfdft6o7nn8g",
 	});
 
@@ -40,7 +40,7 @@ Deno.test("Test auth code flow and get user's top artist", async () => {
 	);
 
 	const top_artist = await getUserTopItems("artists", {
-		accessToken: `Bearer ${access_token}`,
+		accessToken: access_token,
 		query: {
 			limit: 1,
 		},
