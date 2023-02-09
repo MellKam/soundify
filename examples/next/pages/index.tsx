@@ -51,11 +51,9 @@ export default function ({
 
 	return (
 		<>
-			{user === undefined ? (
-				<button onClick={loginToSpotify}>Login to spotify</button>
-			) : (
-				<h1>Welcome {user.display_name}!</h1>
-			)}
+			{user === undefined
+				? <button onClick={loginToSpotify}>Login to spotify</button>
+				: <h1>Welcome {user.display_name}!</h1>}
 		</>
 	);
 }
