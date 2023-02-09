@@ -1,32 +1,40 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { AuthCodeService } from "soundify-web-api";
-import { getCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
+import {
+	authService,
+	SPOTIFY_ACCESS_TOKEN,
+	SPOTIFY_REFRESH_TOKEN,
+} from "@/spotify/index.server";
 
-export default async function handler(
+export default async function (
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const authService = new AuthCodeService({
-		SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID!,
-		SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET!,
-		SPOTIFY_REDIRECT_URI: process.env.SPOTIFY_REDIRECT_URI!,
-	});
-
-	const refreshToken = getCookie("SPOTIFY_REFRESH_TOKEN", {
+	const refreshToken = getCookie(SPOTIFY_REFRESH_TOKEN, {
 		req,
 		res,
-		httpOnly: true,
 	});
 
 	if (typeof refreshToken !== "string") {
-		res.status(400).send("Can't find SPOTIFY_REFRESH_TOKEN");
+		res.status(400).send({ error: "Can't find SPOTIFY_REFRESH_TOKEN" });
 		return;
 	}
 
 	try {
-		const data = await authService.getAccessByRefreshToken(refreshToken);
-		res.json(data);
+		const { access_token, expires_in } = await authService
+			.getAccessByRefreshToken(
+				refreshToken,
+			);
+
+		setCookie(SPOTIFY_ACCESS_TOKEN, access_token, {
+			maxAge: expires_in,
+			req,
+			res,
+			sameSite: "strict",
+		});
+
+		res.status(200).send("OK");
 	} catch (error) {
-		res.status(500).send(String(error));
+		res.status(500).send({ error: String(error) });
 	}
 }

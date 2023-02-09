@@ -1,39 +1,33 @@
 import { getCookie, setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { AuthCodeService, KeypairResponse } from "soundify-web-api";
+import {
+	authService,
+	SPOTIFY_ACCESS_TOKEN,
+	SPOTIFY_REFRESH_TOKEN,
+	SPOTIFY_STATE,
+} from "@/spotify/index.server";
 
-export default async function handler(
+export default async function (
 	req: NextApiRequest,
-	res: NextApiResponse<KeypairResponse | string>,
+	res: NextApiResponse,
 ) {
-	const authService = new AuthCodeService({
-		SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID!,
-		SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET!,
-		SPOTIFY_REDIRECT_URI: process.env.SPOTIFY_REDIRECT_URI!,
-	});
-
-	const state = getCookie("state", { httpOnly: true, req, res });
+	const state = getCookie(SPOTIFY_STATE, { req, res });
 	if (typeof state !== "string") {
-		res.status(400).send("Cannot get state from cookies");
+		res.status(400).send({ error: "Cannot get state from cookies" });
 		return;
 	}
 
 	if (!req.url) {
-		res.status(400).send("req.url in undefined");
+		res.status(400).send({ error: "req.url in undefined" });
 		return;
 	}
 	const url = new URL(req.url, `http://${req.headers.host}`);
 
 	try {
-		const keypairData = await authService.getGrantData(url.searchParams, state);
+		const { refresh_token, access_token } = await authService
+			.getGrantData(url.searchParams, state);
 
-		setCookie("SPOTIFY_ACCESS_TOKEN", keypairData.access_token, {
-			sameSite: "strict",
-			req,
-			res,
-		});
-
-		setCookie("SPOTIFY_REFRESH_TOKEN", keypairData.refresh_token, {
+		setCookie(SPOTIFY_REFRESH_TOKEN, refresh_token, {
 			httpOnly: true,
 			sameSite: "strict",
 			path: "/api/refresh",
@@ -41,8 +35,14 @@ export default async function handler(
 			res,
 		});
 
-		res.redirect("/");
+		setCookie(SPOTIFY_ACCESS_TOKEN, access_token, {
+			req,
+			res,
+			sameSite: "strict",
+		});
+
+		res.status(200).send("OK");
 	} catch (error) {
-		res.status(400).send(String(error));
+		res.status(400).send({ error: String(error) });
 	}
 }
