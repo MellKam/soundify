@@ -1,4 +1,4 @@
-import { bundle } from "https://deno.land/x/emit@0.14.0/mod.ts";
+import { bundle } from "https://deno.land/x/emit@0.15.0/mod.ts";
 import { createCache } from "https://deno.land/x/deno_cache@0.4.1/mod.ts";
 
 const cache = createCache();
