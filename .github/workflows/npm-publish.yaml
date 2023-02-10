@@ -19,20 +19,16 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
-        id: pnpm-install
         with:
           run_install: false
 
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Setup node 
+      - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
 
-      - name: Install deps
-        run: pnpm i 
+      - name: Install dependencies
+        run: pnpm --filter=soundify-web-api install
 
       - name: Build
         run: deno task build
