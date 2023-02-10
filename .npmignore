@@ -3,6 +3,8 @@ deno.lock
 tests
 scripts
 examples
+pnpm-workspace.yaml
+pnpm-lock.yaml
 .vscode
 .github
 node_modules

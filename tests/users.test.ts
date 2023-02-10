@@ -4,7 +4,7 @@ import {
 	ClientCredentialsService,
 	getUserProfile,
 	getUserTopItems,
-} from "../../src/mod.ts";
+} from "../mod.ts";
 
 const env = cleanEnv(Deno.env.toObject(), {
 	SPOTIFY_CLIENT_ID: str(),

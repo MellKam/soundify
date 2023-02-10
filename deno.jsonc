@@ -41,7 +41,8 @@
 		}
 	},
 	"tasks": {
-		"cache": "deno cache ./src/mod.ts",
+		"cache": "deno cache ./mod.ts",
+		"check": "deno check ./mod.ts",
 		"lint": "deno fmt && deno lint",
 		"lint:check": "deno lint && deno fmt  --check",
 		"build": "deno run --no-prompt --allow-read=. --allow-write=. https://deno.land/x/deno2node/src/cli.ts tsconfig.json && deno run -A ./scripts/bundle_web.ts"

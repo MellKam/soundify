@@ -1,0 +1,5 @@
+packages:
+  - '.'
+  - 'examples/basic-web'
+  - 'examples/next'
+  - 'examples/basic-node'

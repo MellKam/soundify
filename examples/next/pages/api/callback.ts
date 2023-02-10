@@ -41,7 +41,7 @@ export default async function (
 			sameSite: "strict",
 		});
 
-		res.status(200).send("OK");
+		res.redirect("/");
 	} catch (error) {
 		res.status(400).send({ error: String(error) });
 	}

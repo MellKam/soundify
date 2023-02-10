@@ -15,13 +15,13 @@ const authService = new AuthCodeService({
 app.get("/login", (_req, res) => {
 	const state = webcrypto.randomUUID();
 
-	const redirectURL = authService.getAuthURL({
-		scopes: ["user-read-email"],
-		state,
-	});
-
 	res.cookie("state", state);
-	res.redirect(redirectURL.toString());
+	res.redirect(
+		authService.getAuthURL({
+			scopes: ["user-read-email"],
+			state,
+		}).toString(),
+	);
 });
 
 app.get("/callback", async (req, res) => {
@@ -33,7 +33,7 @@ app.get("/callback", async (req, res) => {
 
 	try {
 		const keypairData = await authService.getGrantData(
-			new URL(req.url).searchParams,
+			new URL(req.url, `http://${req.headers.host}`).searchParams,
 			state,
 		);
 

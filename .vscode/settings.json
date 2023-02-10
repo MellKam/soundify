@@ -1,9 +1,13 @@
 {
 	"deno.enablePaths": [
-		"./src",
-		"./scripts",
-		"./tests",
-		"./examples/basic-deno"
+		"api",
+		"auth",
+		"mod.ts",
+		"utils.ts",
+		"scripts",
+		"tests",
+		"platform/platform.deno.ts",
+		"examples/basic-deno"
 	],
 	"deno.lint": true,
 	"deno.config": "./deno.jsonc",

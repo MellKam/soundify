@@ -8,10 +8,20 @@
 		"declaration": true,
 		"moduleResolution": "node",
 		"module": "ESNext",
-		"rootDir": "./src/",
 		"outDir": "./dist/",
 		"target": "ESNext"
 	},
-	"include": ["./src/**/*.ts"],
-	"exclude": ["./src/**/*.web.ts"]
+	"include": [
+		"./**/*.ts",
+		"mod.ts",
+		"utils.ts",
+		"./api/**/*.ts",
+		"./auth/**/*.ts"
+	],
+	"exclude": [
+		"./platform/**/*.web.ts",
+		"./examples/**",
+		"./scripts/**",
+		"./tests/**"
+	]
 }

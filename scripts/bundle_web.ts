@@ -3,7 +3,7 @@ import { createCache } from "https://deno.land/x/deno_cache@0.4.1/mod.ts";
 
 const cache = createCache();
 
-const { code: bundledCode } = await bundle("./src/mod.ts", {
+const { code: bundledCode } = await bundle("./mod.ts", {
 	load: (specifier) => {
 		if (specifier.endsWith(".deno.ts")) {
 			const baseLength = specifier.length - ".deno.ts".length;

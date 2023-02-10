@@ -5,7 +5,7 @@ import {
 	str,
 	url,
 } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { AuthCodeService } from "../../src/mod.ts";
+import { AuthCodeService } from "../../mod.ts";
 
 const env = cleanEnv(Deno.env.toObject(), {
 	PORT: num(),

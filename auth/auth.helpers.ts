@@ -1,4 +1,4 @@
-import { encodeBase64 } from "../platform.deno.ts";
+import { encodeBase64 } from "../platform/platform.deno.ts";
 import { createURLWithParams } from "../utils.ts";
 import { API_TOKEN_URL } from "./auth.consts.ts";
 import { ApiTokenRequestParams } from "./auth.types.ts";
