@@ -19,6 +19,7 @@
 	"main": "./dist/mod.js",
 	"types": "./dist/mod.d.ts",
 	"module": "./dist/mod.js",
+	"sideEffects": false,
 	"exports": {
 		".": {
 			"import": {

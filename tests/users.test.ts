@@ -1,16 +1,12 @@
-import { cleanEnv, str } from "https://deno.land/x/envalid@0.1.2/mod.ts";
 import {
 	AuthCodeService,
 	ClientCredentialsService,
 	getUserProfile,
 	getUserTopItems,
 } from "../mod.ts";
+import { getTestEnv } from "./testEnv.ts";
 
-const env = cleanEnv(Deno.env.toObject(), {
-	SPOTIFY_CLIENT_ID: str(),
-	SPOTIFY_CLIENT_SECRET: str(),
-	SPOTIFY_REFRESH_TOKEN: str(),
-});
+const env = getTestEnv();
 
 Deno.test("Test client credentials flow and get user profile", async () => {
 	const authService = new ClientCredentialsService({

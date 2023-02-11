@@ -30,7 +30,7 @@ export const AUTH_SCOPES = {
 	/**
 	 * @description Control playback of a Spotify track.
 	 *
-	 * *The user must have a `Spotify Premium` account.*
+	 * !The user must have a `Spotify Premium` account.
 	 */
 	STREAMING: "streaming",
 	// Playlist -----------------------------------------------------------------

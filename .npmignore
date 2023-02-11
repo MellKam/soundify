@@ -7,4 +7,5 @@ pnpm-workspace.yaml
 pnpm-lock.yaml
 .vscode
 .github
+.env.test
 node_modules

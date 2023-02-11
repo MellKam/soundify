@@ -1,14 +1,12 @@
 import { getCookie } from "cookies-next";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useCallback, useEffect } from "react";
-import { getCurrentUserProfile, type UserPrivate } from "soundify-web-api/web";
+import { getCurrentUserProfile, type UserPrivate } from "soundify-web-api";
 import { SPOTIFY_ACCESS_TOKEN } from "@/spotify/index.client";
 
-type ServerSideData = {
+export const getServerSideProps: GetServerSideProps<{
 	user?: UserPrivate;
-};
-
-export const getServerSideProps: GetServerSideProps<ServerSideData> = async ({
+}> = async ({
 	req,
 	res,
 }) => {
@@ -31,9 +29,8 @@ export default function ({
 	const loginToSpotify = useCallback(() => location.replace("/api/auth"), []);
 
 	useEffect(() => {
-		if (user || getCookie(SPOTIFY_ACCESS_TOKEN)) {
-			return;
-		}
+		if (user) return;
+		if (typeof getCookie(SPOTIFY_ACCESS_TOKEN) === "string") return;
 
 		(async () => {
 			try {
