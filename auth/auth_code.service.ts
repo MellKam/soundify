@@ -7,6 +7,7 @@ import {
 	KeypairResponse,
 	RequestUserAuthParams,
 } from "./auth.types.ts";
+import { AuthProvider } from "./auth.provider.ts";
 
 /**
  * Spotify auth service that uses "Authorization Code Flow"
@@ -78,7 +79,7 @@ export class AuthCodeService {
 		return (await res.json()) as KeypairResponse;
 	}
 
-	async getAccessByRefreshToken(refreshToken: string) {
+	async refreshAccessToken(refreshToken: string) {
 		const res = await postApiTokenRoute(this.BASIC_AUTH_HEADER, {
 			refresh_token: refreshToken,
 			grant_type: "refresh_token",
@@ -89,5 +90,26 @@ export class AuthCodeService {
 		}
 
 		return (await res.json()) as AccessTokenResponse;
+	}
+
+	getProvider(
+		{ refresh_token, ...rest }: {
+			refresh_token: string;
+			access_token?: string;
+			expires_in?: number;
+		},
+	) {
+		return new AuthProvider({
+			refresh: this.refreshAccessToken.bind(this, refresh_token),
+			...rest,
+		});
+	}
+
+	async getProviderFromGrantData(
+		searchParams: URLSearchParams,
+		state?: string,
+	) {
+		const data = await this.getGrantData(searchParams, state);
+		return this.getProvider(data);
 	}
 }

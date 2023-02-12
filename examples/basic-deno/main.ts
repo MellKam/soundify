@@ -5,7 +5,7 @@ import {
 	str,
 	url,
 } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { AuthCodeService } from "../../mod.ts";
+import { AuthCodeService, getCurrentUserProfile } from "../../mod.ts";
 
 const env = cleanEnv(Deno.env.toObject(), {
 	PORT: num(),
@@ -41,12 +41,14 @@ router
 		}
 
 		try {
-			const keypairData = await authService.getGrantData(
+			const authProvider = await authService.getGrantData(
 				ctx.request.url.searchParams,
 				state,
 			);
 
-			ctx.response.body = keypairData;
+			const user = await getCurrentUserProfile(authProvider);
+
+			ctx.response.body = user;
 		} catch (error) {
 			ctx.response.body = String(error);
 		}
