@@ -22,6 +22,7 @@
 		"./platform/**/*.web.ts",
 		"./examples/**",
 		"./scripts/**",
-		"./tests/**"
+		"./tests/**",
+		"./dist/**"
 	]
 }

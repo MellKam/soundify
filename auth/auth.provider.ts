@@ -1,14 +1,16 @@
 import { AccessTokenResponse } from "./auth.types.ts";
 
-export class AuthProvider {
+type RefreshFn = () => Promise<AccessTokenResponse>;
+
+export class AuthProvider implements IAuthProvider {
 	#accessToken: string | null = null;
 	#isExpired = true;
-	#expireTimeoutId: number | null = null;
-	#refresh: () => Promise<AccessTokenResponse>;
+	#expireTimeoutId: ReturnType<typeof setTimeout> | null = null;
+	#refresh: RefreshFn;
 
 	constructor(
 		{ refresh, access_token, expires_in }: {
-			refresh: () => Promise<AccessTokenResponse>;
+			refresh: RefreshFn;
 			access_token?: string;
 			expires_in?: number;
 		},
@@ -48,6 +50,28 @@ export class AuthProvider {
 			throw new Error("expireTimeoutId in null");
 		}
 		clearTimeout(this.#expireTimeoutId);
+	}
+}
+
+export class ImplicitAuthProvider implements IAuthProvider {
+	#accessToken: string;
+	#refresh: () => void;
+
+	constructor({ refresh, access_token }: {
+		refresh: () => void;
+		access_token: string;
+	}) {
+		this.#refresh = refresh;
+		this.#accessToken = access_token;
+	}
+
+	async call<T>(func: (accessToken: string) => Promise<T>) {
+		try {
+			return await func(this.#accessToken);
+		} catch (_) {
+			this.#refresh();
+			throw new Error("error");
+		}
 	}
 }
 
