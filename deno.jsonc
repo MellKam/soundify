@@ -14,12 +14,12 @@
 				"./pnpm-lock.yaml",
 				"./deno.lock",
 				"./README.md",
-				"./examples/basic-node/dist/",
-				"./examples/basic-node/node_modules/",
-				"./examples/basic-web/node_modules/",
-				"./examples/basic-web/dist/",
-				"./examples/next/node_modules/",
-				"./examples/next/.next/"
+				"./examples/node-express-auth/dist/",
+				"./examples/node-express-auth/node_modules/",
+				"./examples/react-vite/node_modules/",
+				"./examples/react-vite/dist/",
+				"./examples/next-ssr/node_modules/",
+				"./examples/next-ssr/.next/"
 			]
 		}
 	},
@@ -31,12 +31,12 @@
 				"./pnpm-lock.yaml",
 				"./deno.lock",
 				"./README.md",
-				"./examples/basic-node/dist/",
-				"./examples/basic-node/node_modules/",
-				"./examples/basic-web/node_modules/",
-				"./examples/basic-web/dist/",
-				"./examples/next/node_modules/",
-				"./examples/next/.next/"
+				"./examples/node-express-auth/dist/",
+				"./examples/node-express-auth/node_modules/",
+				"./examples/react-vite/node_modules/",
+				"./examples/react-vite/dist/",
+				"./examples/next-ssr/node_modules/",
+				"./examples/next-ssr/.next/"
 			]
 		}
 	},

@@ -1,5 +1,5 @@
 {
-	"name": "@examples/basic-web",
+	"name": "@examples/react-vite",
 	"private": "true",
 	"type": "module",
 	"scripts": {

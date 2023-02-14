@@ -7,7 +7,7 @@
 		"scripts",
 		"tests",
 		"platform/platform.deno.ts",
-		"examples/basic-deno",
+		"examples/deno-oak-auth",
 		"spotify.client.ts"
 	],
 	"deno.lint": true,
