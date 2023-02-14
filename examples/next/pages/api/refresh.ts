@@ -22,7 +22,7 @@ export default async function (
 
 	try {
 		const { access_token, expires_in } = await authService
-			.getAccessByRefreshToken(
+			.refreshAccessToken(
 				refreshToken,
 			);
 

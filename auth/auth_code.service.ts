@@ -1,3 +1,4 @@
+import { SpotifyClient } from "../spotify.client.ts";
 import { createURLWithParams } from "../utils.ts";
 import { AUTHORIZE_URL } from "./auth.consts.ts";
 import { getBasicAuthHeader, postApiTokenRoute } from "./auth.helpers.ts";
@@ -78,7 +79,7 @@ export class AuthCodeService {
 		return (await res.json()) as KeypairResponse;
 	}
 
-	async getAccessByRefreshToken(refreshToken: string) {
+	async refreshAccessToken(refreshToken: string) {
 		const res = await postApiTokenRoute(this.BASIC_AUTH_HEADER, {
 			refresh_token: refreshToken,
 			grant_type: "refresh_token",
@@ -89,5 +90,18 @@ export class AuthCodeService {
 		}
 
 		return (await res.json()) as AccessTokenResponse;
+	}
+
+	createClient(
+		{ refresh_token, ...rest }: {
+			refresh_token: string;
+			access_token?: string;
+			expires_in?: number;
+		},
+	) {
+		return new SpotifyClient({
+			refresh: this.refreshAccessToken.bind(this, refresh_token),
+			...rest,
+		});
 	}
 }

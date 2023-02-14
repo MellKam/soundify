@@ -8,7 +8,7 @@ export const createURLWithParams = <
 
 	Object.keys(searchParams).forEach((key) => {
 		const value = searchParams[key];
-		if (value) {
+		if (typeof value !== "undefined") {
 			url.searchParams.set(key, value.toString());
 		}
 	});

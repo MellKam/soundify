@@ -5,7 +5,7 @@ import {
 	str,
 	url,
 } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { AuthCodeService } from "../../mod.ts";
+import { AuthCodeService, getCurrentUserProfile } from "../../mod.ts";
 
 const env = cleanEnv(Deno.env.toObject(), {
 	PORT: num(),
@@ -41,12 +41,16 @@ router
 		}
 
 		try {
-			const keypairData = await authService.getGrantData(
+			const { refresh_token } = await authService.getGrantData(
 				ctx.request.url.searchParams,
 				state,
 			);
 
-			ctx.response.body = keypairData;
+			const spotifyClient = authService.createClient({ refresh_token });
+
+			const user = await getCurrentUserProfile(spotifyClient);
+
+			ctx.response.body = user;
 		} catch (error) {
 			ctx.response.body = String(error);
 		}
