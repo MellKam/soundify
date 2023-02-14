@@ -1,6 +1,6 @@
 import { getBasicAuthHeader, postApiTokenRoute } from "./auth.helpers.ts";
 import { AccessTokenWithScope } from "./auth.types.ts";
-import { AuthProvider } from "./auth.provider.ts";
+import { SpotifyClient } from "../spotify.client.ts";
 
 /**
  * Spotify auth service that uses "Client Credenials Flow"
@@ -37,8 +37,8 @@ export class ClientCredentialsService {
 		return (await res.json()) as AccessTokenWithScope;
 	}
 
-	getProvider() {
-		return new AuthProvider({
+	createClient() {
+		return new SpotifyClient({
 			refresh: this.getAccessToken.bind(this),
 		});
 	}

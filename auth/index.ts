@@ -10,10 +10,3 @@ export {
 export { AuthCodeService } from "./auth_code.service.ts";
 export { ImplicitGrantService } from "./implicit_grant.service.ts";
 export { ClientCredentialsService } from "./client_credentials.service.ts";
-
-// Auth Provider
-export {
-	AuthProvider,
-	type IAuthProvider,
-	ImplicitAuthProvider,
-} from "./auth.provider.ts";

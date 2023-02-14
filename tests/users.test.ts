@@ -9,28 +9,28 @@ import { getTestEnv } from "./testEnv.ts";
 const env = getTestEnv();
 
 Deno.test("Test client credentials flow and get user profile", async () => {
-	const authProvider = new ClientCredentialsService({
+	const spotifyClient = new ClientCredentialsService({
 		SPOTIFY_CLIENT_ID: env.SPOTIFY_CLIENT_ID,
 		SPOTIFY_CLIENT_SECRET: env.SPOTIFY_CLIENT_SECRET,
-	}).getProvider();
+	}).createClient();
 
-	const user = await getUserProfile(authProvider, "zksczw19rao4pcfdft6o7nn8g");
+	const user = await getUserProfile(spotifyClient, "zksczw19rao4pcfdft6o7nn8g");
 
 	console.log(user.display_name);
-	authProvider.removeExpireListener();
+	spotifyClient.removeExpireListener();
 });
 
 Deno.test("Test auth code flow and get user's top artist", async () => {
-	const authProvider = new AuthCodeService({
+	const spotifyClient = new AuthCodeService({
 		SPOTIFY_CLIENT_ID: env.SPOTIFY_CLIENT_ID,
 		SPOTIFY_CLIENT_SECRET: env.SPOTIFY_CLIENT_SECRET,
 		SPOTIFY_REDIRECT_URI: "",
-	}).getProvider({ refresh_token: env.SPOTIFY_REFRESH_TOKEN });
+	}).createClient({ refresh_token: env.SPOTIFY_REFRESH_TOKEN });
 
-	const top_artist = await getUserTopItems(authProvider, "artists", {
+	const top_artist = await getUserTopItems(spotifyClient, "artists", {
 		limit: 1,
 	});
 
 	console.log("Top artist is: ", top_artist.items[0].name);
-	authProvider.removeExpireListener();
+	spotifyClient.removeExpireListener();
 });

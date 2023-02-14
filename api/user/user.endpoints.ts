@@ -1,18 +1,15 @@
 import { Artist } from "../artist/index.ts";
-import { spotifyFetch } from "../fetch.ts";
 import { Track } from "../track/track.types.ts";
 import { UserPrivate, UserPublic } from "./user.types.ts";
 import { PagingObject, PagingOptions } from "../shared/index.ts";
-import { type IAuthProvider } from "../../auth/index.ts";
+import { ISpotifyClient } from "../../spotify.client.ts";
 
 /**
  * Get detailed profile information about the current user
  * (including the current user's username).
  */
-export const getCurrentUserProfile = (authProvider: IAuthProvider) => {
-	return authProvider.call((accessToken) => {
-		return spotifyFetch<UserPrivate>("/me", { accessToken });
-	});
+export const getCurrentUserProfile = (spotifyClient: ISpotifyClient) => {
+	return spotifyClient.fetch<UserPrivate>("/me");
 };
 
 type GetUserTopItemsOpts = PagingOptions & {
@@ -26,33 +23,28 @@ type TopItem = Artist | Track;
  * Get the current user's top artists or tracks
  * based on calculated affinity.
  */
-export function getUserTopItems<
+export const getUserTopItems = <
 	T extends TopItemType,
 	M extends Record<TopItemType, TopItem> = {
 		artists: Artist;
 		tracks: Track;
 	},
 >(
-	authProvider: IAuthProvider,
+	spotifyClient: ISpotifyClient,
 	type: T,
 	query: GetUserTopItemsOpts,
-) {
-	return authProvider.call((accessToken) => {
-		return spotifyFetch<PagingObject<M[T]>>(`/me/top/${type}`, {
-			query,
-			accessToken,
-		});
+) => {
+	return spotifyClient.fetch<PagingObject<M[T]>>(`/me/top/${type}`, {
+		query,
 	});
-}
+};
 
 /**
  * Get public profile information about a Spotify user.
  */
 export const getUserProfile = (
-	authProvider: IAuthProvider,
+	spotifyClient: ISpotifyClient,
 	user_id: string,
 ) => {
-	return authProvider.call((accessToken) => {
-		return spotifyFetch<UserPublic>(`/users/${user_id}`, { accessToken });
-	});
+	return spotifyClient.fetch<UserPublic>(`/users/${user_id}`);
 };

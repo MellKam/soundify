@@ -41,12 +41,14 @@ router
 		}
 
 		try {
-			const authProvider = await authService.getGrantData(
+			const { refresh_token } = await authService.getGrantData(
 				ctx.request.url.searchParams,
 				state,
 			);
 
-			const user = await getCurrentUserProfile(authProvider);
+			const spotifyClient = authService.createClient({ refresh_token });
+
+			const user = await getCurrentUserProfile(spotifyClient);
 
 			ctx.response.body = user;
 		} catch (error) {
