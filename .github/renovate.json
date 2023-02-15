@@ -1,0 +1,23 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		"config:base",
+		":disableRateLimiting",
+		"group:all"
+	],
+	"rebaseWhen": "conflicted",
+	"gitAuthor": "Renovate Bot <bot@renovateapp.com>",
+	"semanticPrefix": "chore(dependency)",
+	"separateMajorMinor": false,
+	"lockFileMaintenance": {
+		"enabled": true
+	},
+	"baseBranches": [
+		"main"
+	],
+	"packageFiles": [
+		"package.json",
+		"examples/**/package.json",
+		".github/workflows/**/*.yml"
+	]
+}
