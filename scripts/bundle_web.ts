@@ -22,6 +22,5 @@ await Deno.writeTextFile(
 	"./dist/web.mjs",
 	bundledCode.replace(/\/\/# sourceMappingURL=.*\n/, ""),
 );
-await Deno.writeTextFile("./dist/web.d.ts", 'export * from "./mod.js";\n');
 
 console.log("Done.");

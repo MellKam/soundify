@@ -7,7 +7,8 @@
 	],
 	"rebaseWhen": "conflicted",
 	"gitAuthor": "Renovate Bot <bot@renovateapp.com>",
-	"semanticPrefix": "chore(dependency)",
+	"semanticCommitType": "chore",
+	"semanticCommitScope": "dependency",
 	"separateMajorMinor": false,
 	"lockFileMaintenance": {
 		"enabled": true
@@ -15,7 +16,7 @@
 	"baseBranches": [
 		"main"
 	],
-	"packageFiles": [
+	"includePaths": [
 		"package.json",
 		"examples/**/package.json",
 		".github/workflows/**/*.yml"

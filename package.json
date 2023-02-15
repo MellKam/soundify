@@ -13,8 +13,14 @@
 		"url": "https://github.com/MellKam"
 	},
 	"files": [
-		"./dist",
-		"./src"
+		"./dist/",
+		"./auth/",
+		"./api/",
+		"./platform/",
+		"mod.ts",
+		"spotify.client.ts",
+		"spotify.error.ts",
+		"utils.ts"
 	],
 	"main": "./dist/mod.js",
 	"types": "./dist/mod.d.ts",
@@ -31,7 +37,7 @@
 		"./web": {
 			"import": {
 				"import": "./dist/web.mjs",
-				"types": "./dist/web.d.ts"
+				"types": "./dist/mod.d.ts"
 			}
 		}
 	},
@@ -41,7 +47,7 @@
 				"./dist/mod.d.ts"
 			],
 			"web": [
-				"./dist/web.d.ts"
+				"./dist/mod.d.ts"
 			]
 		}
 	},
