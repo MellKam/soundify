@@ -16,8 +16,5 @@
 	},
 	"baseBranches": [
 		"main"
-	],
-	"fileMatch": [
-		"(^|/)package\\.json$"
 	]
 }
