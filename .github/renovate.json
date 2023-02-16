@@ -1,5 +1,8 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"repositories": [
+		"mellkam/soundify"
+	],
 	"extends": [
 		"config:base",
 		":disableRateLimiting",
@@ -16,5 +19,10 @@
 	},
 	"baseBranches": [
 		"main"
+	],
+	"packageFiles": [
+		"package.json",
+		"examples/**/package.json",
+		".github/workflows/**/*.yml"
 	]
 }

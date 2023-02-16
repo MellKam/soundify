@@ -16,7 +16,8 @@
 		"./dist/",
 		"./auth/",
 		"./api/",
-		"./platform/",
+		"./platform/platform.node.ts",
+		"./platform/platform.web.ts",
 		"mod.ts",
 		"spotify.client.ts",
 		"spotify.error.ts",
@@ -61,6 +62,7 @@
 		"music"
 	],
 	"devDependencies": {
+		"typescript": "^4.9.5",
 		"@types/node": "^18.13.0"
 	},
 	"packageManager": "pnpm@7.27.0"
