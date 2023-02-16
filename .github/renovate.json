@@ -5,6 +5,7 @@
 		":disableRateLimiting",
 		"group:all"
 	],
+	"versioning": "npm",
 	"rebaseWhen": "conflicted",
 	"gitAuthor": "Renovate Bot <bot@renovateapp.com>",
 	"semanticCommitType": "chore",
@@ -16,9 +17,7 @@
 	"baseBranches": [
 		"main"
 	],
-	"includePaths": [
-		"package.json",
-		"examples/**/package.json",
-		".github/workflows/**/*.yml"
+	"fileMatch": [
+		"(^|/)package\\.json$"
 	]
 }
