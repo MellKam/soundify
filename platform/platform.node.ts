@@ -1,10 +1,12 @@
 import { Buffer } from "node:buffer";
-import { randomBytes } from "node:crypto";
+import { createHash } from "node:crypto";
 
-export const encodeBase64 = (data: string): string => {
+export const encodeToBase64 = (data: string): string => {
 	return Buffer.from(data).toString("base64");
 };
 
-export const getRandomHexString = (length: number): string => {
-	return randomBytes(length).toString("hex");
+export const getPKCECodeChallenge = async (
+	codeVerifier: string,
+): Promise<string> => {
+	return createHash("sha256").update(codeVerifier).digest("base64url");
 };

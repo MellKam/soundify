@@ -42,6 +42,10 @@ export interface GetAuthURLOptions {
 	show_dialog?: boolean;
 }
 
+export interface GetAuthURLPKCEOptions extends GetAuthURLOptions {
+	code_challenge?: string;
+}
+
 /**
  * Query parameters for the `GET` request to the `/authorize` endpoint
  */
@@ -53,6 +57,8 @@ export interface RequestUserAuthParams
 	state?: string;
 	scope?: string;
 	show_dialog?: boolean;
+	code_challenge_method?: "S256";
+	code_challenge?: string;
 }
 
 /**
@@ -63,5 +69,7 @@ export interface ApiTokenRequestParams
 	refresh_token?: string;
 	code?: string;
 	redirect_uri?: string;
+	client_id?: string;
+	code_verifier?: string;
 	grant_type: "refresh_token" | "client_credentials" | "authorization_code";
 }

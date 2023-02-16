@@ -1,4 +1,4 @@
-import { encodeBase64 } from "../platform/platform.deno.ts";
+import { encodeToBase64 } from "../platform/platform.deno.ts";
 import { createURLWithParams } from "../utils.ts";
 import { API_TOKEN_URL } from "./auth.consts.ts";
 import { ApiTokenRequestParams } from "./auth.types.ts";
@@ -8,7 +8,7 @@ export const getBasicAuthHeader = (
 	CLIENT_SECRET: string,
 ) => {
 	return "Basic " +
-		encodeBase64(
+		encodeToBase64(
 			CLIENT_ID + ":" + CLIENT_SECRET,
 		);
 };

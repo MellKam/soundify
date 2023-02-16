@@ -1,10 +1,11 @@
 import { SpotifyClient } from "../spotify.client.ts";
 import { createURLWithParams } from "../utils.ts";
-import { AUTHORIZE_URL } from "./auth.consts.ts";
+import { API_TOKEN_URL, AUTHORIZE_URL } from "./auth.consts.ts";
 import { getBasicAuthHeader, postApiTokenRoute } from "./auth.helpers.ts";
 import {
 	AccessTokenResponse,
-	GetAuthURLOptions,
+	ApiTokenRequestParams,
+	GetAuthURLPKCEOptions,
 	KeypairResponse,
 	RequestUserAuthParams,
 } from "./auth.types.ts";
@@ -33,18 +34,25 @@ export class AuthCodeService {
 	}
 
 	getAuthURL(
-		opts: GetAuthURLOptions,
+		opts: GetAuthURLPKCEOptions,
 	) {
-		return createURLWithParams<RequestUserAuthParams>(
+		const body: RequestUserAuthParams = {
+			response_type: "code",
+			client_id: this.config.SPOTIFY_CLIENT_ID,
+			scope: opts.scopes?.join(" "),
+			redirect_uri: this.config.SPOTIFY_REDIRECT_URI,
+			state: opts.state,
+			show_dialog: opts.show_dialog,
+		};
+
+		if (opts.code_challenge) {
+			body.code_challenge_method = "S256";
+			body.code_challenge = opts.code_challenge;
+		}
+
+		return createURLWithParams(
 			AUTHORIZE_URL,
-			{
-				response_type: "code",
-				client_id: this.config.SPOTIFY_CLIENT_ID,
-				scope: opts.scopes?.join(" "),
-				redirect_uri: this.config.SPOTIFY_REDIRECT_URI,
-				state: opts.state,
-				show_dialog: opts.show_dialog,
-			},
+			body,
 		);
 	}
 

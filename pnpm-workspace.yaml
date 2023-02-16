@@ -3,3 +3,4 @@ packages:
   - 'examples/next-ssr'
   - 'examples/react-vite'
   - 'examples/node-express-auth'
+  - 'examples/pkce-auth'

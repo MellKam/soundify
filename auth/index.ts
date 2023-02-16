@@ -8,5 +8,6 @@ export {
 
 // Auth Services
 export { AuthCodeService } from "./auth_code.service.ts";
+export { PKCECodeService } from "./pkce_code.service.ts";
 export { ImplicitGrantService } from "./implicit_grant.service.ts";
 export { ClientCredentialsService } from "./client_credentials.service.ts";
