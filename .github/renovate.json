@@ -19,10 +19,5 @@
 	},
 	"baseBranches": [
 		"main"
-	],
-	"packageFiles": [
-		"package.json",
-		"examples/**/package.json",
-		".github/workflows/**/*.yml"
 	]
 }
