@@ -37,5 +37,19 @@ Link to package - [soundify](https://deno.land/x/soundify)
 import { ... } from "https://deno.land/x/soundify/mod.ts"
 ```
 
+# Authorization flow
+
+There are 4 flows for authorization. It may be difficult for beginners to choose one of them. In this case, you can check out Spotify's official documentation on this.
+[How to chose authorization flow?](https://developer.spotify.com/documentation/general/guides/authorization/#which-oauth-flow-should-i-use)
+
+#### This is a copy of the summary table for all auth flows
+
+| Flow | Access user resources | Requires secret key (SERVER-SIDE) | Access token refresh |
+| :---: | :---: | :---: | :---: |
+| Authorization code | Yes | Yes | Yes |
+| Authorization code with PKCE | Yes | No | Yes |
+| Client credentials | No | Yes | No |
+| Implicit grant | Yes | No | No |
+
 
 
