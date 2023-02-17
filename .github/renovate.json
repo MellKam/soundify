@@ -15,5 +15,9 @@
 	},
 	"baseBranches": [
 		"main"
+	],
+	"ignorePaths": [
+		"**/node_modules/**",
+		"**/tests/**"
 	]
 }
