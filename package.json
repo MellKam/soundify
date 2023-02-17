@@ -6,7 +6,7 @@
 		"type": "git",
 		"url": "https://github.com/MellKam/soundify"
 	},
-	"description": "Spotify web-api wrapper for node, deno and web",
+	"description": "Modern Spotify webapi wrapper for Node, Deno, and browser 🎧",
 	"license": "MIT",
 	"author": {
 		"name": "Artem Melnyk",
