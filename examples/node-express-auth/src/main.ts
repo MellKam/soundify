@@ -1,25 +1,27 @@
-import { AuthCodeService } from "soundify-web-api";
+import { AuthCode } from "soundify-web-api";
 import { webcrypto } from "node:crypto";
+import express from "express";
 import cookieParser from "cookie-parser";
 
-import express from "express";
 const app = express();
 app.use(cookieParser("secret"));
 
-const authService = new AuthCodeService({
-	SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID!,
-	SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET!,
-	SPOTIFY_REDIRECT_URI: process.env.SPOTIFY_REDIRECT_URI!,
-});
+const config = {
+	client_id: process.env.SPOTIFY_CLIENT_ID!,
+	client_secret: process.env.SPOTIFY_CLIENT_SECRET!,
+	redirect_uri: process.env.SPOTIFY_REDIRECT_URI!,
+};
 
 app.get("/login", (_req, res) => {
 	const state = webcrypto.randomUUID();
 
 	res.cookie("state", state);
 	res.redirect(
-		authService.getAuthURL({
+		AuthCode.getAuthURL({
 			scopes: ["user-read-email"],
 			state,
+			client_id: config.client_id,
+			redirect_uri: config.redirect_uri,
 		}).toString(),
 	);
 });
@@ -31,11 +33,20 @@ app.get("/callback", async (req, res) => {
 		return;
 	}
 
+	const searchParams =
+		new URL(req.url, `http://${req.headers.host}`).searchParams;
+	const code = searchParams.get("code");
+	if (!code) {
+		res.status(400).send("Can't find code");
+		return;
+	}
+
 	try {
-		const keypairData = await authService.getGrantData(
-			new URL(req.url, `http://${req.headers.host}`).searchParams,
+		const keypairData = await AuthCode.getGrantData({
+			code,
 			state,
-		);
+			...config,
+		});
 
 		res.status(200).json(keypairData);
 	} catch (error) {

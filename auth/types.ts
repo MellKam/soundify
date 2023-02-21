@@ -1,4 +1,4 @@
-import { type AuthScope } from "./auth.consts.ts";
+import { type AuthScope } from "./consts.ts";
 
 export interface AccessTokenResponse {
 	access_token: string;
@@ -42,10 +42,14 @@ export interface GetAuthURLOptions {
 	show_dialog?: boolean;
 }
 
+export interface GetAuthURLPKCEOptions extends GetAuthURLOptions {
+	code_challenge?: string;
+}
+
 /**
  * Query parameters for the `GET` request to the `/authorize` endpoint
  */
-export interface RequestUserAuthParams
+export interface AuthorizeReqParams
 	extends Record<string, string | undefined | boolean> {
 	client_id: string;
 	response_type: "code" | "token";
@@ -53,15 +57,22 @@ export interface RequestUserAuthParams
 	state?: string;
 	scope?: string;
 	show_dialog?: boolean;
+	code_challenge_method?: "S256";
+	code_challenge?: string;
 }
 
 /**
  * Query parameters for the `GET` request to the `/api/token` endpoint
  */
-export interface ApiTokenRequestParams
-	extends Record<string, string | undefined> {
+export interface ApiTokenReqParams extends Record<string, string | undefined> {
 	refresh_token?: string;
 	code?: string;
 	redirect_uri?: string;
+	client_id?: string;
+	code_verifier?: string;
 	grant_type: "refresh_token" | "client_credentials" | "authorization_code";
+}
+
+export interface IAuthProvider {
+	getAccessToken: (forceRefresh?: boolean) => Promise<string>;
 }

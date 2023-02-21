@@ -1,5 +1,5 @@
 {
-	"name": "@examples/react-vite",
+	"name": "@examples/pkce-auth",
 	"private": "true",
 	"type": "module",
 	"scripts": {
