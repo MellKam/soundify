@@ -16,9 +16,7 @@
 	"baseBranches": [
 		"main"
 	],
-	"includePaths": [
-		"package.json",
-		"examples/**/package.json",
-		".github/workflows/**/*.yml"
+	"ignorePaths": [
+		"**/node_modules/**"
 	]
 }

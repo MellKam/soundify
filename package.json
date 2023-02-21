@@ -16,7 +16,8 @@
 		"./dist/",
 		"./auth/",
 		"./api/",
-		"./platform/",
+		"./platform/platform.node.ts",
+		"./platform/platform.web.ts",
 		"mod.ts",
 		"client.ts",
 		"utils.ts"
