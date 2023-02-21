@@ -1,11 +1,11 @@
 import {
-	authService,
 	CODE_VERIFIER,
+	config,
 	SPOTIFY_ACCESS_TOKNE,
-	SPOTIFY_EXPIRES_TIME,
 	SPOTIFY_REFRESH_TOKEN,
-} from "../auth.service";
+} from "../spotify";
 import { useNavigate } from "react-router-dom";
+import { PKCEAuthCode } from "soundify-web-api/web";
 import { useEffect, useState } from "react";
 
 export const Page = () => {
@@ -26,13 +26,17 @@ export const Page = () => {
 	useEffect(() => {
 		(async () => {
 			try {
-				const data = await authService.getGrantData(code, code_verifier);
+				const { access_token, refresh_token } = await PKCEAuthCode.getGrantData(
+					{
+						code,
+						code_verifier,
+						client_id: config.client_id,
+						redirect_uri: config.redirect_uri,
+					},
+				);
 
-				const expiresTime = new Date().getTime() + data.expires_in * 1000;
-
-				localStorage.setItem(SPOTIFY_REFRESH_TOKEN, data.refresh_token);
-				localStorage.setItem(SPOTIFY_ACCESS_TOKNE, data.access_token);
-				localStorage.setItem(SPOTIFY_EXPIRES_TIME, expiresTime.toString());
+				localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);
+				localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
 
 				navigate("/");
 			} catch (err) {

@@ -1,17 +1,16 @@
-export const createURLWithParams = <
+export const searchParamsFromObj = <
 	T extends Record<string, string | number | boolean | undefined>,
 >(
-	baseURL: string,
-	searchParams: T,
-): URL => {
-	const url = new URL(baseURL);
+	obj: T,
+): URLSearchParams => {
+	const searchParams = new URLSearchParams();
 
-	Object.keys(searchParams).forEach((key) => {
-		const value = searchParams[key];
+	Object.keys(obj).forEach((key) => {
+		const value = obj[key];
 		if (typeof value !== "undefined") {
-			url.searchParams.set(key, value.toString());
+			searchParams.set(key, value.toString());
 		}
 	});
 
-	return url;
+	return searchParams;
 };

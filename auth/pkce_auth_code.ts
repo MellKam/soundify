@@ -1,32 +1,34 @@
-import { createURLWithParams } from "../utils.ts";
-import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./auth.consts.ts";
+import { searchParamsFromObj } from "../utils.ts";
+import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./consts.ts";
 import {
-	ApiTokenRequestParams,
+	ApiTokenReqParams,
+	AuthorizeReqParams,
 	IAuthProvider,
 	KeypairResponse,
-	RequestUserAuthParams,
-} from "./auth.types.ts";
+} from "./types.ts";
 import { getPKCECodeChallenge } from "../platform/platform.deno.ts";
 export { getPKCECodeChallenge as getCodeChallenge } from "../platform/platform.deno.ts";
 
 export const getAuthURL = (
-	opts: {
+	{ scopes, ...opts }: {
 		client_id: string;
 		redirect_uri: string;
 		code_challenge: string;
 		scopes?: AuthScope[];
 	},
 ) => {
-	const { scopes, ...rest } = opts;
-	return createURLWithParams<RequestUserAuthParams>(
-		AUTHORIZE_URL,
+	const url = new URL(AUTHORIZE_URL);
+
+	url.search = searchParamsFromObj<AuthorizeReqParams>(
 		{
 			response_type: "code",
 			scope: scopes?.join(" "),
 			code_challenge_method: "S256",
-			...rest,
+			...opts,
 		},
-	);
+	).toString();
+
+	return url;
 };
 
 export const getGrantData = async (opts: {
@@ -36,19 +38,17 @@ export const getGrantData = async (opts: {
 	redirect_uri: string;
 }) => {
 	const res = await fetch(
-		createURLWithParams<ApiTokenRequestParams>(
-			API_TOKEN_URL,
-			{
-				grant_type: "authorization_code",
-				...opts,
-			},
-		),
+		API_TOKEN_URL,
 		{
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
 				Accept: "application/json",
 			},
 			method: "POST",
+			body: searchParamsFromObj<ApiTokenReqParams>({
+				grant_type: "authorization_code",
+				...opts,
+			}),
 		},
 	);
 
@@ -87,41 +87,40 @@ export const generateCodes = async () => {
 
 export class AuthProvider implements IAuthProvider {
 	constructor(
-		private config: {
+		private opts: {
 			readonly client_id: string;
-			access_token: string;
+			access_token?: string;
 			refresh_token: string;
+			readonly saveAccessToken?: (access_token: string) => void;
+			readonly saveRefreshToken?: (refresh_token: string) => void;
 		},
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh) {
-			const data = await this.#refresh();
-			this.config.refresh_token = data.refresh_token;
-			this.config.access_token = data.access_token;
+		if (forceRefresh || !this.opts.access_token) {
+			const { access_token, refresh_token } = await this.#refresh();
+			this.opts.refresh_token = refresh_token;
+			this.opts.access_token = access_token;
+			if (this.opts.saveAccessToken) this.opts.saveAccessToken(access_token);
+			if (this.opts.saveRefreshToken) this.opts.saveRefreshToken(refresh_token);
 		}
 
-		return this.config.access_token;
+		return this.opts.access_token;
 	}
 
 	async #refresh() {
-		const res = await fetch(
-			createURLWithParams<ApiTokenRequestParams>(
-				API_TOKEN_URL,
-				{
-					grant_type: "refresh_token",
-					client_id: this.config.client_id,
-					refresh_token: this.config.refresh_token,
-				},
-			),
-			{
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-					Accept: "application/json",
-				},
-				method: "POST",
+		const res = await fetch(API_TOKEN_URL, {
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+				Accept: "application/json",
 			},
-		);
+			method: "POST",
+			body: searchParamsFromObj<ApiTokenReqParams>({
+				grant_type: "refresh_token",
+				client_id: this.opts.client_id,
+				refresh_token: this.opts.refresh_token,
+			}),
+		});
 
 		if (!res.ok) {
 			throw new Error(await res.text());

@@ -19,7 +19,9 @@
 				"./examples/react-vite/node_modules/",
 				"./examples/react-vite/dist/",
 				"./examples/next-ssr/node_modules/",
-				"./examples/next-ssr/.next/"
+				"./examples/next-ssr/.next/",
+				"./examples/pkce-auth/node_modules/",
+				"./examples/pkce-auth/dist/"
 			]
 		}
 	},
@@ -36,7 +38,9 @@
 				"./examples/react-vite/node_modules/",
 				"./examples/react-vite/dist/",
 				"./examples/next-ssr/node_modules/",
-				"./examples/next-ssr/.next/"
+				"./examples/next-ssr/.next/",
+				"./examples/pkce-auth/node_modules/",
+				"./examples/pkce-auth/dist/"
 			]
 		}
 	},

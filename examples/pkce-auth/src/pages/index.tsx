@@ -1,49 +1,29 @@
-import { useEffect } from "react";
-import {
-	authService,
-	CODE_VERIFIER,
-	SPOTIFY_ACCESS_TOKNE,
-	SPOTIFY_EXPIRES_TIME,
-	SPOTIFY_REFRESH_TOKEN,
-} from "../auth.service";
-
-const authorize = async () => {
-	const code_verifier = authService.generateCodeVerifier();
-	const code_challenge = await authService.getCodeChallenge(code_verifier);
-
-	const authURL = authService.getAuthURL({
-		scopes: ["user-read-email"],
-		code_challenge,
-	});
-
-	localStorage.setItem(CODE_VERIFIER, code_verifier);
-	location.replace(authURL);
-};
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentUserProfile } from "soundify-web-api/web";
+import { authorize, useSpotifyClient } from "../spotify";
 
 export const Page = () => {
-	const expiresTime = localStorage.getItem(SPOTIFY_EXPIRES_TIME);
-	const accessToken = localStorage.getItem(SPOTIFY_ACCESS_TOKNE);
-
-	if (
-		!expiresTime || !accessToken
-	) {
+	const spotifyClient = useSpotifyClient();
+	if (spotifyClient === null) {
 		authorize();
-		return <div>Authorizing...</div>;
+		return <h1>Redirecting to Spotify...</h1>;
 	}
 
-	useEffect(() => {
-		if (new Date().getTime() > Number(expiresTime)) {
-			const refreshToken = localStorage.getItem(SPOTIFY_REFRESH_TOKEN);
+	const { status, data: userProfile, error } = useQuery({
+		queryKey: ["user-profile"],
+		queryFn: () => {
+			return getCurrentUserProfile(spotifyClient);
+		},
+		retry: false,
+	});
 
-			if (refreshToken) {
-				(async () => {
-					const data = await authService.refreshAccessToken(refreshToken);
+	if (status === "error") {
+		return <h1>{String(error)}</h1>;
+	}
 
-					console.log(data);
-				})();
-			}
-		}
-	}, []);
+	if (status === "loading") {
+		return <h1>Loading...</h1>;
+	}
 
-	return <div>Authorized</div>;
+	return <h1>Welcome {userProfile.display_name}!</h1>;
 };

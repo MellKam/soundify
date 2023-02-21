@@ -1,11 +1,12 @@
 import { getCookie, setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { AuthCode } from "soundify-web-api";
 import {
-	authService,
+	config,
 	SPOTIFY_ACCESS_TOKEN,
 	SPOTIFY_REFRESH_TOKEN,
 	SPOTIFY_STATE,
-} from "@/spotify/index.server";
+} from "../../spotify";
 
 export default async function (
 	req: NextApiRequest,
@@ -22,10 +23,19 @@ export default async function (
 		return;
 	}
 	const url = new URL(req.url, `http://${req.headers.host}`);
+	const code = url.searchParams.get("code");
+	if (!code) {
+		res.status(400).send({ error: "Cannot find `code` in search params" });
+		return;
+	}
 
 	try {
-		const { refresh_token, access_token } = await authService
-			.getGrantData(url.searchParams, state);
+		const { refresh_token, access_token } = await AuthCode
+			.getGrantData({
+				code,
+				state,
+				...config,
+			});
 
 		setCookie(SPOTIFY_REFRESH_TOKEN, refresh_token, {
 			httpOnly: true,

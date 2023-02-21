@@ -1,7 +1,7 @@
 import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
 import { cleanEnv, str, url } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { AuthCodeService } from "../../mod.ts";
+import { AuthCode } from "../../mod.ts";
 // If you want to copy this code, change this import path to
 // `https://deno.land/x/soundify/mod.ts`
 
@@ -25,8 +25,6 @@ const env = cleanEnv(config(), {
 	SPOTIFY_REDIRECT_URI: url(),
 });
 
-const authService = new AuthCodeService(env);
-
 const app = new Application();
 const router = new Router();
 
@@ -37,11 +35,12 @@ router
 			httpOnly: true,
 		});
 
-		const authURL = authService.getAuthURL({
+		ctx.response.redirect(AuthCode.getAuthURL({
 			scopes: ["user-read-email"],
 			state,
-		});
-		ctx.response.redirect(authURL);
+			client_id: env.SPOTIFY_CLIENT_ID,
+			redirect_uri: env.SPOTIFY_REDIRECT_URI,
+		}));
 	})
 	.get("/callback", async (ctx) => {
 		const state = await ctx.cookies.get("state");
@@ -52,10 +51,22 @@ router
 			return;
 		}
 
+		const code = ctx.request.url.searchParams.get("code");
+		if (!code) {
+			ctx.response.body = "Cannot find `code` in search params";
+			ctx.response.status = 400;
+			return;
+		}
+
 		try {
-			const grantData = await authService.getGrantData(
-				ctx.request.url.searchParams,
-				state,
+			const grantData = await AuthCode.getGrantData(
+				{
+					client_id: env.SPOTIFY_CLIENT_ID,
+					client_secret: env.SPOTIFY_CLIENT_SECRET,
+					redirect_uri: env.SPOTIFY_REDIRECT_URI,
+					code,
+					state,
+				},
 			);
 
 			ctx.response.body = grantData;

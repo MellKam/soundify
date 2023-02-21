@@ -1,30 +1,32 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCookie, setCookie } from "cookies-next";
+import { AuthCode } from "soundify-web-api";
 import {
-	authService,
+	config,
 	SPOTIFY_ACCESS_TOKEN,
 	SPOTIFY_REFRESH_TOKEN,
-} from "@/spotify/index.server";
+} from "../../spotify";
 
 export default async function (
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const refreshToken = getCookie(SPOTIFY_REFRESH_TOKEN, {
+	const refresh_token = getCookie(SPOTIFY_REFRESH_TOKEN, {
 		req,
 		res,
 	});
 
-	if (typeof refreshToken !== "string") {
+	if (typeof refresh_token !== "string") {
 		res.status(400).send({ error: "Can't find SPOTIFY_REFRESH_TOKEN" });
 		return;
 	}
 
 	try {
-		const { access_token, expires_in } = await authService
-			.refreshAccessToken(
-				refreshToken,
-			);
+		const authProvider = new AuthCode.AuthProvider({
+			...config,
+			refresh_token,
+		});
+		const { access_token, expires_in } = await authProvider.refresh();
 
 		setCookie(SPOTIFY_ACCESS_TOKEN, access_token, {
 			maxAge: expires_in,

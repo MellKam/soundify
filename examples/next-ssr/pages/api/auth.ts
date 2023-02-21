@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { webcrypto } from "node:crypto";
 import { setCookie } from "cookies-next";
-import { authService, SPOTIFY_STATE } from "@/spotify/index.server";
+import { AuthCode } from "soundify-web-api";
+import { config, SPOTIFY_STATE } from "../../spotify";
 
 export default function (
 	req: NextApiRequest,
@@ -17,9 +18,11 @@ export default function (
 	});
 
 	res.redirect(
-		authService.getAuthURL({
+		AuthCode.getAuthURL({
 			scopes: ["user-read-email"],
 			state,
+			client_id: config.client_id,
+			redirect_uri: config.redirect_uri,
 		}).toString(),
 	);
 }

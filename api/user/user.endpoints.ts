@@ -2,7 +2,7 @@ import { Artist } from "../artist/index.ts";
 import { Track } from "../track/track.types.ts";
 import { UserPrivate, UserPublic } from "./user.types.ts";
 import { PagingObject, PagingOptions } from "../shared/index.ts";
-import { ISpotifyClient } from "../../spotify.client.ts";
+import { ISpotifyClient } from "../../client.ts";
 
 /**
  * Get detailed profile information about the current user

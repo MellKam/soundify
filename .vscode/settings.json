@@ -2,14 +2,13 @@
 	"deno.enablePaths": [
 		"api",
 		"auth",
-		"mod.ts",
-		"utils.ts",
 		"scripts",
 		"tests",
 		"platform/platform.deno.ts",
 		"examples/deno-oak-auth",
-		"spotify.client.ts",
-		"spotify.error.ts"
+		"client.ts",
+		"mod.ts",
+		"utils.ts"
 	],
 	"deno.lint": true,
 	"deno.config": "./deno.jsonc",

@@ -1,15 +1,16 @@
-import { createURLWithParams } from "../utils.ts";
-import { AUTHORIZE_URL, AuthScope } from "./auth.consts.ts";
-import { getBasicAuthHeader, postApiTokenRoute } from "./auth.helpers.ts";
+import { searchParamsFromObj } from "../utils.ts";
+import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./consts.ts";
+import { getBasicAuthHeader } from "./helpers.ts";
 import {
 	AccessTokenResponse,
+	ApiTokenReqParams,
+	AuthorizeReqParams,
 	IAuthProvider,
 	KeypairResponse,
-	RequestUserAuthParams,
-} from "./auth.types.ts";
+} from "./types.ts";
 
 export const getAuthURL = (
-	opts: {
+	{ scopes, ...opts }: {
 		client_id: string;
 		scopes?: AuthScope[];
 		redirect_uri: string;
@@ -17,16 +18,15 @@ export const getAuthURL = (
 		state?: string;
 	},
 ) => {
-	const { scopes, ...rest } = opts;
+	const url = new URL(AUTHORIZE_URL);
 
-	return createURLWithParams<RequestUserAuthParams>(
-		AUTHORIZE_URL,
-		{
-			response_type: "code",
-			scope: scopes?.join(" "),
-			...rest,
-		},
-	);
+	url.search = searchParamsFromObj<AuthorizeReqParams>({
+		response_type: "code",
+		scope: scopes?.join(" "),
+		...opts,
+	}).toString();
+
+	return url;
 };
 
 export const getGrantData = async (
@@ -38,14 +38,18 @@ export const getGrantData = async (
 		client_secret: string;
 	},
 ) => {
-	const res = await postApiTokenRoute(
-		getBasicAuthHeader(opts.client_id, opts.client_secret),
-		{
+	const res = await fetch(API_TOKEN_URL, {
+		method: "POST",
+		headers: {
+			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		body: searchParamsFromObj<ApiTokenReqParams>({
 			code: opts.code,
 			redirect_uri: opts.redirect_uri,
 			grant_type: "authorization_code",
-		},
-	);
+		}),
+	});
 
 	if (!res.ok) {
 		throw new Error(await res.text());
@@ -77,23 +81,32 @@ export class AuthProvider implements IAuthProvider {
 
 	async getAccessToken(forceRefresh = false) {
 		if (forceRefresh || this.#access_token === null) {
-			const data = await this.#refresh();
-			this.#access_token = data.access_token;
+			const data = await this.refresh();
+			return data.access_token;
 		}
 
 		return this.#access_token;
 	}
 
-	async #refresh() {
-		const res = await postApiTokenRoute(this.#BASIC_AUTH_HEADER, {
-			refresh_token: this.config.refresh_token,
-			grant_type: "refresh_token",
+	async refresh() {
+		const res = await fetch(API_TOKEN_URL, {
+			method: "POST",
+			headers: {
+				"Authorization": this.#BASIC_AUTH_HEADER,
+				"Content-Type": "application/x-www-form-urlencoded",
+			},
+			body: searchParamsFromObj<ApiTokenReqParams>({
+				refresh_token: this.config.refresh_token,
+				grant_type: "refresh_token",
+			}),
 		});
 
 		if (!res.ok) {
 			throw new Error(await res.text());
 		}
 
-		return (await res.json()) as AccessTokenResponse;
+		const data = (await res.json()) as AccessTokenResponse;
+		this.#access_token = data.access_token;
+		return data;
 	}
 }
