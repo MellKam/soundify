@@ -6,8 +6,7 @@ export {
 	type KeypairResponse,
 } from "./auth.types.ts";
 
-// Auth Services
-export { AuthCodeService } from "./auth_code.service.ts";
-export { PKCECodeService } from "./pkce_code.service.ts";
-export { ImplicitGrantService } from "./implicit_grant.service.ts";
-export { ClientCredentialsService } from "./client_credentials.service.ts";
+export * as PKCEAuthCode from "./pkce_auth_code.ts";
+export * as AuthCode from "./auth_code.ts";
+export * as ClientCredentials from "./client_credentials.ts";
+export * as ImplicitGrant from "./implicit_grant.ts";

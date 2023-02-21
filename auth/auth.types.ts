@@ -73,3 +73,7 @@ export interface ApiTokenRequestParams
 	code_verifier?: string;
 	grant_type: "refresh_token" | "client_credentials" | "authorization_code";
 }
+
+export interface IAuthProvider {
+	getAccessToken: (forceRefresh?: boolean) => Promise<string>;
+}
