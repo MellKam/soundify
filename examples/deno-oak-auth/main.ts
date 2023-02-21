@@ -1,5 +1,5 @@
 import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
-import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
+import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import { cleanEnv, str, url } from "https://deno.land/x/envalid@0.1.2/mod.ts";
 import { AuthCode } from "../../mod.ts";
 // If you want to copy this code, change this import path to
