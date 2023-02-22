@@ -19,22 +19,19 @@
 </div>
 
 <div align="center">
+	<i>Not ready for production</i>
   <strong>
-    <h1 align="center">Soundify</h1>
+    <h1 align="center">Soundify (ALPHA)</h1>
   </strong>
-
   <p align="center">
-    Soundify is a lightweight and flexible library for seamless communication with Spotify API, designed to work smoothly with TypeScript, Deno, Node.js, and client-side JavaScript. It's open source and provides an easy-to-use interface for accessing Spotify's music data, including user authorization and authentication.
+    Soundify is a lightweight and flexible library for seamless communication with Spotify API, designed to work smoothly with TypeScript, Deno, Node.js, and client-side JavaScript. It's open source and provides an easy-to-use interface for accessing Spotify's data.
   </p>
 </div>
-
-> (ALPHA) This package is in active development now. All API may be not stable and this is
-not recemended to use in production.
 
 # What makes this library special?
 
 - Multiplatform: You can use it with Node.js, Deno on the server, or with client-side JavaScript.
-- Modern: It leverages modern web APIs like native `fetch`, `crypto`, and `URLSearchParams`, and doesn't require any external dependencies.
+- Modern: It leverages modern web APIs like native `fetch`, `crypto`, `URLSearchParams` and doesn't require any external dependencies.
 - Lightweight and treeshakable: It's designed to be as small as possible (exact size TBD).
 - TypeScript first: It's built with TypeScript and provides great support for it out of the box.
 - Comprehensive Spotify Auth support: It can handle all Spotify Auth flows and automatically refreshes access tokens.
@@ -42,8 +39,7 @@ not recemended to use in production.
 
 # Installation
 
-## NPM
-[soundify on npmjs.com](https://www.npmjs.com/package/soundify-web-api)
+### NPM [npm.js/soundify-web-api](https://www.npmjs.com/package/soundify-web-api)
 
 ```bash
 npm i soundify-web-api
@@ -59,9 +55,7 @@ import { ... } from "soundify-web-api"
 import { ... } from "soundify-web-api/web"
 ```
 
-## Deno 
-
-[soundify on deno.land](https://deno.land/x/soundify)
+### Deno [deno.land/x/soundify](https://deno.land/x/soundify)
 
 ```ts
 // Import from denoland (recomended)
@@ -85,7 +79,9 @@ There are 4 authorization flows, and this package supports all of them It may be
 | Client credentials | No | Yes | No |
 | Implicit grant | Yes | No | No |
 
-> As from spotify docs: "Implicit grant is not recommended because it returns a token in a URL instead of a trusted channel and does not support token updates"
+<br/>
+
+> As from spotify docs: "Implicit grant is not recommended because it returns a token in a URL instead of a trusted channel"
 
 
 
