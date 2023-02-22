@@ -58,7 +58,7 @@ There are 4 authorization flows, and this package supports all of them It may be
 | Client credentials | No | Yes | No |
 | Implicit grant | Yes | No | No |
 
-> As from spotify docs: "Implicit grant is not recommended because it returns a token in a URL instead of a trusted channel and does not support token updates"; 
+> As from spotify docs: "Implicit grant is not recommended because it returns a token in a URL instead of a trusted channel and does not support token updates"
 
 
 
