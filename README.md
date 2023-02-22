@@ -1,6 +1,6 @@
 <div align="center">
 	<p align="center">
-    <img style="object-fit: contain; border: none; box-sizing: content-box; max-height: 200px;" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
+    <img style="object-fit: contain; max-height: 200px;" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
   </p>
 	<p align="center">
 		<a href="https://www.npmjs.com/package/soundify-web-api"><img alt="npm" src="https://img.shields.io/npm/v/soundify-web-api?color=1DB954"></a>
