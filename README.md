@@ -1,17 +1,35 @@
-<img style="width: 100%; max-height: 400px; object-fit: contain; border: none; box-sizing: content-box;" src="https://user-images.githubusercontent.com/51422045/216315836-fb8faeed-c9d9-42bb-a8a6-507e0b3a66d1.jpg">
-
 <div align="center">
-
-![DENO](https://shield.deno.dev/x/soundify)
-![NPM](https://img.shields.io/npm/v/soundify-web-api?label=npm&logo=npm&labelColor=000000)
-![GitHub last commit](https://img.shields.io/github/last-commit/MellKam/soundify-web-api?labelColor=000000)
-
+	<p align="center">
+    <img style="object-fit: contain; border: none; box-sizing: content-box; max-height: 200px;" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
+  </p>
+	<p align="center">
+		<a href="https://www.npmjs.com/package/soundify-web-api"><img alt="npm" src="https://img.shields.io/npm/v/soundify-web-api?color=1DB954"></a>
+		<a href="https://deno.land/x/soundify"><img alt="deno.land" src="https://img.shields.io/github/v/tag/MellKam/soundify?color=1DB954&label=deno.land%2Fx&logo=deno"></a>
+		<a href="https://github.com/MellKam/soundify/blob/main/LICENSE"><img alt="license" src="https://img.shields.io/github/license/MellKam/soundify?color=1DB954"></a>
+		<a href="https://github.com/MellKam/soundify/commits/main"><img src="https://img.shields.io/github/last-commit/MellKam/soundify?color=1DB954" alt="Last commit" /></a>
+  </p>
 </div>
 
-# Package status
+<br />
 
-This package is in active development now. All API may be not stable and this is
+<div align="center">
+  
+
+  <strong>
+    <h1 align="center">Soundify</h1>
+  </strong>
+
+  <p align="center">
+    Soundify is a lightweight and flexible library for seamless communication with Spotify API, designed to work smoothly with TypeScript, Deno, Node.js, and client-side JavaScript. It's open source and provides an easy-to-use interface for accessing Spotify's music data, including user authorization and authentication.
+  </p>
+</div>
+
+<br/>
+
+> (ALPHA) This package is in active development now. All API may be not stable and this is
 not recemended to use in production.
+
+<br/>
 
 # Installation
 
