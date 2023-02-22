@@ -1,6 +1,6 @@
 <div align="center">
 	<p align="center">
-    <img style="object-fit: contain;" height="200px" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
+    <img align="center" width="500px" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
   </p>
 	<p align="center">
 		<a href="https://www.npmjs.com/package/soundify-web-api">
@@ -18,11 +18,7 @@
   </p>
 </div>
 
-<br />
-
 <div align="center">
-  
-
   <strong>
     <h1 align="center">Soundify</h1>
   </strong>
@@ -32,12 +28,17 @@
   </p>
 </div>
 
-<br/>
-
 > (ALPHA) This package is in active development now. All API may be not stable and this is
 not recemended to use in production.
 
-<br/>
+# What makes this library special?
+
+- Multiplatform: You can use it with Node.js, Deno on the server, or with client-side JavaScript.
+- Modern: It leverages modern web APIs like native fetch, crypto, and URLSearchParams, and doesn't require any external dependencies.
+- Lightweight and treeshakable: It's designed to be as small as possible (exact size TBD) and easy to optimize for your specific use case.
+- TypeScript first: It's built with TypeScript and provides great support for it out of the box.
+- Comprehensive Spotify Auth support: It can handle all Spotify Auth flows and automatically refreshes access tokens.
+- Robust documentation: The library comes with extensive documentation and lots of examples to help you get started.
 
 # Installation
 
