@@ -1,6 +1,11 @@
 <div align="center">
 	<p align="center">
-    <img style="object-fit: contain;" height="200px" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
+		<style>
+			img {
+				max-height: 200px;
+			}
+		</style>
+    <img align="center" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
   </p>
 	<p align="center">
 		<a href="https://www.npmjs.com/package/soundify-web-api">
@@ -18,11 +23,7 @@
   </p>
 </div>
 
-<br />
-
 <div align="center">
-  
-
   <strong>
     <h1 align="center">Soundify</h1>
   </strong>
@@ -32,12 +33,8 @@
   </p>
 </div>
 
-<br/>
-
 > (ALPHA) This package is in active development now. All API may be not stable and this is
 not recemended to use in production.
-
-<br/>
 
 # Installation
 
