@@ -65,6 +65,23 @@ import { ... } from "https://deno.land/x/soundify/mod.ts"
 import { ... } from "https://raw.githubusercontent.com/MellKam/soundify/main/mod.ts";
 ```
 
+# Gettings started
+
+First of all, you should already have a Spotify app created. If not, go and create one here https://developer.spotify.com/dashboard
+
+Let's write "Hello world!" with soundify.
+
+```ts
+import { SpotifyClient, getCurrentUserProfile } from "soundify-web-api";
+
+const client = new SpotifyClient(
+	authProvider: "YOUR_ACCESS_TOKEN",
+)
+
+const user = await getCurrentUserProfile(client);
+console.log(user);
+```
+
 # Authorization flow
 
 There are 4 authorization flows, and this package supports all of them It may be difficult for beginners to choose one. In this case, you can read Spotify's official documentation on the subject.
@@ -82,6 +99,10 @@ There are 4 authorization flows, and this package supports all of them It may be
 <br/>
 
 > As from spotify docs: "Implicit grant is not recommended because it returns a token in a URL instead of a trusted channel"
+
+<br/>
+
+Thatnk's ChatGPT for helping to create this readme ❤️
 
 
 
