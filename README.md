@@ -31,6 +31,15 @@
 > (ALPHA) This package is in active development now. All API may be not stable and this is
 not recemended to use in production.
 
+# What makes this library special?
+
+- Multiplatform: You can use it with Node.js, Deno on the server, or with client-side JavaScript.
+- Modern: It leverages modern web APIs like native fetch, crypto, and URLSearchParams, and doesn't require any external dependencies.
+- Lightweight and treeshakable: It's designed to be as small as possible (exact size TBD) and easy to optimize for your specific use case.
+- TypeScript first: It's built with TypeScript and provides great support for it out of the box.
+- Comprehensive Spotify Auth support: It can handle all Spotify Auth flows and automatically refreshes access tokens.
+- Robust documentation: The library comes with extensive documentation and lots of examples to help you get started.
+
 # Installation
 
 ## NPM
