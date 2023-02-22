@@ -1,11 +1,6 @@
 <div align="center">
 	<p align="center">
-		<style>
-			img {
-				max-height: 200px;
-			}
-		</style>
-    <img align="center" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
+    <img align="center" width="500px" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
   </p>
 	<p align="center">
 		<a href="https://www.npmjs.com/package/soundify-web-api">
