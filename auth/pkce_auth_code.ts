@@ -98,17 +98,13 @@ export class AuthProvider implements IAuthProvider {
 
 	async getAccessToken(forceRefresh = false) {
 		if (forceRefresh || !this.opts.access_token) {
-			const { access_token, refresh_token } = await this.#refresh();
-			this.opts.refresh_token = refresh_token;
-			this.opts.access_token = access_token;
-			if (this.opts.saveAccessToken) this.opts.saveAccessToken(access_token);
-			if (this.opts.saveRefreshToken) this.opts.saveRefreshToken(refresh_token);
+			await this.refresh();
 		}
 
-		return this.opts.access_token;
+		return this.opts.access_token!;
 	}
 
-	async #refresh() {
+	async refresh() {
 		const res = await fetch(API_TOKEN_URL, {
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
@@ -126,6 +122,14 @@ export class AuthProvider implements IAuthProvider {
 			throw new Error(await res.text());
 		}
 
-		return (await res.json()) as KeypairResponse;
+		const data = (await res.json()) as KeypairResponse;
+
+		this.opts.refresh_token = data.refresh_token;
+		this.opts.access_token = data.access_token;
+		if (this.opts.saveAccessToken) this.opts.saveAccessToken(data.access_token);
+		if (this.opts.saveRefreshToken) {
+			this.opts.saveRefreshToken(data.refresh_token);
+		}
+		return data;
 	}
 }

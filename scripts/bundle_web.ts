@@ -1,26 +1,30 @@
-import { bundle } from "https://deno.land/x/emit@0.15.0/mod.ts";
-import { createCache } from "https://deno.land/x/deno_cache@0.4.1/mod.ts";
+import * as esbuild from "https://deno.land/x/esbuild@v0.17.10/mod.js";
+import { Plugin } from "https://deno.land/x/esbuild@v0.17.10/mod.d.ts";
+import { resolve } from "https://deno.land/std@0.177.0/path/mod.ts";
 
-const cache = createCache();
+const plugin: Plugin = {
+	name: "web",
+	setup(build) {
+		build.onResolve({ filter: /.*deno.ts/g }, (args) => {
+			return {
+				path: resolve(
+					args.resolveDir,
+					args.path.replace(".deno.ts", ".web.ts"),
+				),
+			};
+		});
+	},
+};
 
-const { code: bundledCode } = await bundle("./mod.ts", {
-	load: (specifier) => {
-		if (specifier.endsWith(".deno.ts")) {
-			const baseLength = specifier.length - ".deno.ts".length;
-			specifier = specifier.substring(0, baseLength) + ".web.ts";
-		}
-		return cache.load(specifier);
-	},
-	compilerOptions: {
-		sourceMap: false,
-		inlineSources: false,
-		inlineSourceMap: false,
-	},
+await esbuild.build({
+	entryPoints: ["./mod.ts"],
+	outfile: "./dist/web.mjs",
+	format: "esm",
+	platform: "browser",
+	bundle: true,
+	minify: true,
+	target: ["es2022"],
+	plugins: [plugin],
 });
 
-await Deno.writeTextFile(
-	"./dist/web.mjs",
-	bundledCode.replace(/\/\/# sourceMappingURL=.*\n/, ""),
-);
-
-console.log("Done.");
+esbuild.stop();

@@ -5,7 +5,6 @@ export {
 	type GetAuthURLOptions,
 	type KeypairResponse,
 } from "./types.ts";
-export { PureAuthProvider } from "./helpers.ts";
 
 export * as AuthCode from "./auth_code.ts";
 export * as PKCEAuthCode from "./pkce_auth_code.ts";

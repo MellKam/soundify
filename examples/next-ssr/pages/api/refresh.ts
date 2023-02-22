@@ -22,11 +22,10 @@ export default async function (
 	}
 
 	try {
-		const authProvider = new AuthCode.AuthProvider({
+		const { access_token, expires_in } = await (new AuthCode.AuthProvider({
 			...config,
 			refresh_token,
-		});
-		const { access_token, expires_in } = await authProvider.refresh();
+		})).refresh();
 
 		setCookie(SPOTIFY_ACCESS_TOKEN, access_token, {
 			maxAge: expires_in,

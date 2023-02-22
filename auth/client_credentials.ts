@@ -20,14 +20,14 @@ export class AuthProvider implements IAuthProvider {
 
 	async getAccessToken(forceRefresh = false) {
 		if (forceRefresh || !this.#access_token) {
-			const data = await this.#fetchToken();
+			const data = await this.refresh();
 			this.#access_token = data.access_token;
 		}
 
 		return this.#access_token;
 	}
 
-	async #fetchToken() {
+	async refresh() {
 		const res = await fetch(API_TOKEN_URL, {
 			method: "POST",
 			headers: {

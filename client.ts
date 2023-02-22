@@ -34,10 +34,10 @@ export interface ISpotifyClient {
 }
 
 export class SpotifyClient implements ISpotifyClient {
-	#authProvider: IAuthProvider;
+	#authProvider: IAuthProvider | string;
 	constructor(
 		{ authProvider }: {
-			authProvider: IAuthProvider;
+			authProvider: IAuthProvider | string;
 		},
 	) {
 		this.#authProvider = authProvider;
@@ -77,12 +77,14 @@ export class SpotifyClient implements ISpotifyClient {
 				const { error: { message, status } } = await res
 					.json() as SpotifyRawError;
 
-				if (status === 401) {
-					if (!authRetry) {
-						const accessToken = await this.#authProvider.getAccessToken(true);
-						authRetry = true;
-						return await call(accessToken);
-					}
+				if (
+					typeof this.#authProvider !== "string" && status === 401 && !authRetry
+				) {
+					const access_token = await this.#authProvider.getAccessToken(
+						true,
+					);
+					authRetry = true;
+					return await call(access_token);
 				} else {
 					throw new SpotifyError(message, status);
 				}
@@ -91,8 +93,11 @@ export class SpotifyClient implements ISpotifyClient {
 			return res;
 		};
 
-		const accessToken = await this.#authProvider.getAccessToken();
-		const res = await call(accessToken);
+		const access_token = typeof this.#authProvider === "string"
+			? this.#authProvider
+			: await this.#authProvider.getAccessToken();
+
+		const res = await call(access_token);
 
 		return await res.json() as R;
 	};

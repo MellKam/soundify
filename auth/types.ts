@@ -42,10 +42,6 @@ export interface GetAuthURLOptions {
 	show_dialog?: boolean;
 }
 
-export interface GetAuthURLPKCEOptions extends GetAuthURLOptions {
-	code_challenge?: string;
-}
-
 /**
  * Query parameters for the `GET` request to the `/authorize` endpoint
  */
@@ -75,4 +71,5 @@ export interface ApiTokenReqParams extends Record<string, string | undefined> {
 
 export interface IAuthProvider {
 	getAccessToken: (forceRefresh?: boolean) => Promise<string>;
+	refresh: () => Promise<AccessTokenResponse>;
 }

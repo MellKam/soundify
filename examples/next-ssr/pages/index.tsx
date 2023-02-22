@@ -3,7 +3,6 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useCallback, useEffect } from "react";
 import {
 	getCurrentUserProfile,
-	PureAuthProvider,
 	SpotifyClient,
 	type UserPrivate,
 } from "soundify-web-api";
@@ -17,12 +16,12 @@ export const getServerSideProps: GetServerSideProps<{
 		return { props: {} };
 	}
 
-	const spotifyClient = new SpotifyClient({
-		authProvider: new PureAuthProvider(accessToken),
-	});
-
 	try {
-		const user = await getCurrentUserProfile(spotifyClient);
+		const user = await getCurrentUserProfile(
+			new SpotifyClient({
+				authProvider: accessToken,
+			}),
+		);
 		return { props: { user } };
 	} catch (error) {
 		return { props: {} };

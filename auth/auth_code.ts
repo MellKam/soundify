@@ -9,6 +9,8 @@ import {
 	KeypairResponse,
 } from "./types.ts";
 
+import { Client } from "https://raw.githubusercontent.com/hum/spotify/main/mod.ts";
+
 export const getAuthURL = (
 	{ scopes, ...opts }: {
 		client_id: string;

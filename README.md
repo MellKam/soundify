@@ -13,33 +13,40 @@
 This package is in active development now. All API may be not stable and this is
 not recemended to use in production.
 
-# NPM
+# Installation
 
-Lint to package - [soundify-web-api](https://www.npmjs.com/package/soundify-web-api)
+## NPM
+[soundify on npmjs.com](https://www.npmjs.com/package/soundify-web-api)
 
 ```bash
 npm i soundify-web-api
 ```
 
+Unfortunately, the `soundify` package on the NPM was already taken ;(
+
 ```ts
-// For nodejs
+// For nodejs (server-side)
 import { ... } from "soundify-web-api"
 
 // For client-side javascript
 import { ... } from "soundify-web-api/web"
 ```
 
-# Deno 
+## Deno 
 
-Link to package - [soundify](https://deno.land/x/soundify)
+[soundify on deno.land](https://deno.land/x/soundify)
 
 ```ts
+// Import from denoland (recomended)
 import { ... } from "https://deno.land/x/soundify/mod.ts"
+
+// Import from github repo main branch 
+import { ... } from "https://raw.githubusercontent.com/MellKam/soundify/main/mod.ts";
 ```
 
 # Authorization flow
 
-There are 4 flows for authorization. It may be difficult for beginners to choose one of them. In this case, you can check out Spotify's official documentation on this.
+There are 4 authorization flows, and this package supports all of them It may be difficult for beginners to choose one. In this case, you can read Spotify's official documentation on the subject.
 [How to chose authorization flow?](https://developer.spotify.com/documentation/general/guides/authorization/#which-oauth-flow-should-i-use)
 
 #### This is a copy of the summary table for all auth flows
@@ -50,6 +57,8 @@ There are 4 flows for authorization. It may be difficult for beginners to choose
 | Authorization code with PKCE | Yes | No | Yes |
 | Client credentials | No | Yes | No |
 | Implicit grant | Yes | No | No |
+
+> As from spotify docs: "Implicit grant is not recommended because it returns a token in a URL instead of a trusted channel and does not support token updates"; 
 
 
 
