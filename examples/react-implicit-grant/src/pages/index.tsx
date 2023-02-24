@@ -1,13 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentUserProfile } from "soundify-web-api/web";
-import { authorize, useSpotifyClient } from "../spotify";
+import {
+	getCurrentUserProfile,
+	ImplicitGrant,
+	SpotifyClient,
+} from "soundify-web-api/web";
+
+const useSpotifyClient = () => {
+	const accessToken = localStorage.getItem("SPOTIFY_ACCESS_TOKEN");
+
+	if (!accessToken) {
+		location.replace(ImplicitGrant.getAuthURL({
+			client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
+			redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
+			scopes: ["user-read-email"],
+		}));
+	}
+
+	return new SpotifyClient({
+		authProvider: accessToken!,
+	});
+};
 
 export const Page = () => {
 	const spotifyClient = useSpotifyClient();
-	if (spotifyClient === null) {
-		authorize();
-		return <h1>Redirecting to Spotify...</h1>;
-	}
 
 	const { status, data: userProfile, error } = useQuery({
 		queryKey: ["user-profile"],

@@ -1,5 +1,5 @@
 import { IAuthProvider } from "./auth/types.ts";
-import { searchParamsFromObj } from "./utils.ts";
+import { QueryParams, searchParamsFromObj } from "./utils.ts";
 
 export const API_PREFIX = "https://api.spotify.com/v1";
 
@@ -29,7 +29,7 @@ export interface ISpotifyClient {
 	>(baseURL: string, opts?: {
 		method?: HTTPMethod;
 		body?: Record<string, unknown>;
-		query?: Record<string, string | number | boolean | undefined>;
+		query?: QueryParams;
 	}) => Promise<R>;
 }
 
@@ -50,7 +50,7 @@ export class SpotifyClient implements ISpotifyClient {
 		{ body, query, method }: {
 			method?: HTTPMethod;
 			body?: Record<string, unknown>;
-			query?: Record<string, string | number | boolean | undefined>;
+			query?: QueryParams;
 		} = {},
 	) => {
 		const url = new URL(API_PREFIX + baseURL);
@@ -74,20 +74,29 @@ export class SpotifyClient implements ISpotifyClient {
 			});
 
 			if (!res.ok) {
-				const { error: { message, status } } = await res
-					.json() as SpotifyRawError;
+				let error: SpotifyRawError;
+				try {
+					error = await res.json() as SpotifyRawError;
+				} catch (_) {
+					throw new SpotifyError(
+						"Unable to read response body(not a json value)",
+						res.status,
+					);
+				}
 
+				const { error: { message } } = error;
 				if (
-					typeof this.#authProvider !== "string" && status === 401 && !authRetry
+					res.status === 401 && typeof this.#authProvider !== "string" &&
+					!authRetry
 				) {
 					const access_token = await this.#authProvider.getAccessToken(
 						true,
 					);
 					authRetry = true;
 					return await call(access_token);
-				} else {
-					throw new SpotifyError(message, status);
 				}
+
+				throw new SpotifyError(message, res.status);
 			}
 
 			return res;

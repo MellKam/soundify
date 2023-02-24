@@ -3,6 +3,7 @@ import { Track } from "../track/track.types.ts";
 import { UserPrivate, UserPublic } from "./user.types.ts";
 import { PagingObject, PagingOptions } from "../shared/index.ts";
 import { ISpotifyClient } from "../../client.ts";
+import { QueryParams } from "../../utils.ts";
 
 /**
  * Get detailed profile information about the current user
@@ -12,9 +13,9 @@ export const getCurrentUserProfile = (spotifyClient: ISpotifyClient) => {
 	return spotifyClient.fetch<UserPrivate>("/me");
 };
 
-type GetUserTopItemsOpts = PagingOptions & {
+interface GetUserTopItemsOpts extends QueryParams {
 	time_range?: "long_term" | "medium_term" | "short_term";
-};
+}
 
 type TopItemType = "artists" | "tracks";
 type TopItem = Artist | Track;
@@ -32,11 +33,14 @@ export const getUserTopItems = <
 >(
 	spotifyClient: ISpotifyClient,
 	type: T,
-	query: GetUserTopItemsOpts,
+	query?: GetUserTopItemsOpts & PagingOptions,
 ) => {
-	return spotifyClient.fetch<PagingObject<M[T]>>(`/me/top/${type}`, {
-		query,
-	});
+	return spotifyClient.fetch<PagingObject<M[T]>>(
+		`/me/top/${type}`,
+		{
+			query,
+		},
+	);
 };
 
 /**

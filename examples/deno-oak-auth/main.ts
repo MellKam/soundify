@@ -7,21 +7,9 @@ import { AuthCode } from "../../mod.ts";
 
 const PORT = 3000;
 
-/**
- * You can create your app and get all the secrets here
- * Spoity Dashboard - `https://developer.spotify.com/dashboard`
- */
 const env = cleanEnv(config(), {
 	SPOTIFY_CLIENT_ID: str(),
 	SPOTIFY_CLIENT_SECRET: str(),
-	/**
-	 * Make sure that in the dashboard of your Spotify app,
-	 * in Settings -> Redirect URIs, this link is specified:
-	 *
-	 * @link `http://localhost:${PORT}/callback`
-	 *
-	 * @var PORT - variable that exists above. By default it is `3000`
-	 */
 	SPOTIFY_REDIRECT_URI: url(),
 });
 

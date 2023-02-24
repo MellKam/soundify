@@ -42,13 +42,13 @@ app.get("/callback", async (req, res) => {
 	}
 
 	try {
-		const keypairData = await AuthCode.getGrantData({
+		const grantData = await AuthCode.getGrantData({
 			code,
 			state,
 			...config,
 		});
 
-		res.status(200).json(keypairData);
+		res.status(200).json(grantData);
 	} catch (error) {
 		res.status(400).send(String(error));
 	}

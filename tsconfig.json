@@ -12,8 +12,8 @@
 		"target": "ESNext"
 	},
 	"include": [
-		"./**/*.ts",
 		"mod.ts",
+		"client.ts",
 		"utils.ts",
 		"./api/**/*.ts",
 		"./auth/**/*.ts"

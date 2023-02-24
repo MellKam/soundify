@@ -1,3 +1,5 @@
+import { QueryParams } from "../../utils.ts";
+
 export interface PagingObject<T> {
 	href: string;
 	items: T[];
@@ -17,7 +19,7 @@ export interface CursorPagingObject<T> {
 	total: number;
 }
 
-export interface PagingOptions extends Record<string, number | undefined> {
+export interface PagingOptions extends QueryParams {
 	/**
 	 * The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
 	 */

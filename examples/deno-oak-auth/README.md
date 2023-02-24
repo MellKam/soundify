@@ -1,3 +1,5 @@
+<img width="360" alt="Soundify example banner" src="https://user-images.githubusercontent.com/51422045/221211970-06ef3ffc-20b2-4bfb-a468-92e92a84ed22.png">
+
 # Soundify exapmle (deno-oak-auth)
 
 This example uses [OAK](https://github.com/oakserver/oak) (deno http framework)
