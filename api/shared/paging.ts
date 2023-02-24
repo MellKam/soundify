@@ -21,11 +21,13 @@ export interface CursorPagingObject<T> {
 
 export interface PagingOptions extends QueryParams {
 	/**
-	 * The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
+	 * The maximum number of items to return. Minimum: 1. Maximum: 50.
+	 * @default 20
 	 */
 	limit?: number;
 	/**
-	 * The index of the first item to return. Default: 0 (the first item). Use with limit to get the next set of items.
+	 * The index of the first item to return. Use with limit to get the next set of items.
+	 * @default 0 (the first item)
 	 */
 	offset?: number;
 }
