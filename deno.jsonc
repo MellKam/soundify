@@ -16,12 +16,12 @@
 				"./README.md",
 				"./examples/node-express-auth/dist/",
 				"./examples/node-express-auth/node_modules/",
-				"./examples/react-vite/node_modules/",
-				"./examples/react-vite/dist/",
+				"./examples/react-implicit-grant/node_modules/",
+				"./examples/react-implicit-grant/dist/",
 				"./examples/next-ssr/node_modules/",
 				"./examples/next-ssr/.next/",
-				"./examples/pkce-auth/node_modules/",
-				"./examples/pkce-auth/dist/"
+				"./examples/react-pkce-auth/node_modules/",
+				"./examples/react-pkce-auth/dist/"
 			]
 		}
 	},
@@ -35,12 +35,12 @@
 				"./README.md",
 				"./examples/node-express-auth/dist/",
 				"./examples/node-express-auth/node_modules/",
-				"./examples/react-vite/node_modules/",
-				"./examples/react-vite/dist/",
+				"./examples/react-implicit-grant/node_modules/",
+				"./examples/react-implicit-grant/dist/",
 				"./examples/next-ssr/node_modules/",
 				"./examples/next-ssr/.next/",
-				"./examples/pkce-auth/node_modules/",
-				"./examples/pkce-auth/dist/"
+				"./examples/react-pkce-auth/node_modules/",
+				"./examples/react-pkce-auth/dist/"
 			]
 		}
 	},

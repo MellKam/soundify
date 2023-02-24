@@ -2,7 +2,9 @@
 
 # Soundify exapmle (react-pkce-auth)
 
-This example shows how to use PKCE authentication in a single-page React application. We will also use the `react-router-dom`, `@tanstack/react-query` libraries to speed up our routine workflow.
+This example shows how to use PKCE authentication in a single-page React
+application. We will also use the `react-router-dom`, `@tanstack/react-query`
+libraries to speed up our routine workflow.
 
 Don't forget to fill in the env variables in the `.env` file in the same way as
 in the `.env.example` file.
