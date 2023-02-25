@@ -11,11 +11,17 @@ export interface PagingObject<T> {
 }
 
 export interface CursorPagingObject<T> {
+	/**
+	 * A link to the Web API endpoint returning the full result of the request.
+	 */
 	href: string;
 	items: T[];
 	limit: number;
 	next: string;
 	cursors: { after: string; before: string };
+	/**
+	 * The total number of items available to return.
+	 */
 	total: number;
 }
 
