@@ -10,7 +10,7 @@ import { QueryParams } from "../../utils.ts";
  * (including the current user's username).
  */
 export const getCurrentUserProfile = (client: ISpotifyClient) => {
-	return client.fetch<UserPrivate>("/me");
+	return client.fetch<UserPrivate>("/me", "json");
 };
 
 interface GetUserTopItemsOpts extends QueryParams {
@@ -47,6 +47,7 @@ export const getUserTopItems = <
 ) => {
 	return client.fetch<PagingObject<M[T]>>(
 		`/me/top/${type}`,
+		"json",
 		{
 			query,
 		},
@@ -61,7 +62,7 @@ export const getUserProfile = (
 	/** Spotify user ID. */
 	user_id: string,
 ) => {
-	return client.fetch<UserPublic>(`/users/${user_id}`);
+	return client.fetch<UserPublic>(`/users/${user_id}`, "json");
 };
 
 /**
@@ -76,8 +77,14 @@ export const followPlaylist = async (
 	 */
 	is_public?: boolean,
 ) => {
-	await client.fetch(`/playlists/${playlist_id}/followers`, {
-		method: "PUT",
-		body: typeof is_public !== "undefined" ? { public: is_public } : undefined,
-	});
+	await client.fetch(
+		`/playlists/${playlist_id}/followers`,
+		"void",
+		{
+			method: "PUT",
+			body: typeof is_public !== "undefined"
+				? { public: is_public }
+				: undefined,
+		},
+	);
 };

@@ -23,17 +23,28 @@ export class SpotifyError extends Error implements ISpoitfyError {
 	}
 }
 
-export interface ISpotifyClient {
-	fetch: <
-		R extends unknown,
-	>(baseURL: string, opts?: {
-		method?: HTTPMethod;
-		body?: Record<string, unknown>;
-		query?: QueryParams;
-	}) => Promise<R>;
+interface FetchOpts {
+	method?: HTTPMethod;
+	body?: Record<string, unknown>;
+	query?: QueryParams;
 }
 
-export class SpotifyClient implements ISpotifyClient {
+export interface ISpotifyClient {
+	fetch(
+		baseURL: string,
+		returnType: "void",
+		opts?: FetchOpts,
+	): Promise<void>;
+	fetch<
+		R extends unknown,
+	>(
+		baseURL: string,
+		returnType: "json",
+		opts?: FetchOpts,
+	): Promise<R>;
+}
+
+export class SpotifyClient {
 	#authProvider: IAuthProvider | string;
 	constructor(
 		{ authProvider }: {
@@ -43,16 +54,23 @@ export class SpotifyClient implements ISpotifyClient {
 		this.#authProvider = authProvider;
 	}
 
-	fetch = async <
+	async fetch(
+		baseURL: string,
+		returnType: "void",
+		opts?: FetchOpts,
+	): Promise<void>;
+	async fetch<R = unknown>(
+		baseURL: string,
+		returnType: "json",
+		opts?: FetchOpts,
+	): Promise<R>;
+	async fetch<
 		R extends unknown,
 	>(
 		baseURL: string,
-		{ body, query, method }: {
-			method?: HTTPMethod;
-			body?: Record<string, unknown>;
-			query?: QueryParams;
-		} = {},
-	) => {
+		returnType: "void" | "json",
+		{ body, query, method }: FetchOpts = {},
+	) {
 		const url = new URL(API_PREFIX + baseURL);
 		if (query) {
 			url.search = searchParamsFromObj(query).toString();
@@ -108,6 +126,9 @@ export class SpotifyClient implements ISpotifyClient {
 
 		const res = await call(access_token);
 
-		return await res.json() as R;
-	};
+		if (returnType === "json") {
+			return await res.json() as R;
+		}
+		if (res.body) await res.body.cancel();
+	}
 }

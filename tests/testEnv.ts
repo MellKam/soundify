@@ -14,7 +14,7 @@ export interface TestEnv extends Record<string, string> {
 export const getTestEnv = () => {
 	const rawEnv = config({
 		safe: true,
-		path: "./.env.test",
+		path: "./.env.test.local",
 	}) as Partial<TestEnv>;
 
 	Object.keys(rawEnv).forEach((key) => {

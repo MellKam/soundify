@@ -31,9 +31,9 @@ Deno.test("Test auth code flow and get user's top artist", async () => {
 		}),
 	});
 
-	const top_artist = await getUserTopItems(client, "artists", {
+	const topArtists = await getUserTopItems(client, "artists", {
 		limit: 1,
 	});
 
-	console.log("Top artist is: ", top_artist.items[0].name);
+	console.log("Top artist is: ", topArtists.items.at(0)?.name);
 });
