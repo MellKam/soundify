@@ -1,6 +1,7 @@
 export { AUTH_SCOPES, type AuthScope } from "./consts.ts";
 export {
 	type AccessResponse,
+	type IAuthProvider,
 	type KeypairResponse,
 	type ScopedAccessResponse,
 } from "./types.ts";

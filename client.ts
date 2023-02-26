@@ -3,8 +3,6 @@ import { QueryParams, searchParamsFromObj } from "./utils.ts";
 
 const API_PREFIX = "https://api.spotify.com/v1";
 
-type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-
 interface SpotifyRawError {
 	error: { message: string; status: number };
 }
@@ -22,6 +20,8 @@ export class SpotifyError extends Error implements ISpoitfyError {
 		this.status = status;
 	}
 }
+
+type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 interface FetchOpts {
 	method?: HTTPMethod;
@@ -53,6 +53,10 @@ export class SpotifyClient {
 		 */
 		authProvider: IAuthProvider | string,
 	) {
+		this.#authProvider = authProvider;
+	}
+
+	setAuthProvider(authProvider: IAuthProvider | string) {
 		this.#authProvider = authProvider;
 	}
 

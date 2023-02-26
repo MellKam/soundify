@@ -1,5 +1,3 @@
-import { type AuthScope } from "./consts.ts";
-
 export interface AccessResponse {
 	/**
 	 * An Access Token that can be provided in subsequent calls,
@@ -34,62 +32,6 @@ export interface KeypairResponse extends ScopedAccessResponse {
 	refresh_token: string;
 }
 
-export type GetAuthURLOptions = {
-	/**
-	 * List of scopes.
-	 *
-	 * @default
-	 * If no scopes are specified, authorization will be granted
-	 * only to access publicly available information
-	 */
-	scopes?: AuthScope[];
-	/**
-	 * Whether or not to force the user to approve the app again
-	 * if they’ve already done so.
-	 *
-	 * - If false, a user who has already approved the application
-	 *  may be automatically redirected to the URI specified by `redirect_uri`.
-	 * - If true, the user will not be automatically redirected and will have
-	 *  to approve the app again.
-	 *
-	 * @default false
-	 */
-	show_dialog?: boolean;
-};
-
-export type AppCredentials = {
-	/**
-	 * The Client ID generated after registering your Spotify application.
-	 */
-	client_id: string;
-	/**
-	 * The Client Secret generated after registering your Spotify application.
-	 */
-	client_secret: string;
-	/**
-	 * The URI to redirect to after the user grants or denies permission.
-	 * This URI needs to have been entered in the _Redirect URI Allowlist_
-	 * that you specified when you registered your application.
-	 */
-	redirect_uri: string;
-};
-
-export type AuthState = {
-	/**
-	 * This provides protection against attacks such as
-	 * cross-site request forgery.
-	 */
-	state?: string;
-};
-
-export type AuthCode = {
-	/**
-	 * An authorization code that can be exchanged for an Access Token.
-	 * The code that Spotify produces after redirecting to `redirect_uri`.
-	 */
-	code: string;
-};
-
 /**
  * Query parameters for the `GET` request to the `/authorize` endpoint
  */
@@ -119,7 +61,7 @@ export interface ApiTokenReqParams extends Record<string, string | undefined> {
 
 export interface IAuthProvider {
 	/**
-	 * Function that gives you access token.
+	 * Function that gives you Spotify access token.
 	 */
 	getAccessToken: (
 		/**

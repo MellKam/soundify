@@ -71,34 +71,74 @@ First of all, you should already have a Spotify app created. If not, go and crea
 
 Let's write "Hello world!" with soundify.
 
-```ts
-import { SpotifyClient, getCurrentUserProfile } from "soundify-web-api";
+```js
+// main.js
+import { getCurrentUserProfile, SpotifyClient } from "soundify-web-api";
 
-const client = new SpotifyClient(
-  authProvider: "YOUR_ACCESS_TOKEN",
-)
+const client = new SpotifyClient("YOUR_ACCESS_TOKEN");
 
 const user = await getCurrentUserProfile(client);
 console.log(user);
+
+// If access token is valid it will output something like this
+/**
+{
+  id: '31xofk5q7l22rvsbff7yiechyx6i',
+  display_name: 'Soundify',
+  type: 'user',
+  uri: 'spotify:user:31xofk5q7l22rvsbff7yiechyx6i'
+  ...
+}
+*/
 ```
 
-# Authorization flow
+## But how to get your Access Token?
 
-There are 4 authorization flows, and this package supports all of them It may be difficult for beginners to choose one. In this case, you can read Spotify's official documentation on the subject.
-[How to chose authorization flow?](https://developer.spotify.com/documentation/general/guides/authorization/#which-oauth-flow-should-i-use)
+If you're new to Spotify, you can read more about it in the [Spotify Authorization Guide](https://developer.spotify.com/documentation/general/guides/authorization/). 
 
-#### This is a copy of the summary table for all auth flows
+Next, you can go to [examples/node-express-auth](https://github.com/MellKam/soundify/tree/main/examples/node-express-auth) or [examples/deno-oak-auth](https://github.com/MellKam/soundify/tree/main/examples/deno-oak-auth) and see the example http server code that will help you get your tokens.
 
-| Flow | Access user resources | Requires secret key (SERVER-SIDE) | Access token refresh |
-| :---: | :---: | :---: | :---: |
-| Authorization code | Yes | Yes | Yes |
-| Authorization code with PKCE | Yes | No | Yes |
-| Client credentials | No | Yes | No |
-| Implicit grant | Yes | No | No |
 
-<br/>
+# Authorization
 
-> As from spotify docs: "Implicit grant is not recommended because it returns a token in a URL instead of a trusted channel"
+This is how you can import specific authorization flow. 
+
+```ts
+// Authorization code flow
+import { AuthCode } from "soundify-web-api"
+// Authorization code flow with PKCE
+import { PKCEAuthCode } from "soundify-web-api"
+// Client credentials flow
+import { ClientCredentials } from "soundify-web-api"
+// Implicit grant flow
+import { ImplicitGrant } from "soundify-web-api"
+```
+
+Flows have similar functions and classes. For example `getAuthURL`, `getGrantData` and `AuthProvider`.
+
+# AuthProvider
+
+For authorization, you can simply use an access token and independently set a new access token after its expiration
+```ts
+import { SpotifyClient } from "soundify-web-api"
+
+const client = new SpotifyClient("ACCESS_TOKEN")
+// token expires
+client.setAuthProvider("NEW_ACCESS_TOKEN")
+```
+
+But if you need automatic refresh, you can create an AuthProvider. 
+```ts
+import { AuthCode, SpotifyClient } from "soundify-web-api"
+
+const authProvider = new AuthCode.AuthProvider({
+  client_id: "SPOTIFY_CLIENT_ID";
+  client_secret: "SPOTIFY_CLIENT_SECRET";
+  refresh_token: "YOUR_REFRESH_TOKEN";
+})
+
+const client = new SpotifyClient(authProvider)
+```
 
 <br/>
 

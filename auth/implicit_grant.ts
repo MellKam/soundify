@@ -1,11 +1,40 @@
 import { searchParamsFromObj } from "../utils.ts";
-import { AUTHORIZE_URL } from "./consts.ts";
-import { AccessResponse, AppCredentials, GetAuthURLOptions } from "./types.ts";
+import { AUTHORIZE_URL, AuthScope } from "./consts.ts";
+import { AccessResponse } from "./types.ts";
 import { AuthorizeReqParams } from "./types.ts";
 
-export type GetAuthURLOpts =
-	& GetAuthURLOptions
-	& Pick<AppCredentials, "client_id" | "redirect_uri">;
+export type GetAuthURLOpts = {
+	/**
+	 * List of scopes.
+	 *
+	 * @default
+	 * If no scopes are specified, authorization will be granted
+	 * only to access publicly available information
+	 */
+	scopes?: AuthScope[];
+	/**
+	 * Whether or not to force the user to approve the app again
+	 * if they’ve already done so.
+	 *
+	 * - If false, a user who has already approved the application
+	 *  may be automatically redirected to the URI specified by `redirect_uri`.
+	 * - If true, the user will not be automatically redirected and will have
+	 *  to approve the app again.
+	 *
+	 * @default false
+	 */
+	show_dialog?: boolean;
+	/**
+	 * The Client ID generated after registering your Spotify application.
+	 */
+	client_id: string;
+	/**
+	 * The URI to redirect to after the user grants or denies permission.
+	 * This URI needs to have been entered in the _Redirect URI Allowlist_
+	 * that you specified when you registered your application.
+	 */
+	redirect_uri: string;
+};
 
 export const getAuthURL = ({ scopes, ...opts }: GetAuthURLOpts) => {
 	const url = new URL(AUTHORIZE_URL);

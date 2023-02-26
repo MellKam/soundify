@@ -1,28 +1,43 @@
 import { searchParamsFromObj } from "../utils.ts";
-import { API_TOKEN_URL, AUTHORIZE_URL } from "./consts.ts";
+import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./consts.ts";
 import {
 	ApiTokenReqParams,
-	AppCredentials,
-	AuthCode,
 	AuthorizeReqParams,
-	AuthState,
-	GetAuthURLOptions,
 	IAuthProvider,
 	KeypairResponse,
 } from "./types.ts";
 import { getPKCECodeChallenge } from "../platform/platform.deno.ts";
 
-export type GetAuthURLOpts =
-	& {
-		/**
-		 * PKCE code that you generated from `code_verifier`.
-		 * You can get it with the `getCodeChallenge` function.
-		 */
-		code_challenge: string;
-	}
-	& AuthState
-	& Pick<GetAuthURLOptions, "scopes">
-	& Pick<AppCredentials, "client_id" | "redirect_uri">;
+export type GetAuthURLOpts = {
+	/**
+	 * The Client ID generated after registering your Spotify application.
+	 */
+	client_id: string;
+	/**
+	 * The URI to redirect to after the user grants or denies permission.
+	 * This URI needs to have been entered in the _Redirect URI Allowlist_
+	 * that you specified when you registered your application.
+	 */
+	redirect_uri: string;
+	/**
+	 * PKCE code that you generated from `code_verifier`.
+	 * You can get it with the `getCodeChallenge` function.
+	 */
+	code_challenge: string;
+	/**
+	 * This provides protection against attacks such as
+	 * cross-site request forgery.
+	 */
+	state?: string;
+	/**
+	 * List of scopes.
+	 *
+	 * @default
+	 * If no scopes are specified, authorization will be granted
+	 * only to access publicly available information
+	 */
+	scopes?: AuthScope[];
+};
 
 export const getAuthURL = (
 	{ scopes, ...opts }: GetAuthURLOpts,
@@ -41,15 +56,27 @@ export const getAuthURL = (
 	return url;
 };
 
-export type GetGrantDataOpts =
-	& {
-		/**
-		 * The random code you generated before redirecting the user to spotify auth
-		 */
-		code_verifier: string;
-	}
-	& AuthCode
-	& Pick<AppCredentials, "client_id" | "redirect_uri">;
+export type GetGrantDataOpts = {
+	/**
+	 * The random code you generated before redirecting the user to spotify auth
+	 */
+	code_verifier: string;
+	/**
+	 * An authorization code that can be exchanged for an Access Token.
+	 * The code that Spotify produces after redirecting to `redirect_uri`.
+	 */
+	code: string;
+	/**
+	 * The Client ID generated after registering your Spotify application.
+	 */
+	client_id: string;
+	/**
+	 * The URI to redirect to after the user grants or denies permission.
+	 * This URI needs to have been entered in the _Redirect URI Allowlist_
+	 * that you specified when you registered your application.
+	 */
+	redirect_uri: string;
+};
 
 export const getGrantData = async (opts: GetGrantDataOpts) => {
 	const res = await fetch(
