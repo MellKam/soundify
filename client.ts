@@ -1,7 +1,7 @@
 import { IAuthProvider } from "./auth/types.ts";
 import { QueryParams, searchParamsFromObj } from "./utils.ts";
 
-export const API_PREFIX = "https://api.spotify.com/v1";
+const API_PREFIX = "https://api.spotify.com/v1";
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -46,10 +46,12 @@ export interface ISpotifyClient {
 
 export class SpotifyClient {
 	#authProvider: IAuthProvider | string;
+
 	constructor(
-		{ authProvider }: {
-			authProvider: IAuthProvider | string;
-		},
+		/**
+		 * It is recommended to pass a class that implements `IAuthProvider` to automatically update tokens. If you do not need this behavior, you can simply pass an access token.
+		 */
+		authProvider: IAuthProvider | string,
 	) {
 		this.#authProvider = authProvider;
 	}
@@ -70,7 +72,7 @@ export class SpotifyClient {
 		baseURL: string,
 		returnType: "void" | "json",
 		{ body, query, method }: FetchOpts = {},
-	) {
+	): Promise<R | void> {
 		const url = new URL(API_PREFIX + baseURL);
 		if (query) {
 			url.search = searchParamsFromObj(query).toString();

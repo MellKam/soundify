@@ -16,9 +16,7 @@ const useSpotifyClient = () => {
 		}));
 	}
 
-	return new SpotifyClient({
-		authProvider: accessToken!,
-	});
+	return new SpotifyClient(accessToken!);
 };
 
 export const Page = () => {

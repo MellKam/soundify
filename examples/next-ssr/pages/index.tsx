@@ -18,9 +18,7 @@ export const getServerSideProps: GetServerSideProps<{
 
 	try {
 		const user = await getCurrentUserProfile(
-			new SpotifyClient({
-				authProvider: accessToken,
-			}),
+			new SpotifyClient(accessToken),
 		);
 		return { props: { user } };
 	} catch (error) {

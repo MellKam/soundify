@@ -68,7 +68,7 @@ export const SpotifyProvider = (
 			},
 		});
 
-		return new SpotifyClient({ authProvider });
+		return new SpotifyClient(authProvider);
 	}, []);
 
 	if (client === null) {

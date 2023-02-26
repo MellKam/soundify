@@ -1,6 +1,6 @@
 import { API_TOKEN_URL } from "./consts.ts";
 import { getBasicAuthHeader } from "./helpers.ts";
-import { AccessTokenWithScope, IAuthProvider } from "./types.ts";
+import { IAuthProvider, ScopedAccessResponse } from "./types.ts";
 
 export class AuthProvider implements IAuthProvider {
 	readonly #BASIC_AUTH_HEADER: string;
@@ -43,6 +43,6 @@ export class AuthProvider implements IAuthProvider {
 			throw new Error(await res.text());
 		}
 
-		return (await res.json()) as AccessTokenWithScope;
+		return (await res.json()) as ScopedAccessResponse;
 	}
 }

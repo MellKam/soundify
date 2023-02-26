@@ -1,22 +1,25 @@
 import { searchParamsFromObj } from "../utils.ts";
-import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./consts.ts";
+import { API_TOKEN_URL, AUTHORIZE_URL } from "./consts.ts";
 import { getBasicAuthHeader } from "./helpers.ts";
 import {
-	AccessTokenResponse,
+	AccessResponse,
 	ApiTokenReqParams,
+	AppCredentials,
+	AuthCode,
 	AuthorizeReqParams,
+	AuthState,
+	GetAuthURLOptions,
 	IAuthProvider,
 	KeypairResponse,
 } from "./types.ts";
 
+export type GetAuthURLOpts =
+	& Pick<AppCredentials, "client_id" | "redirect_uri">
+	& GetAuthURLOptions
+	& AuthState;
+
 export const getAuthURL = (
-	{ scopes, ...opts }: {
-		client_id: string;
-		scopes?: AuthScope[];
-		redirect_uri: string;
-		show_dialog?: boolean;
-		state?: string;
-	},
+	{ scopes, ...opts }: GetAuthURLOpts,
 ) => {
 	const url = new URL(AUTHORIZE_URL);
 
@@ -29,14 +32,13 @@ export const getAuthURL = (
 	return url;
 };
 
+export type GetGrantDataOpts =
+	& AuthCode
+	& AppCredentials
+	& AuthState;
+
 export const getGrantData = async (
-	opts: {
-		code: string;
-		state?: string;
-		redirect_uri: string;
-		client_id: string;
-		client_secret: string;
-	},
+	opts: GetGrantDataOpts,
 ) => {
 	const res = await fetch(API_TOKEN_URL, {
 		method: "POST",
@@ -105,7 +107,7 @@ export class AuthProvider implements IAuthProvider {
 			throw new Error(await res.text());
 		}
 
-		const data = (await res.json()) as AccessTokenResponse;
+		const data = (await res.json()) as AccessResponse;
 		this.#access_token = data.access_token;
 		return data;
 	}

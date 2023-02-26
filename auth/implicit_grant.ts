@@ -1,21 +1,19 @@
 import { searchParamsFromObj } from "../utils.ts";
-import { AUTHORIZE_URL, AuthScope } from "./consts.ts";
-import { AccessTokenResponse } from "./types.ts";
+import { AUTHORIZE_URL } from "./consts.ts";
+import { AccessResponse, AppCredentials, GetAuthURLOptions } from "./types.ts";
 import { AuthorizeReqParams } from "./types.ts";
 
-export const getAuthURL = ({ scopes, ...rest }: {
-	client_id: string;
-	scopes?: AuthScope[];
-	redirect_uri: string;
-	show_dialog?: boolean;
-	state?: string;
-}) => {
+export type GetAuthURLOpts =
+	& GetAuthURLOptions
+	& Pick<AppCredentials, "client_id" | "redirect_uri">;
+
+export const getAuthURL = ({ scopes, ...opts }: GetAuthURLOpts) => {
 	const url = new URL(AUTHORIZE_URL);
 
 	url.search = searchParamsFromObj<AuthorizeReqParams>({
 		response_type: "token",
 		scope: scopes?.join(" "),
-		...rest,
+		...opts,
 	}).toString();
 
 	return url;
@@ -57,5 +55,5 @@ export const getGrantData = (urlHash: string, state?: string) => {
 		access_token,
 		token_type,
 		expires_in,
-	} as AccessTokenResponse;
+	} as AccessResponse;
 };

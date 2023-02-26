@@ -1,21 +1,31 @@
 import { searchParamsFromObj } from "../utils.ts";
-import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./consts.ts";
+import { API_TOKEN_URL, AUTHORIZE_URL } from "./consts.ts";
 import {
 	ApiTokenReqParams,
+	AppCredentials,
+	AuthCode,
 	AuthorizeReqParams,
+	AuthState,
+	GetAuthURLOptions,
 	IAuthProvider,
 	KeypairResponse,
 } from "./types.ts";
 import { getPKCECodeChallenge } from "../platform/platform.deno.ts";
-export { getPKCECodeChallenge as getCodeChallenge } from "../platform/platform.deno.ts";
+
+export type GetAuthURLOpts =
+	& {
+		/**
+		 * PKCE code that you generated from `code_verifier`.
+		 * You can get it with the `getCodeChallenge` function.
+		 */
+		code_challenge: string;
+	}
+	& AuthState
+	& Pick<GetAuthURLOptions, "scopes">
+	& Pick<AppCredentials, "client_id" | "redirect_uri">;
 
 export const getAuthURL = (
-	{ scopes, ...opts }: {
-		client_id: string;
-		redirect_uri: string;
-		code_challenge: string;
-		scopes?: AuthScope[];
-	},
+	{ scopes, ...opts }: GetAuthURLOpts,
 ) => {
 	const url = new URL(AUTHORIZE_URL);
 
@@ -31,12 +41,17 @@ export const getAuthURL = (
 	return url;
 };
 
-export const getGrantData = async (opts: {
-	code: string;
-	code_verifier: string;
-	client_id: string;
-	redirect_uri: string;
-}) => {
+export type GetGrantDataOpts =
+	& {
+		/**
+		 * The random code you generated before redirecting the user to spotify auth
+		 */
+		code_verifier: string;
+	}
+	& AuthCode
+	& Pick<AppCredentials, "client_id" | "redirect_uri">;
+
+export const getGrantData = async (opts: GetGrantDataOpts) => {
 	const res = await fetch(
 		API_TOKEN_URL,
 		{
@@ -63,12 +78,18 @@ const PKCEVerifierChars =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
 
 /**
- * PKCE Code Verifier
+ * Generates random PKCE Code Verifier
  *
  * The code verifier is a random string between 43 and 128 characters in length.
  * It can contain letters, digits, underscores, periods, hyphens, or tildes.
  */
-export const generateCodeVerifier = (length = 64) => {
+export const generateCodeVerifier = (
+	/**
+	 * Must be between 43 and 128 characters
+	 * @default 64
+	 */
+	length = 64,
+) => {
 	let code_verifier = "";
 	for (let i = 0; i < length; i++) {
 		code_verifier += PKCEVerifierChars.charAt(
@@ -78,6 +99,12 @@ export const generateCodeVerifier = (length = 64) => {
 	return code_verifier;
 };
 
+export { getPKCECodeChallenge as getCodeChallenge } from "../platform/platform.deno.ts";
+
+/**
+ * Shorthand for generating PKCE codes.
+ * Uses `generateCodeVerifier` and `getCodeChallenge` under the hood.
+ */
 export const generateCodes = async () => {
 	const code_verifier = generateCodeVerifier();
 	const code_challenge = await getPKCECodeChallenge(code_verifier);

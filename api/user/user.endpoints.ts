@@ -114,6 +114,9 @@ interface GetFollowedArtistsOpts extends QueryParams {
 	after?: string;
 }
 
+/**
+ * Get the current user's followed artists.
+ */
 export const getFollowedArtists = async (
 	client: ISpotifyClient,
 	opts?: Pick<PagingOptions, "limit"> & GetFollowedArtistsOpts,
