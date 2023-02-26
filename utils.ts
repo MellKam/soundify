@@ -21,3 +21,9 @@ export const searchParamsFromObj = <
 
 	return searchParams;
 };
+
+export const wait = (seconds: number) => {
+	return new Promise<void>((res) => {
+		setTimeout(res, seconds);
+	});
+};
