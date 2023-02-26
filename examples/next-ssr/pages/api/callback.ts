@@ -30,7 +30,7 @@ export default async function (
 	}
 
 	try {
-		const { refresh_token, access_token } = await AuthCode
+		const { refresh_token, access_token, expires_in } = await AuthCode
 			.getGrantData({
 				code,
 				state,
@@ -48,6 +48,7 @@ export default async function (
 		setCookie(SPOTIFY_ACCESS_TOKEN, access_token, {
 			req,
 			res,
+			maxAge: expires_in,
 			sameSite: "strict",
 		});
 
