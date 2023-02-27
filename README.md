@@ -142,13 +142,13 @@ const authProvider = new AuthCode.AuthProvider({
 
 // For authorization code flow with PKCE
 const authProvider = new PKCEAuthCode.AuthProvider({
-	client_id: "SPOTIFY_CLIENT_ID",
-	refresh_token: "YOUR_REFRESH_TOKEN",
+  client_id: "SPOTIFY_CLIENT_ID",
+  refresh_token: "YOUR_REFRESH_TOKEN",
 })
 
 // For client credentials flow
 const authProvider = new ClientCredentials.AuthProvider({
-	client_id: "SPOTIFY_CLIENT_ID",
+  client_id: "SPOTIFY_CLIENT_ID",
   client_secret: "SPOTIFY_CLIENT_SECRET",
 })
 
@@ -165,8 +165,8 @@ Scopes can be setted just as array of string
 import { AuthCode } from "soundify-web-api";
 
 AuthCode.getAuthURL({
-	scopes: ["user-read-email"],
-	...
+  scopes: ["user-read-email"],
+  ...
 })
 ```
 
@@ -175,8 +175,8 @@ Or you can use the `AUTH_SCOPES` const object, which is used as an enum
 import { AuthCode, AUTH_SCOPES } from "soundify-web-api";
 
 AuthCode.getAuthURL({
-	scopes: [AUTH_SCOPES.USER_READ_EMAIL],
-	...
+  scopes: [AUTH_SCOPES.USER_READ_EMAIL],
+  ...
 })
 ```
 
@@ -185,8 +185,8 @@ If you need to set all scopes, it may be much easier to use `AUTH_SCOPES`.
 import { AuthCode, AUTH_SCOPES } from "soundify-web-api";
 
 AuthCode.getAuthURL({
-	scopes: Object.values(AUTH_SCOPES),
-	...
+  scopes: Object.values(AUTH_SCOPES),
+  ...
 })
 ```
 
