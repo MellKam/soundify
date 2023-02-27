@@ -101,6 +101,8 @@ Next, you can go to [examples/node-express-auth](https://github.com/MellKam/soun
 
 # Authorization
 
+The flows are separated by namespaces. Each namespace has all the necessary functions and classes to implement a given authorization flow.
+
 This is how you can import specific authorization flow. 
 
 ```ts
@@ -116,7 +118,7 @@ import { ImplicitGrant } from "soundify-web-api"
 
 Flows have similar functions and classes. For example `getAuthURL`, `getGrantData` and `AuthProvider`.
 
-# AuthProvider
+## AuthProvider
 
 For authorization, you can simply use an access token and independently set a new access token after its expiration
 ```ts
@@ -131,18 +133,66 @@ But if you need automatic refresh, you can create an AuthProvider.
 ```ts
 import { AuthCode, SpotifyClient } from "soundify-web-api"
 
+// For authorization code flow
 const authProvider = new AuthCode.AuthProvider({
-  client_id: "SPOTIFY_CLIENT_ID";
-  client_secret: "SPOTIFY_CLIENT_SECRET";
-  refresh_token: "YOUR_REFRESH_TOKEN";
+  client_id: "SPOTIFY_CLIENT_ID",
+  client_secret: "SPOTIFY_CLIENT_SECRET",
+  refresh_token: "YOUR_REFRESH_TOKEN",
+})
+
+// For authorization code flow with PKCE
+const authProvider = new PKCEAuthCode.AuthProvider({
+	client_id: "SPOTIFY_CLIENT_ID",
+	refresh_token: "YOUR_REFRESH_TOKEN",
+})
+
+// For client credentials flow
+const authProvider = new ClientCredentials.AuthProvider({
+	client_id: "SPOTIFY_CLIENT_ID",
+  client_secret: "SPOTIFY_CLIENT_SECRET",
 })
 
 const client = new SpotifyClient(authProvider)
 ```
 
-<br/>
+The Implicit Grant does not have an AuthProvider because it does not have the ability to refresh the token without reloading the page. Therefore, every time a token expires, you must redirect the user to get a new token
 
-Thatnk's ChatGPT for helping to create this readme ❤️
+## Auth Scopes
+
+Scopes can be setted just as array of string
+
+```ts
+import { AuthCode } from "soundify-web-api";
+
+AuthCode.getAuthURL({
+	scopes: ["user-read-email"],
+	...
+})
+```
+
+Or you can use the `AUTH_SCOPES` const object, which is used as an enum
+```ts
+import { AuthCode, AUTH_SCOPES } from "soundify-web-api";
+
+AuthCode.getAuthURL({
+	scopes: [AUTH_SCOPES.USER_READ_EMAIL],
+	...
+})
+```
+
+If you need to set all scopes, it may be much easier to use `AUTH_SCOPES`.
+```ts
+import { AuthCode, AUTH_SCOPES } from "soundify-web-api";
+
+AuthCode.getAuthURL({
+	scopes: Object.values(AUTH_SCOPES),
+	...
+})
+```
+
+Be careful with scopes, because many fields and endpoints may not be available because the auth scope is not set.
+
+All contributions are very welcome ❤️
 
 
 
