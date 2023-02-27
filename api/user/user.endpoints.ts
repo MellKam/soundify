@@ -10,14 +10,15 @@ import { ISpotifyClient } from "../../client.ts";
 import { QueryParams } from "../../utils.ts";
 
 /**
- * Get detailed profile information about the current user
- * (including the current user's username).
+ * Get detailed profile information about the current user.
+ *
+ * @param client SpotifyClient instance
  */
-export const getCurrentUserProfile = (client: ISpotifyClient) => {
-	return client.fetch<UserPrivate>("/me", "json");
+export const getCurrentUserProfile = async (client: ISpotifyClient) => {
+	return await client.fetch<UserPrivate>("/me", "json");
 };
 
-interface GetUserTopItemsOpts extends QueryParams {
+interface GetUserTopItemsOpts extends QueryParams, PagingOptions {
 	/**
 	 * Over what time frame the affinities are computed.
 	 *
@@ -32,53 +33,85 @@ interface GetUserTopItemsOpts extends QueryParams {
 
 type TopItemType = "artists" | "tracks";
 type TopItem = Artist | Track;
+interface TopItemMap extends Record<TopItemType, TopItem> {
+	artists: Artist;
+	tracks: Track;
+}
 
 /**
  * Get the current user's top artists or tracks
  * based on calculated affinity.
+ *
+ * @param client SpotifyClient instance
+ * @param type The type of entity to return. ("artists" or "tracks")
+ * @param opts Additional option for request
  */
-export const getUserTopItems = <
+export const getUserTopItems = async <
 	T extends TopItemType,
-	M extends Record<TopItemType, TopItem> = {
-		artists: Artist;
-		tracks: Track;
-	},
 >(
 	client: ISpotifyClient,
-	/** The type of entity to return. ("artists" or "tracks") */
 	type: T,
-	query?: GetUserTopItemsOpts & PagingOptions,
+	opts?: GetUserTopItemsOpts,
 ) => {
-	return client.fetch<PagingObject<M[T]>>(
+	return await client.fetch<PagingObject<TopItemMap[T]>>(
 		`/me/top/${type}`,
 		"json",
 		{
-			query,
+			query: opts,
 		},
 	);
 };
 
 /**
- * Get public profile information about a Spotify user.
+ * Get the current user's top artists based on calculated affinity.
+ *
+ * @param client SpotifyClient instance
+ * @param opts Additional option for request
  */
-export const getUserProfile = (
+export const getUserTopArtists = async (
 	client: ISpotifyClient,
-	/** Spotify user ID. */
+	opts: GetUserTopItemsOpts,
+) => {
+	return await getUserTopItems(client, "artists", opts);
+};
+
+/**
+ * Get the current user's top tracks based on calculated affinity.
+ *
+ * @param client SpotifyClient instance
+ * @param opts Additional option for request
+ */
+export const getUserTopTracks = async (
+	client: ISpotifyClient,
+	opts: GetUserTopItemsOpts,
+) => {
+	return await getUserTopItems(client, "tracks", opts);
+};
+
+/**
+ * Get public profile information about a Spotify user.
+ *
+ * @param client SpotifyClient instance
+ * @param user_id Spotify user ID
+ */
+export const getUserProfile = async (
+	client: ISpotifyClient,
 	user_id: string,
 ) => {
-	return client.fetch<UserPublic>(`/users/${user_id}`, "json");
+	return await client.fetch<UserPublic>(`/users/${user_id}`, "json");
 };
 
 /**
  * Add the current user as a follower of a playlist.
+ *
+ * @param client SpotifyClient instance
+ * @param playlist_id Spotify playlist ID
+ * @param is_public If true the playlist will be included in user's public
+ * playlists, if false it will remain private. By default - true
  */
 export const followPlaylist = async (
 	client: ISpotifyClient,
 	playlist_id: string,
-	/**
-	 * If true the playlist will be included in user's public playlists, if false it will remain private.
-	 * @default true
-	 */
 	is_public?: boolean,
 ) => {
 	await client.fetch(
@@ -95,6 +128,9 @@ export const followPlaylist = async (
 
 /**
  * Remove the current user as a follower of a playlist.
+ *
+ * @param client SpotifyClient instance
+ * @param playlist_id Spotify playlist ID
  */
 export const unfollowPlaylist = async (
 	client: ISpotifyClient,
@@ -107,7 +143,8 @@ export const unfollowPlaylist = async (
 	);
 };
 
-interface GetFollowedArtistsOpts extends QueryParams {
+interface GetFollowedArtistsOpts
+	extends QueryParams, Pick<PagingOptions, "limit"> {
 	/**
 	 * The last artist ID retrieved from the previous request.
 	 */
@@ -116,12 +153,15 @@ interface GetFollowedArtistsOpts extends QueryParams {
 
 /**
  * Get the current user's followed artists.
+ *
+ * @param client SpotifyClient instance
+ * @param opts Additional option for request
  */
 export const getFollowedArtists = async (
 	client: ISpotifyClient,
-	opts?: Pick<PagingOptions, "limit"> & GetFollowedArtistsOpts,
+	opts?: GetFollowedArtistsOpts,
 ) => {
-	return await client.fetch<{ artists: CursorPagingObject<Artist> }>(
+	return (await client.fetch<{ artists: CursorPagingObject<Artist> }>(
 		"/me/following",
 		"json",
 		{
@@ -130,17 +170,17 @@ export const getFollowedArtists = async (
 				...opts,
 			},
 		},
-	);
+	)).artists;
 };
 
 /**
  * Add the current user as a follower of one or more artists.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_ids List of Spotify artist IDs. Maximum 50
  */
 export const followArtists = async (
 	client: ISpotifyClient,
-	/**
-	 * List of Spotify artist IDs. Maximum 50
-	 */
 	artist_ids: string[],
 ) => {
 	await client.fetch("/me/following", "void", {
@@ -150,16 +190,29 @@ export const followArtists = async (
 			ids: artist_ids,
 		},
 	});
+};
+
+/**
+ * Add the current user as a follower of an artist.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_id Spotify artist ID
+ */
+export const followArtist = async (
+	client: ISpotifyClient,
+	artist_id: string,
+) => {
+	return await followArtists(client, [artist_id]);
 };
 
 /**
  * Add the current user as a follower of one or more Spotify users.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_ids List of Spotify user IDs. Maximum 50
  */
 export const followUsers = async (
 	client: ISpotifyClient,
-	/**
-	 * List of Spotify user IDs. Maximum 50
-	 */
 	user_ids: string[],
 ) => {
 	await client.fetch("/me/following", "void", {
@@ -172,13 +225,26 @@ export const followUsers = async (
 };
 
 /**
+ * Add the current user as a follower of an user.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_id Spotify user ID
+ */
+export const followUser = async (
+	client: ISpotifyClient,
+	user_id: string,
+) => {
+	return await followUsers(client, [user_id]);
+};
+
+/**
  * Remove the current user as a follower of one or more artists.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_ids List of Spotify artist IDs. Maximum 50
  */
 export const unfollowArtists = async (
 	client: ISpotifyClient,
-	/**
-	 * List of Spotify artist IDs. Maximum 50
-	 */
 	artist_ids: string[],
 ) => {
 	await client.fetch("/me/following", "void", {
@@ -188,16 +254,29 @@ export const unfollowArtists = async (
 			ids: artist_ids,
 		},
 	});
+};
+
+/**
+ * Remove the current user as a follower of specified artist.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_id Spotify artist ID
+ */
+export const unfollowArtist = async (
+	client: ISpotifyClient,
+	artist_id: string,
+) => {
+	await unfollowArtists(client, [artist_id]);
 };
 
 /**
  * Remove the current user as a follower of one or more Spotify users.
+ *
+ * @param client SpotifyClient instance
+ * @param user_ids List of Spotify user IDs. Maximum 50
  */
 export const unfollowUsers = async (
 	client: ISpotifyClient,
-	/**
-	 * List of Spotify user IDs. Maximum 50
-	 */
 	user_ids: string[],
 ) => {
 	await client.fetch("/me/following", "void", {
@@ -210,13 +289,26 @@ export const unfollowUsers = async (
 };
 
 /**
+ * Remove the current user as a follower of specified Spotify user.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_id Spotify user ID
+ */
+export const unfollowUser = async (
+	client: ISpotifyClient,
+	user_id: string,
+) => {
+	await unfollowUsers(client, [user_id]);
+};
+
+/**
  * Check to see if the current user is following one or more artists.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_ids List of Spotify artist IDs. Maximum 50
  */
 export const checkIfUserFollowsArtists = async (
 	client: ISpotifyClient,
-	/**
-	 * List of Spotify artist IDs. Maximum 50
-	 */
 	artist_ids: string[],
 ) => {
 	return await client.fetch<boolean[]>("/me/following/contains", "json", {
@@ -228,13 +320,26 @@ export const checkIfUserFollowsArtists = async (
 };
 
 /**
+ * Check to see if the current user is following artist.
+ *
+ * @param client SpotifyClient instance
+ * @param artist_id Spotify artist ID
+ */
+export const checkIfUserFollowsArtist = async (
+	client: ISpotifyClient,
+	artist_id: string,
+) => {
+	return (await checkIfUserFollowsArtists(client, [artist_id]))[0];
+};
+
+/**
  * Check to see if the current user is following one or more Spotify users.
+ *
+ * @param client SpotifyClient instance
+ * @param user_ids List of Spotify user IDs. Maximum 50
  */
 export const checkIfUserFollowsUsers = async (
 	client: ISpotifyClient,
-	/**
-	 * List of Spotify user IDs. Maximum 50
-	 */
 	user_ids: string[],
 ) => {
 	return await client.fetch<boolean[]>("/me/following/contains", "json", {
@@ -246,12 +351,29 @@ export const checkIfUserFollowsUsers = async (
 };
 
 /**
- * Check to see if one or more Spotify users are following a specified playlist.
+ * Check to see if the current user is following artist.
+ *
+ * @param client SpotifyClient instance
+ * @param user_id Spotify user ID
  */
-export const checkIfUsersFollowsPlaylist = async (
+export const checkIfUserFollowsUser = async (
 	client: ISpotifyClient,
-	playlist_id: string,
+	user_id: string,
+) => {
+	return (await checkIfUserFollowsUsers(client, [user_id]))[0];
+};
+
+/**
+ * Check to see if one or more Spotify users are following a specified playlist.
+ *
+ * @param client SpotifyClient instance
+ * @param user_ids List of Spotify user IDs. Maximum: 5 ids.
+ * @param playlist_id Spotify palylist ID
+ */
+export const checkIfUsersFollowPlaylist = async (
+	client: ISpotifyClient,
 	user_ids: string[],
+	playlist_id: string,
 ) => {
 	return await client.fetch<boolean[]>(
 		`/playlists/${playlist_id}/followers/contains`,
@@ -262,4 +384,19 @@ export const checkIfUsersFollowsPlaylist = async (
 			},
 		},
 	);
+};
+
+/**
+ * Check to see Spotify user is following a specified playlist.
+ *
+ * @param client SpotifyClient instance
+ * @param user_id Spotify user ID
+ * @param playlist_id Spotify palylist ID
+ */
+export const checkIfUserFollowsPlaylist = async (
+	client: ISpotifyClient,
+	user_id: string,
+	playlist_id: string,
+) => {
+	return (await checkIfUsersFollowPlaylist(client, [user_id], playlist_id))[0];
 };

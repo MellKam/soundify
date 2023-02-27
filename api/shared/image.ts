@@ -1,5 +1,14 @@
 export interface Image {
-	height?: number;
+	/**
+	 * The source URL of the image.
+	 */
+	height: number | null;
+	/**
+	 * The source URL of the image.
+	 */
 	url: string;
-	width?: number;
+	/**
+	 * The image width in pixels.
+	 */
+	width: number | null;
 }
