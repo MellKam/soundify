@@ -28,7 +28,7 @@ jobs:
           node-version: "18.x"
 
       - name: Install dependencies
-        run: pnpm --filter=soundify-web-api install
+        run: pnpm --filter=soundify-web-api install --frozen-lockfile
 
       - name: Build
         run: deno task build

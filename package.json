@@ -62,7 +62,7 @@
 	],
 	"devDependencies": {
 		"typescript": "4.9.5",
-		"@types/node": "18.14.1"
+		"@types/node": "18.14.2"
 	},
 	"engines": {
 		"node": ">=17.5.0"
