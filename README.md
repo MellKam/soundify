@@ -31,10 +31,10 @@
 # What makes this library special?
 
 - Multiplatform: You can use it with Node.js, Deno on the server, or with client-side JavaScript.
+- - Comprehensive Spotify Auth support: It can handle all Spotify Auth flows and automatically refreshes access tokens.
 - Modern: It leverages modern web APIs like native `fetch`, `crypto`, `URLSearchParams` and doesn't require any external dependencies.
 - Lightweight and treeshakable: It's designed to be as small as possible (exact size TBD).
 - TypeScript first: It's built with TypeScript and provides great support for it out of the box.
-- Comprehensive Spotify Auth support: It can handle all Spotify Auth flows and automatically refreshes access tokens.
 - Great docs: The library comes with extensive documentation and lots of examples to help you get started.
 
 # Installation
@@ -72,24 +72,23 @@ First of all, you should already have a Spotify app created. If not, go and crea
 Let's write "Hello world!" with soundify.
 
 ```js
-// main.js
 import { getCurrentUserProfile, SpotifyClient } from "soundify-web-api";
 
 const client = new SpotifyClient("YOUR_ACCESS_TOKEN");
 
 const user = await getCurrentUserProfile(client);
 console.log(user);
+```
 
-// If access token is valid it will output something like this
-/**
+If access token is valid it will output something like this
+```json
 {
-  id: '31xofk5q7l22rvsbff7yiechyx6i',
-  display_name: 'Soundify',
-  type: 'user',
-  uri: 'spotify:user:31xofk5q7l22rvsbff7yiechyx6i'
+  "id": "31xofk5q7l22rvsbff7yiechyx6i",
+  "display_name": "Soundify",
+  "type": "user",
+  "uri": "spotify:user:31xofk5q7l22rvsbff7yiechyx6i",
   ...
 }
-*/
 ```
 
 ## But how to get your Access Token?
@@ -131,8 +130,6 @@ client.setAuthProvider("NEW_ACCESS_TOKEN")
 
 But if you need automatic refresh, you can create an AuthProvider. 
 ```ts
-import { AuthCode, SpotifyClient } from "soundify-web-api"
-
 // For authorization code flow
 const authProvider = new AuthCode.AuthProvider({
   client_id: "SPOTIFY_CLIENT_ID",
