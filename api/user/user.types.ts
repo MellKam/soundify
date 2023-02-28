@@ -32,11 +32,11 @@ export interface UserPublic {
 	/**
 	 * The object type: "user"
 	 */
-	type: string;
+	type: "user";
 	/**
 	 * The Spotify URI for the user.
 	 */
-	uri: string;
+	uri: `spotify:user:${string}`;
 }
 
 export interface UserPrivate extends UserPublic {

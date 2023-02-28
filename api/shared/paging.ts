@@ -1,13 +1,31 @@
 import { QueryParams } from "../../utils.ts";
 
 export interface PagingObject<T> {
+	/**
+	 * A link to the Web API endpoint returning the full result of the request.
+	 */
 	href: string;
-	items: T[];
+	/**
+	 * The maximum number of items in the response.
+	 */
 	limit: number;
-	next?: string;
+	/**
+	 * URL to the next page of items.
+	 */
+	next: string | null;
+	/**
+	 * The offset of the items returned.
+	 */
 	offset: number;
-	previous?: string;
+	/**
+	 * URL to the previous page of items
+	 */
+	previous: string | null;
+	/**
+	 * The total number of items available to return.
+	 */
 	total: number;
+	items: T[];
 }
 
 export interface CursorPagingObject<T> {
@@ -15,14 +33,32 @@ export interface CursorPagingObject<T> {
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
 	href: string;
-	items: T[];
+	/**
+	 * The maximum number of items in the response.
+	 */
 	limit: number;
-	next: string;
-	cursors: { after: string; before: string };
+	/**
+	 * URL to the next page of items.
+	 */
+	next: string | null;
+	/**
+	 * The cursors used to find the next set of items.
+	 */
+	cursors: {
+		/**
+		 * The cursor to use as key to find the next page of items.
+		 */
+		after: string;
+		/**
+		 * The cursor to use as key to find the previous page of items.
+		 */
+		before: string;
+	};
 	/**
 	 * The total number of items available to return.
 	 */
 	total: number;
+	items: T[];
 }
 
 export interface PagingOptions extends QueryParams {

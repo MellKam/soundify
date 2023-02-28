@@ -1,4 +1,4 @@
-export type Markets =
+export type Market =
 	| "AD"
 	| "AE"
 	| "AG"
