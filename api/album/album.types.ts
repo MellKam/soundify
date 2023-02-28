@@ -1,5 +1,12 @@
 import { Artist, ArtistSimplified } from "../artist/index.ts";
-import { ExternalIds, ExternalUrls, Image } from "../shared/index.ts";
+import {
+	ExternalIds,
+	ExternalUrls,
+	Image,
+	PagingObject,
+	RestrictionsReason,
+} from "../shared/index.ts";
+import { Market } from "../shared/markets.ts";
 import { Track } from "../track/index.ts";
 
 export interface AlbumBase {
@@ -12,10 +19,10 @@ export interface AlbumBase {
 	 */
 	total_tracks: number;
 	/**
-	 * The markets in which the album is available: [ISO 3166-1 alpha-2](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country codes.
-	 * Note that an album is considered available in a market when at least 1 of its tracks is available in that market.
+	 * The markets in which the album is available:
+	 * ISO 3166-1 alpha-2 country codes.
 	 */
-	available_markets: string[];
+	available_markets: Market[];
 	/**
 	 * Known external URLs for this album.
 	 */
@@ -34,9 +41,10 @@ export interface AlbumBase {
 	images: Image[];
 	/**
 	 * The name of the album.
+	 *
 	 * In case of an album takedown, the value may be an empty string.
 	 */
-	name?: string;
+	name: string;
 	/**
 	 * The date the album was first released.
 	 */
@@ -51,9 +59,10 @@ export interface AlbumBase {
 	restrictions?: {
 		/**
 		 * The reason for the restriction.
+		 *
 		 * Albums may be restricted if the content is not available in a given market, to the user's subscription type, or when the user's account is set to not play explicit content.
 		 */
-		reason: "market" | "product" | "explicit";
+		reason: RestrictionsReason;
 	};
 	/**
 	 * The object type.
@@ -62,15 +71,34 @@ export interface AlbumBase {
 	/**
 	 * The Spotify URI for the album.
 	 */
-	uri: string;
-	/**
-	 * The popularity of the artist. The value will be between 0 and 100, with 100 being the most popular. The artist's popularity is calculated from the popularity of all the artist's tracks.
-	 */
-	popularity: number;
+	uri: `spotify:album:${string}`;
 	/**
 	 * Known external IDs for the track.
 	 */
 	external_ids?: ExternalIds;
+	/**
+	 * The copyright statements of the album.
+	 */
+	copyrights?: {
+		/**
+		 * The copyright text for this content.
+		 */
+		text: string;
+	}[];
+	/**
+	 * A list of the genres the album is associated with.
+	 * If not yet classified, the array is empty.
+	 */
+	genres?: string[];
+	/**
+	 * The label associated with the album.
+	 */
+	label?: string;
+	/**
+	 * The popularity of the artist.
+	 * The value will be between 0 and 100, with 100 being the most popular.
+	 */
+	popularity?: number;
 }
 
 export interface AlbumSimplified extends AlbumBase {
@@ -93,13 +121,5 @@ export interface Album extends AlbumBase {
 	/**
 	 * The tracks of the album.
 	 */
-	tracks: {
-		href: string;
-		items: Track[];
-		limit: number;
-		next: string;
-		offset: number;
-		previous: string;
-		total: number;
-	};
+	tracks: PagingObject<Track>;
 }

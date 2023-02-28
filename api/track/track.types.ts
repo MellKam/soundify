@@ -1,5 +1,5 @@
 import { AlbumSimplified } from "../album/index.ts";
-import { ArtistSimplified } from "../artist/index.ts";
+import { Artist } from "../artist/index.ts";
 import {
 	ExternalIds,
 	ExternalUrls,
@@ -15,14 +15,15 @@ export interface Track {
 	/**
 	 * The artists who performed the track.
 	 */
-	artists: ArtistSimplified[];
+	artists: Artist[];
 	/**
 	 * The markets in which the album is available:
 	 * ISO 3166-1 alpha-2 country codes.
 	 */
 	available_markets: Market[];
 	/**
-	 * The disc number (usually 1 unless the album consists of more than one disc).
+	 * The disc number
+	 * (usually 1 unless the album consists of more than one disc).
 	 */
 	disc_number: number;
 	/**
@@ -53,7 +54,7 @@ export interface Track {
 	 * If true, the track is playable in the given market.
 	 * Otherwise false.
 	 */
-	is_playable: boolean;
+	is_playable?: boolean;
 	// TODO linked_from: {};
 	/**
 	 * Included in the response when a content restriction is applied.
@@ -66,7 +67,8 @@ export interface Track {
 	 */
 	name: string;
 	/**
-	 * The popularity of the track. The value will be between 0 and 100, with 100 being the most popular.
+	 * The popularity of the track.
+	 * The value will be between 0 and 100, with 100 being the most popular.
 	 */
 	popularity: number;
 	/**

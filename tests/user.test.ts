@@ -16,7 +16,7 @@ import {
 	unfollowUser,
 } from "../api/user/index.ts";
 import { getTestEnv } from "./testEnv.ts";
-import { assert } from "https://deno.land/std@0.177.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
 
 const env = getTestEnv();
 
