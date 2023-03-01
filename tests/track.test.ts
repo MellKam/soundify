@@ -1,6 +1,6 @@
 import { getTestEnv } from "./testEnv.ts";
 import { AuthCode, SpotifyClient } from "../mod.ts";
-import { getTrack } from "../api/track/index.ts";
+import { getTrack, getTracks } from "../api/track/index.ts";
 
 const env = getTestEnv();
 
@@ -17,4 +17,19 @@ Deno.test("Get track by id", async () => {
 	const track = await getTrack(client, trackID);
 
 	console.log(track.name);
+});
+
+Deno.test("Get tracks by ids", async () => {
+	const trackIDs = [
+		"3bnVBN67NBEzedqQuWrpP4",
+		"3dJj6o9o1fRgrojWjailuz",
+		"7CAbF0By0Fpnbiu6Xn5ZF7",
+	];
+	const tracks = await getTracks(client, trackIDs);
+
+	for (const track of tracks) {
+		console.log(
+			`${track.artists.map((a) => a.name).join(", ")} - ${track.name}`,
+		);
+	}
 });
