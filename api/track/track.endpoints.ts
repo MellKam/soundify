@@ -1,5 +1,6 @@
 import { ISpotifyClient } from "../../client.ts";
-import { Market } from "../shared/index.ts";
+import { Market, PagingOptions } from "../shared/index.ts";
+import { PagingObject } from "../shared/paging.ts";
 import { Track } from "./index.ts";
 
 /**
@@ -38,4 +39,27 @@ export const getTracks = async (
 			market,
 		},
 	})).tracks;
+};
+
+interface GetSharedTracksOpts extends PagingOptions {
+	/**
+	 * An ISO 3166-1 alpha-2 country code.
+	 */
+	marker?: Market;
+}
+
+/**
+ * Get a list of the songs saved in the current
+ * Spotify user's 'Your Music' library.
+ *
+ * @param client SpotifyClient instance
+ * @param opts Additional option for request
+ */
+export const getSavedTracks = async (
+	client: ISpotifyClient,
+	opts: GetSharedTracksOpts,
+) => {
+	return await client.fetch<PagingObject<Track>>("/me/tracks", "json", {
+		query: opts,
+	});
 };

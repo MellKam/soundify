@@ -1,6 +1,7 @@
 import { getTestEnv } from "./testEnv.ts";
 import { AuthCode, SpotifyClient } from "../mod.ts";
-import { getTrack, getTracks } from "../api/track/index.ts";
+import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
+import { getSavedTracks, getTrack, getTracks } from "../api/track/index.ts";
 
 const env = getTestEnv();
 
@@ -32,4 +33,10 @@ Deno.test("Get tracks by ids", async () => {
 			`${track.artists.map((a) => a.name).join(", ")} - ${track.name}`,
 		);
 	}
+});
+
+Deno.test("Get saved tracks", async () => {
+	const savedTracks = await getSavedTracks(client, { limit: 5 });
+
+	assert(savedTracks.items.length === 5);
 });
