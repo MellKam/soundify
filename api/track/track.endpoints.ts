@@ -1,7 +1,7 @@
 import { ISpotifyClient } from "../../client.ts";
 import { Market, PagingOptions } from "../shared/index.ts";
 import { PagingObject } from "../shared/paging.ts";
-import { Track } from "./index.ts";
+import { AudioAnalysis, Track } from "./index.ts";
 import { AudioFeatures } from "./track.types.ts";
 
 /**
@@ -145,7 +145,7 @@ export const checkSavedTracks = async (
  * Check if track is already saved in the current Spotify user's 'Your Music' library.
  *
  * @param client SpotifyClient instance
- * @param track_ids Spotify track ID
+ * @param track_id Spotify track ID
  */
 export const checkSavedTrack = async (
 	client: ISpotifyClient,
@@ -179,11 +179,31 @@ export const getTracksAudioFeatures = async (
  * Get audio features for a track based on its Spotify ID.
  *
  * @param client SpotifyClient instance
- * @param track_ids List of the Spotify track IDs. Maximum 100 IDs
+ * @param track_id Spotify track ID
  */
 export const getTrackAudioFeatures = async (
 	client: ISpotifyClient,
 	track_id: string,
 ) => {
-	return (await getTracksAudioFeatures(client, [track_id]))[0];
+	return await client.fetch<AudioFeatures>(
+		`/audio-features/${track_id}`,
+		"json",
+	);
+};
+
+/**
+ * Get a low-level audio analysis for a track in the Spotify catalog.
+ * The audio analysis describes the track’s structure and musical content, including rhythm, pitch, and timbre.
+ *
+ * @param client SpotifyClient instance
+ * @param track_id Spotify track ID
+ */
+export const getTracksAudioAnalysis = async (
+	client: ISpotifyClient,
+	track_id: string,
+) => {
+	return await client.fetch<AudioAnalysis>(
+		`/audio-analysis/${track_id}`,
+		"json",
+	);
 };

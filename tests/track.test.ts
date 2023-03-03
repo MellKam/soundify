@@ -7,6 +7,7 @@ import {
 	getTrack,
 	getTrackAudioFeatures,
 	getTracks,
+	getTracksAudioAnalysis,
 	removeSavedTrack,
 	saveTrack,
 } from "../api/index.ts";
@@ -69,4 +70,11 @@ Deno.test("Get track audio features", async () => {
 	const audioFeatures = await getTrackAudioFeatures(client, trackID);
 
 	assert(audioFeatures.id === trackID);
+});
+
+Deno.test("Get track audio analysis", async () => {
+	const trackID = "3bnVBN67NBEzedqQuWrpP4";
+	const audioAnalysis = await getTracksAudioAnalysis(client, trackID);
+
+	assert(typeof audioAnalysis === "object");
 });
