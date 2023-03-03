@@ -2,6 +2,7 @@ import { ISpotifyClient } from "../../client.ts";
 import { Market, PagingOptions } from "../shared/index.ts";
 import { PagingObject } from "../shared/paging.ts";
 import { Track } from "./index.ts";
+import { AudioFeatures } from "./track.types.ts";
 
 /**
  * Get Spotify catalog information for a single track identified
@@ -144,11 +145,45 @@ export const checkSavedTracks = async (
  * Check if track is already saved in the current Spotify user's 'Your Music' library.
  *
  * @param client SpotifyClient instance
- * @param track_ids potify track ID
+ * @param track_ids Spotify track ID
  */
 export const checkSavedTrack = async (
 	client: ISpotifyClient,
 	track_id: string,
 ) => {
 	return (await checkSavedTracks(client, [track_id]))[0];
+};
+
+/**
+ * Get audio features for multiple tracks based on their Spotify IDs.
+ *
+ * @param client SpotifyClient instance
+ * @param track_ids List of the Spotify track IDs. Maximum 100 IDs
+ */
+export const getTracksAudioFeatures = async (
+	client: ISpotifyClient,
+	track_ids: string[],
+) => {
+	return (await client.fetch<{ audio_features: AudioFeatures[] }>(
+		"/audio-features",
+		"json",
+		{
+			query: {
+				ids: track_ids,
+			},
+		},
+	)).audio_features;
+};
+
+/**
+ * Get audio features for a track based on its Spotify ID.
+ *
+ * @param client SpotifyClient instance
+ * @param track_ids List of the Spotify track IDs. Maximum 100 IDs
+ */
+export const getTrackAudioFeatures = async (
+	client: ISpotifyClient,
+	track_id: string,
+) => {
+	return (await getTracksAudioFeatures(client, [track_id]))[0];
 };

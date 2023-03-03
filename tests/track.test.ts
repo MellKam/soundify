@@ -5,10 +5,11 @@ import {
 	checkSavedTrack,
 	getSavedTracks,
 	getTrack,
+	getTrackAudioFeatures,
 	getTracks,
 	removeSavedTrack,
 	saveTrack,
-} from "../api/track/index.ts";
+} from "../api/index.ts";
 
 const env = getTestEnv();
 
@@ -61,4 +62,11 @@ Deno.test("Add and remove track from 'Your Music' library", async () => {
 	isSaved = await checkSavedTrack(client, trackID);
 	assert(isSaved === false);
 	console.log("after remove isSaved:", isSaved);
+});
+
+Deno.test("Get track audio features", async () => {
+	const trackID = "3bnVBN67NBEzedqQuWrpP4";
+	const audioFeatures = await getTrackAudioFeatures(client, trackID);
+
+	assert(audioFeatures.id === trackID);
 });
