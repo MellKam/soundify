@@ -84,7 +84,6 @@ export const getGrantData = async (opts: GetGrantDataOpts) => {
 		{
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-				Accept: "application/json",
 			},
 			method: "POST",
 			body: searchParamsFromObj<ApiTokenReqParams>({
@@ -139,6 +138,29 @@ export const generateCodes = async () => {
 	return { code_verifier, code_challenge };
 };
 
+export const refresh = async (opts: {
+	client_id: string;
+	refresh_token: string;
+}) => {
+	const res = await fetch(API_TOKEN_URL, {
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+		},
+		method: "POST",
+		body: searchParamsFromObj<ApiTokenReqParams>({
+			grant_type: "refresh_token",
+			client_id: opts.client_id,
+			refresh_token: opts.refresh_token,
+		}),
+	});
+
+	if (!res.ok) {
+		throw new Error(await res.text());
+	}
+
+	return (await res.json()) as KeypairResponse;
+};
+
 export class AuthProvider implements IAuthProvider {
 	constructor(
 		private opts: {
@@ -152,38 +174,22 @@ export class AuthProvider implements IAuthProvider {
 
 	async getAccessToken(forceRefresh = false) {
 		if (forceRefresh || !this.opts.access_token) {
-			await this.refresh();
+			const { access_token, refresh_token } = await refresh({
+				client_id: this.opts.client_id,
+				refresh_token: this.opts.refresh_token,
+			});
+
+			this.opts.refresh_token = refresh_token;
+			this.opts.access_token = access_token;
+
+			if (this.opts.saveAccessToken) {
+				this.opts.saveAccessToken(access_token);
+			}
+			if (this.opts.saveRefreshToken) {
+				this.opts.saveRefreshToken(refresh_token);
+			}
 		}
 
 		return this.opts.access_token!;
-	}
-
-	async refresh() {
-		const res = await fetch(API_TOKEN_URL, {
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-				Accept: "application/json",
-			},
-			method: "POST",
-			body: searchParamsFromObj<ApiTokenReqParams>({
-				grant_type: "refresh_token",
-				client_id: this.opts.client_id,
-				refresh_token: this.opts.refresh_token,
-			}),
-		});
-
-		if (!res.ok) {
-			throw new Error(await res.text());
-		}
-
-		const data = (await res.json()) as KeypairResponse;
-
-		this.opts.refresh_token = data.refresh_token;
-		this.opts.access_token = data.access_token;
-		if (this.opts.saveAccessToken) this.opts.saveAccessToken(data.access_token);
-		if (this.opts.saveRefreshToken) {
-			this.opts.saveRefreshToken(data.refresh_token);
-		}
-		return data;
 	}
 }

@@ -2,11 +2,11 @@ import { searchParamsFromObj } from "../utils.ts";
 import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./consts.ts";
 import { getBasicAuthHeader } from "./helpers.ts";
 import {
-	AccessResponse,
 	ApiTokenReqParams,
 	AuthorizeReqParams,
 	IAuthProvider,
 	KeypairResponse,
+	ScopedAccessResponse,
 } from "./types.ts";
 
 export type GetAuthURLOpts = {
@@ -111,55 +111,50 @@ export const getGrantData = async (
 	return (await res.json()) as KeypairResponse;
 };
 
-export class AuthProvider implements IAuthProvider {
-	readonly #BASIC_AUTH_HEADER: string;
-	#access_token: string | null = null;
+export const refresh = async (opts: {
+	client_id: string;
+	client_secret: string;
+	refresh_token: string;
+}) => {
+	const res = await fetch(API_TOKEN_URL, {
+		method: "POST",
+		headers: {
+			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		body: searchParamsFromObj<ApiTokenReqParams>({
+			refresh_token: opts.refresh_token,
+			grant_type: "refresh_token",
+		}),
+	});
 
+	if (!res.ok) {
+		throw new Error(await res.text());
+	}
+
+	return (await res.json()) as ScopedAccessResponse;
+};
+
+export class AuthProvider implements IAuthProvider {
 	constructor(
-		private readonly config: {
+		private readonly opts: {
 			readonly client_id: string;
 			readonly client_secret: string;
 			readonly refresh_token: string;
 			readonly access_token?: string;
 		},
-	) {
-		this.#BASIC_AUTH_HEADER = getBasicAuthHeader(
-			this.config.client_id,
-			this.config.client_secret,
-		);
-		if (this.config.access_token) {
-			this.#access_token = this.config.access_token;
-		}
-	}
+	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || this.#access_token === null) {
-			const data = await this.refresh();
+		if (forceRefresh || !this.opts.access_token) {
+			const data = await refresh({
+				client_id: this.opts.client_id,
+				client_secret: this.opts.client_secret,
+				refresh_token: this.opts.refresh_token,
+			});
 			return data.access_token;
 		}
 
-		return this.#access_token;
-	}
-
-	async refresh() {
-		const res = await fetch(API_TOKEN_URL, {
-			method: "POST",
-			headers: {
-				"Authorization": this.#BASIC_AUTH_HEADER,
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
-			body: searchParamsFromObj<ApiTokenReqParams>({
-				refresh_token: this.config.refresh_token,
-				grant_type: "refresh_token",
-			}),
-		});
-
-		if (!res.ok) {
-			throw new Error(await res.text());
-		}
-
-		const data = (await res.json()) as AccessResponse;
-		this.#access_token = data.access_token;
-		return data;
+		return this.opts.access_token;
 	}
 }

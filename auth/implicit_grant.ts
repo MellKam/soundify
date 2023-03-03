@@ -48,6 +48,7 @@ export const getAuthURL = ({ scopes, ...opts }: GetAuthURLOpts) => {
 	return url;
 };
 
+// TODO rewrite in future
 export const getGrantData = (urlHash: string, state?: string) => {
 	const searchParams = new URLSearchParams(urlHash.substring(1));
 

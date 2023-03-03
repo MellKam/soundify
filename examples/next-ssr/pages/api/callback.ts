@@ -2,7 +2,7 @@ import { getCookie, setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { AuthCode } from "soundify-web-api";
 import {
-	config,
+	env,
 	SPOTIFY_ACCESS_TOKEN,
 	SPOTIFY_REFRESH_TOKEN,
 	SPOTIFY_STATE,
@@ -34,7 +34,7 @@ export default async function (
 			.getGrantData({
 				code,
 				state,
-				...config,
+				...env,
 			});
 
 		setCookie(SPOTIFY_REFRESH_TOKEN, refresh_token, {

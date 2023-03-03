@@ -70,5 +70,4 @@ export interface IAuthProvider {
 		 */
 		forceRefresh?: boolean,
 	) => Promise<string>;
-	refresh: () => Promise<AccessResponse>;
 }
