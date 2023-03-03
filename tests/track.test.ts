@@ -3,6 +3,7 @@ import { AuthCode, SpotifyClient } from "../mod.ts";
 import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
 import {
 	checkSavedTrack,
+	getRecommendations,
 	getSavedTracks,
 	getTrack,
 	getTrackAudioFeatures,
@@ -77,4 +78,14 @@ Deno.test("Get track audio analysis", async () => {
 	const audioAnalysis = await getTracksAudioAnalysis(client, trackID);
 
 	assert(typeof audioAnalysis === "object");
+});
+
+Deno.test("Get recommendations", async () => {
+	const recommendations = await getRecommendations(client, {
+		seed_artists: ["4Z8W4fKeB5YxbusRsdQVPb"],
+		seed_genres: ["rock"],
+		seed_tracks: ["70LcF31zb1H0PyJoS1Sx1r"],
+	});
+
+	assert(typeof recommendations === "object");
 });

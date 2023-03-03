@@ -1,4 +1,5 @@
-import { ExternalUrls, Followers, Image } from "../shared/index.ts";
+import { Genre } from "../genre/index.ts";
+import { ExternalUrls, Followers, Image } from "../shared.ts";
 
 export interface ArtistSimplified {
 	/**
@@ -36,7 +37,7 @@ export interface Artist extends ArtistSimplified {
 	 * A list of the genres the artist is associated with.
 	 * If not yet classified, the array is empty.
 	 */
-	genres: string[];
+	genres: Genre[];
 	/**
 	 * Images of the artist in various sizes, widest first.
 	 */

@@ -1,8 +1,13 @@
 import { ISpotifyClient } from "../../client.ts";
-import { Market, PagingOptions } from "../shared/index.ts";
-import { PagingObject } from "../shared/paging.ts";
-import { AudioAnalysis, Track } from "./index.ts";
-import { AudioFeatures } from "./track.types.ts";
+import { Market } from "../market/index.ts";
+import { PagingObject, PagingOptions } from "../shared.ts";
+import {
+	AudioAnalysis,
+	AudioFeatures,
+	GetRecommendationsOpts,
+	Recomendations,
+	Track,
+} from "./track.types.ts";
 
 /**
  * Get Spotify catalog information for a single track identified
@@ -206,4 +211,19 @@ export const getTracksAudioAnalysis = async (
 		`/audio-analysis/${track_id}`,
 		"json",
 	);
+};
+
+/**
+ * Recommendations are generated based on the available information for a given seed entity and matched against similar artists and tracks. If there is sufficient information about the provided seeds, a list of tracks will be returned together with pool size details.
+
+ * @param client SpotifyClient instance
+ * @param opts Options and seeds for recomendations
+ */
+export const getRecommendations = async (
+	client: ISpotifyClient,
+	opts: GetRecommendationsOpts,
+) => {
+	return await client.fetch<Recomendations>("/recommendations", "json", {
+		query: opts,
+	});
 };

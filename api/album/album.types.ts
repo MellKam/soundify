@@ -1,17 +1,20 @@
-import { Artist, ArtistSimplified } from "../artist/index.ts";
 import {
 	ExternalIds,
 	ExternalUrls,
 	Image,
 	PagingObject,
 	RestrictionsReason,
-} from "../shared/index.ts";
-import { Market } from "../shared/markets.ts";
+} from "../shared.ts";
+import { Artist, ArtistSimplified } from "../artist/index.ts";
+import { Market } from "../market/index.ts";
 import { Track } from "../track/index.ts";
+import { Genre } from "../genre/index.ts";
 
 export interface AlbumBase {
 	/**
 	 * The type of the album.
+	 *
+	 * TODO check if it is caps or not
 	 */
 	album_type: "album" | "single" | "compilation";
 	/**
@@ -95,7 +98,7 @@ export interface AlbumBase {
 	 * A list of the genres the album is associated with.
 	 * If not yet classified, the array is empty.
 	 */
-	genres?: string[];
+	genres?: Genre[];
 	/**
 	 * The label associated with the album.
 	 */
@@ -110,7 +113,7 @@ export interface AlbumBase {
 export interface AlbumSimplified extends AlbumBase {
 	/**
 	 * **The field is present when getting an artist's albums.**
-	 * Compare to album_type this field represents relationship between the artist and the album.
+	 * Compare to `album_type` this field represents relationship between the artist and the album.
 	 */
 	album_group?: "album" | "single" | "compilation" | "appears_on";
 	/**

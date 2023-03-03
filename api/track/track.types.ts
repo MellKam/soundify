@@ -1,11 +1,9 @@
+import { QueryParams } from "../../utils.ts";
 import { AlbumSimplified } from "../album/index.ts";
 import { Artist } from "../artist/index.ts";
-import {
-	ExternalIds,
-	ExternalUrls,
-	Market,
-	RestrictionsReason,
-} from "../shared/index.ts";
+import { Genre } from "../genre/index.ts";
+import { Market } from "../market/index.ts";
+import { ExternalIds, ExternalUrls, RestrictionsReason } from "../shared.ts";
 
 export interface Track {
 	/**
@@ -451,4 +449,205 @@ export interface AudioAnalysis {
 	 * A tatum represents the lowest regular pulse train that a listener intuitively infers from the timing of perceived musical events (segments).
 	 */
 	tatums: AudioAnalysisGeneric[];
+}
+
+export interface GetRecommendationsOpts extends QueryParams {
+	/**
+	 * List of Spotify IDs for seed artists. Maximum 5 IDs
+	 */
+	seed_artists: string[];
+	/**
+	 * List of any genres in the set of available genre seeds. Maximum 5 genres
+	 */
+	seed_genres: Genre[];
+	/**
+	 * List of Spotify IDs for a seed track. Maximum 5 IDs
+	 */
+	seed_tracks: string[];
+	/**
+	 * The target size of the list of recommended tracks.
+	 * Minimum: 1. Maximum: 100. Default: 20.
+	 */
+	limit?: number;
+	/**
+	 * An ISO 3166-1 alpha-2 country code
+	 */
+	market?: Market;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	max_acousticness?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	max_danceability?: number;
+	max_duration_ms?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	max_energy?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	max_instrumentalness?: number;
+	/**
+	 * Range: `>= 0 <= 11`
+	 */
+	max_key?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	max_liveness?: number;
+	max_loudness?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	max_mode?: number;
+	/**
+	 * Range `>= 0 <= 100`
+	 */
+	max_popularity?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	max_speechiness?: number;
+	max_tempo?: number;
+	max_time_signature?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	max_valence?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	min_acousticness?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	min_danceability?: number;
+	min_duration_ms?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	min_energy?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	min_instrumentalness?: number;
+	/**
+	 * Range: `>= 0 <= 11`
+	 */
+	min_key?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	min_liveness?: number;
+	min_loudness?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	min_mode?: number;
+	/**
+	 * Range `>= 0 <= 100`
+	 */
+	min_popularity?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	min_speechiness?: number;
+	min_tempo?: number;
+	/**
+	 * Range `<= 11`
+	 */
+	min_time_signature?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	min_valence?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	target_acousticness?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	target_danceability?: number;
+	/**
+	 * Target duration of the track (ms)
+	 */
+	target_duration_ms?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	target_energy?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	target_instrumentalness?: number;
+	/**
+	 * Range: `>= 0 <= 11`
+	 */
+	target_key?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	target_liveness?: number;
+	target_loudness?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	target_mode?: number;
+	/**
+	 * Range `>= 0 <= 100`
+	 */
+	target_popularity?: number;
+	target_speechiness?: number;
+	/**
+	 * Target tempo (BPM)
+	 */
+	target_tempo?: number;
+	target_time_signature?: number;
+	/**
+	 * Range: `>= 0 <= 1`
+	 */
+	target_valence?: number;
+}
+
+export interface Recomendations {
+	/**
+	 * An array of recommendation seed objects.
+	 */
+	seeds: {
+		/**
+		 * The number of tracks available after min_* and max_* filters have been applied.
+		 */
+		afterFilteringSize: number;
+		/**
+		 * The number of tracks available after relinking for regional availability.
+		 */
+		afterRelinkingSize: number;
+		/**
+		 * A link to the full track or artist data for this seed.
+		 *
+		 * For tracks this will be a link to a Track Object.  \
+		 * For artists a link to an Artist Object. \
+		 * For genre seeds, this value will be null.
+		 */
+		href: string | null;
+		/**
+		 * The id used to select this seed. This will be the same as the string used in the `seed_artists`, `seed_tracks` or `seed_genres` parameter.
+		 */
+		id: string;
+		/**
+		 * The number of recommended tracks available for this seed.
+		 */
+		initialPoolSize: number;
+		/**
+		 * The entity type of this seed.
+		 *
+		 * TODO check if it is caps or not
+		 */
+		type: "artist" | "track" | "genre";
+	}[];
+	tracks: Track[]; // TODO Simplified track
 }

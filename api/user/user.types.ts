@@ -1,8 +1,4 @@
-import {
-	type ExternalUrls,
-	type Followers,
-	type Image,
-} from "../shared/index.ts";
+import { type ExternalUrls, type Followers, type Image } from "../shared.ts";
 
 export interface UserPublic {
 	/**

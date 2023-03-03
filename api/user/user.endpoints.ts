@@ -1,11 +1,7 @@
 import { Artist } from "../artist/index.ts";
 import { Track } from "../track/track.types.ts";
 import { UserPrivate, UserPublic } from "./user.types.ts";
-import {
-	CursorPagingObject,
-	PagingObject,
-	PagingOptions,
-} from "../shared/index.ts";
+import { CursorPagingObject, PagingObject, PagingOptions } from "../shared.ts";
 import { ISpotifyClient } from "../../client.ts";
 import { QueryParams } from "../../utils.ts";
 

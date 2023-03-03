@@ -1,5 +1,5 @@
 import { UserPublic } from "../index.ts";
-import { ExternalUrls, Followers, Image } from "../shared/index.ts";
+import { ExternalUrls, Followers, Image } from "../shared.ts";
 import { Track } from "../track/index.ts";
 
 export interface Playlist {
