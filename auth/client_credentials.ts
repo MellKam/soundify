@@ -33,15 +33,18 @@ export class AuthProvider implements IAuthProvider {
 
 	constructor(
 		private readonly opts: {
-			client_id: string;
-			client_secret: string;
+			readonly client_id: string;
+			readonly client_secret: string;
+			readonly onRefresh?: (data: AccessResponse) => void | Promise<void>;
 		},
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
 		if (forceRefresh || this.#access_token === null) {
 			const data = await getAccessToken(this.opts);
+
 			this.#access_token = data.access_token;
+			if (this.opts.onRefresh) await this.opts.onRefresh(data);
 		}
 
 		return this.#access_token;

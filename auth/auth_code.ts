@@ -141,7 +141,8 @@ export class AuthProvider implements IAuthProvider {
 			readonly client_id: string;
 			readonly client_secret: string;
 			readonly refresh_token: string;
-			readonly access_token?: string;
+			access_token?: string;
+			readonly onRefresh?: (data: ScopedAccessResponse) => void | Promise<void>;
 		},
 	) {}
 
@@ -152,7 +153,9 @@ export class AuthProvider implements IAuthProvider {
 				client_secret: this.opts.client_secret,
 				refresh_token: this.opts.refresh_token,
 			});
-			return data.access_token;
+
+			this.opts.access_token = data.access_token;
+			if (this.opts.onRefresh) await this.opts.onRefresh(data);
 		}
 
 		return this.opts.access_token;

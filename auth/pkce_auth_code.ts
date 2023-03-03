@@ -167,27 +167,21 @@ export class AuthProvider implements IAuthProvider {
 			readonly client_id: string;
 			access_token?: string;
 			refresh_token: string;
-			readonly saveAccessToken?: (access_token: string) => void;
-			readonly saveRefreshToken?: (refresh_token: string) => void;
+			readonly onRefresh?: (data: KeypairResponse) => void | Promise<void>;
 		},
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
 		if (forceRefresh || !this.opts.access_token) {
-			const { access_token, refresh_token } = await refresh({
+			const data = await refresh({
 				client_id: this.opts.client_id,
 				refresh_token: this.opts.refresh_token,
 			});
 
-			this.opts.refresh_token = refresh_token;
-			this.opts.access_token = access_token;
+			this.opts.refresh_token = data.refresh_token;
+			this.opts.access_token = data.access_token;
 
-			if (this.opts.saveAccessToken) {
-				this.opts.saveAccessToken(access_token);
-			}
-			if (this.opts.saveRefreshToken) {
-				this.opts.saveRefreshToken(refresh_token);
-			}
+			if (this.opts.onRefresh) await this.opts.onRefresh(data);
 		}
 
 		return this.opts.access_token!;
