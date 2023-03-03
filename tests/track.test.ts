@@ -1,7 +1,14 @@
 import { getTestEnv } from "./testEnv.ts";
 import { AuthCode, SpotifyClient } from "../mod.ts";
 import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
-import { getSavedTracks, getTrack, getTracks } from "../api/track/index.ts";
+import {
+	checkSavedTrack,
+	getSavedTracks,
+	getTrack,
+	getTracks,
+	removeSavedTrack,
+	saveTrack,
+} from "../api/track/index.ts";
 
 const env = getTestEnv();
 
@@ -39,4 +46,19 @@ Deno.test("Get saved tracks", async () => {
 	const savedTracks = await getSavedTracks(client, { limit: 5 });
 
 	assert(savedTracks.items.length === 5);
+});
+
+Deno.test("Add and remove track from 'Your Music' library", async () => {
+	const trackID = "3bnVBN67NBEzedqQuWrpP4";
+	await saveTrack(client, trackID);
+
+	let isSaved = await checkSavedTrack(client, trackID);
+	assert(isSaved === true);
+	console.log("after save isSaved:", isSaved);
+
+	await removeSavedTrack(client, trackID);
+
+	isSaved = await checkSavedTrack(client, trackID);
+	assert(isSaved === false);
+	console.log("after remove isSaved:", isSaved);
 });
