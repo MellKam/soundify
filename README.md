@@ -15,6 +15,9 @@
     <a href="https://github.com/MellKam/soundify/commits/main">
       <img src="https://img.shields.io/github/last-commit/MellKam/soundify?color=1DB954" alt="Last commit" />
     </a>
+    <a href="https://github.com/MellKam/soundify/actions">
+      <img src="https://img.shields.io/github/actions/workflow/status/MellKam/soundify/ci.yaml?color=1DB954&label=CI&logo=github" alt="GitHub CI Status" />
+    </a>
   </p>
 </div>
 
