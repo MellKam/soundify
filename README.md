@@ -79,7 +79,7 @@ console.log(user);
 ```
 
 If your Access Token is valid it will output something like this
-```json
+```js
 {
   "id": "31xofk5q7l22rvsbff7yiechyx6i",
   "display_name": "Soundify",
