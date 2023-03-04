@@ -110,12 +110,14 @@ export interface AlbumBase {
 	popularity?: number;
 }
 
+export type AlbumGroup = "album" | "single" | "compilation" | "appears_on";
+
 export interface AlbumSimplified extends AlbumBase {
 	/**
 	 * **The field is present when getting an artist's albums.**
 	 * Compare to `album_type` this field represents relationship between the artist and the album.
 	 */
-	album_group?: "album" | "single" | "compilation" | "appears_on";
+	album_group?: AlbumGroup;
 	/**
 	 * The artists of the album.
 	 */

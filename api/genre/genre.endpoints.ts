@@ -6,7 +6,7 @@ import { Genre } from "./genre.types.ts";
  *
  * @param client SpotifyClient instance
  */
-export const getAvailableGenreSeeds = async (client: ISpotifyClient) => {
+export const getAvailableGenres = async (client: ISpotifyClient) => {
 	return (await client.fetch<{ genres: Genre[] }>(
 		"/recommendations/available-genre-seeds",
 		"json",

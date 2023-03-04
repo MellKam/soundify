@@ -7,5 +7,6 @@ import { Market } from "./market.types.ts";
  * @param client SpotifyClient instance
  */
 export const getAvailableMarkets = async (client: ISpotifyClient) => {
-	return await client.fetch<{ markets: Market[] }>("/markets", "json");
+	return (await client.fetch<{ markets: Market[] }>("/markets", "json"))
+		.markets;
 };
