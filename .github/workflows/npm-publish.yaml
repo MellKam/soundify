@@ -5,7 +5,7 @@ on:
       - "v**"
 
 jobs:
-  build:
+  publish:
     if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
