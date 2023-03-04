@@ -43,15 +43,15 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
 
-    build:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-        - name: Setup deno
-          uses: denoland/setup-deno@v1
-          with:
-            deno-version: v1.x
+      - name: Setup deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
 
-        - name: Test
-          run: deno task build
+      - name: Test
+        run: deno task build
