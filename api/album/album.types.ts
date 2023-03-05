@@ -10,7 +10,7 @@ import { Market } from "../market/index.ts";
 import { Track } from "../track/index.ts";
 import { Genre } from "../genre/index.ts";
 
-export interface AlbumBase {
+interface AlbumBase {
 	/**
 	 * The type of the album.
 	 *
