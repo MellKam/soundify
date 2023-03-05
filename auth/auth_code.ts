@@ -1,5 +1,10 @@
 import { searchParamsFromObj } from "../utils.ts";
-import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./consts.ts";
+import {
+	API_TOKEN_URL,
+	AUTHORIZE_URL,
+	AuthScope,
+	URL_ENCODED,
+} from "./consts.ts";
 import { getBasicAuthHeader } from "./helpers.ts";
 import {
 	ApiTokenReqParams,
@@ -95,7 +100,7 @@ export const getGrantData = async (
 		method: "POST",
 		headers: {
 			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
-			"Content-Type": "application/x-www-form-urlencoded",
+			"Content-Type": URL_ENCODED,
 		},
 		body: searchParamsFromObj<ApiTokenReqParams>({
 			code: opts.code,
@@ -120,7 +125,7 @@ export const refresh = async (opts: {
 		method: "POST",
 		headers: {
 			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
-			"Content-Type": "application/x-www-form-urlencoded",
+			"Content-Type": URL_ENCODED,
 		},
 		body: searchParamsFromObj<ApiTokenReqParams>({
 			refresh_token: opts.refresh_token,

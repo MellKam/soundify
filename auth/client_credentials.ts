@@ -1,4 +1,4 @@
-import { API_TOKEN_URL } from "./consts.ts";
+import { API_TOKEN_URL, URL_ENCODED } from "./consts.ts";
 import { getBasicAuthHeader } from "./helpers.ts";
 import { AccessResponse, IAuthProvider } from "./types.ts";
 
@@ -14,7 +14,7 @@ export const getAccessToken = async (opts: {
 		method: "POST",
 		headers: {
 			"Authorization": basicAuthHeader,
-			"Content-Type": "application/x-www-form-urlencoded",
+			"Content-Type": URL_ENCODED,
 		},
 		body: new URLSearchParams({
 			grant_type: "client_credentials",

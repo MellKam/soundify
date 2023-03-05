@@ -1,6 +1,6 @@
 import * as esbuild from "https://deno.land/x/esbuild@v0.17.10/mod.js";
 import { Plugin } from "https://deno.land/x/esbuild@v0.17.10/mod.d.ts";
-import { resolve } from "https://deno.land/std@0.177.0/path/mod.ts";
+import { resolve } from "https://deno.land/std@0.178.0/path/mod.ts";
 
 const plugin: Plugin = {
 	name: "web",

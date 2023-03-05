@@ -1,5 +1,10 @@
 import { searchParamsFromObj } from "../utils.ts";
-import { API_TOKEN_URL, AUTHORIZE_URL, AuthScope } from "./consts.ts";
+import {
+	API_TOKEN_URL,
+	AUTHORIZE_URL,
+	AuthScope,
+	URL_ENCODED,
+} from "./consts.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
@@ -83,7 +88,7 @@ export const getGrantData = async (opts: GetGrantDataOpts) => {
 		API_TOKEN_URL,
 		{
 			headers: {
-				"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+				"Content-Type": URL_ENCODED,
 			},
 			method: "POST",
 			body: searchParamsFromObj<ApiTokenReqParams>({
@@ -144,7 +149,7 @@ export const refresh = async (opts: {
 }) => {
 	const res = await fetch(API_TOKEN_URL, {
 		headers: {
-			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+			"Content-Type": URL_ENCODED,
 		},
 		method: "POST",
 		body: searchParamsFromObj<ApiTokenReqParams>({
