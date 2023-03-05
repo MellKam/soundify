@@ -27,3 +27,7 @@ export const wait = (seconds: number) => {
 		setTimeout(res, seconds);
 	});
 };
+
+export type NonNullableRecord<T> = {
+	[P in keyof T]: NonNullable<T[P]>;
+};
