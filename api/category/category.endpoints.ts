@@ -68,6 +68,10 @@ interface GetBrowseCategoryOpts extends QueryParams {
 /**
  * Get a single category used to tag items in Spotify
  * (on, for example, the Spotify player’s “Browse” tab).
+ *
+ * @param client SpotifyClient instance
+ * @param category_id The Spotify category ID for the category
+ * @param opts Additional option for request
  */
 export const getBrowseCategory = async (
 	client: ISpotifyClient,
