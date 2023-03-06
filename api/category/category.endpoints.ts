@@ -55,7 +55,7 @@ export const getBrowseCategories = async (
 interface GetBrowseCategoryOpts extends QueryParams {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
-	 * If a country code is specified, only content that is available in that market will be returned.
+	 * Provide this parameter to ensure that the category exists for a particular country.
 	 */
 	country?: Market;
 	/**
