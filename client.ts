@@ -32,7 +32,7 @@ type Retry = {
 	 */
 	times: number;
 	/**
-	 * How many times do you want to wait until the next retry
+	 * How long in miliseconds do you want to wait until the next retry
 	 *
 	 * @default 0
 	 */
@@ -69,6 +69,7 @@ interface SpotifyRegularError {
 export class SpotifyError extends Error {
 	constructor(message: string, public readonly status: number) {
 		super(message);
+		this.name = "SpotifyError" + status;
 	}
 }
 

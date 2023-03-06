@@ -1,6 +1,12 @@
 export type QueryParam = string | number | boolean | undefined | string[];
 export type QueryParams = Record<string, QueryParam>;
 
+/**
+ * Creates URLSearchParams from object
+ *
+ * You can use `new URLSearchParams(obj)`, when your object
+ * `extends Record<string, string>`. Otherwise use this function.
+ */
 export const searchParamsFromObj = <
 	T extends Record<string, QueryParam>,
 >(
@@ -22,9 +28,13 @@ export const searchParamsFromObj = <
 	return searchParams;
 };
 
-export const wait = (seconds: number) => {
+/**
+ * Returns promise that will be resolved after specified delay
+ * @param delay milliseconds
+ */
+export const wait = (delay: number) => {
 	return new Promise<void>((res) => {
-		setTimeout(res, seconds);
+		setTimeout(res, delay);
 	});
 };
 

@@ -115,9 +115,7 @@ export const followPlaylist = async (
 		"void",
 		{
 			method: "PUT",
-			body: typeof is_public !== "undefined"
-				? { public: is_public }
-				: undefined,
+			body: { public: is_public },
 		},
 	);
 };

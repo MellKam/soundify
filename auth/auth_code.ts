@@ -152,7 +152,7 @@ export class AuthProvider implements IAuthProvider {
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || !this.opts.access_token) {
+		if (forceRefresh || this.opts.access_token === undefined) {
 			const data = await refresh({
 				client_id: this.opts.client_id,
 				client_secret: this.opts.client_secret,
