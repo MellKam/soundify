@@ -32,7 +32,7 @@ type Retry = {
 	 */
 	times: number;
 	/**
-	 * How many times do you want to wait until the next retry
+	 * How long in miliseconds do you want to wait until the next retry
 	 *
 	 * @default 0
 	 */
@@ -69,6 +69,7 @@ interface SpotifyRegularError {
 export class SpotifyError extends Error {
 	constructor(message: string, public readonly status: number) {
 		super(message);
+		this.name = "SpotifyError" + status;
 	}
 }
 
@@ -135,78 +136,70 @@ export class SpotifyClient implements ISpotifyClient {
 		if (query) {
 			url.search = searchParamsFromObj(query).toString();
 		}
-
 		const serializedBody = body ? JSON.stringify(body) : undefined;
 
-		// If the token has been refreshed, this value will be true
 		let isTriedRefresh = false;
 		let retry5xx = this.#retry5xx.times;
 		let retry429 = this.#retry429.times;
 
-		let res: Response;
 		let accessToken = typeof this.#authProvider === "string"
 			? this.#authProvider
 			: await this.#authProvider.getAccessToken();
 
-		while (true) {
-			try {
-				res = await fetch(url, {
-					method,
-					headers: {
-						"Content-Type": "application/json",
-						"Accept": "application/json",
-						"Authorization": `Bearer ${accessToken}`,
-					},
-					body: serializedBody,
-				});
+		const call = async (): Promise<Response> => {
+			const res = await fetch(url, {
+				method,
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json",
+					"Authorization": `Bearer ${accessToken}`,
+				},
+				body: serializedBody,
+			});
 
-				if (res.ok) break;
+			if (res.ok) return res;
 
-				let error: SpotifyRegularError;
-
-				try {
-					error = await res.json() as SpotifyRegularError;
-				} catch (_) {
-					throw new SpotifyError(
-						"Unable to read response body (not a json value)",
-						res.status,
-					);
-				}
-
-				throw new SpotifyError(error.error.message, res.status);
-			} catch (error) {
-				// it is 100% must be SpotifyError, no need to check
-				const status = (error as SpotifyError).status;
-
-				if (
-					status === 401 && typeof this.#authProvider !== "string" &&
-					!isTriedRefresh
-				) {
-					const newToken = await this.#authProvider.getAccessToken(true);
-					accessToken = newToken;
-					isTriedRefresh = true;
-					continue;
-				}
-
-				if (status === 429 && retry429 > 0) {
-					if (this.#retry429.delay !== 0) {
-						await wait(this.#retry429.delay);
-					}
-					retry429--;
-					continue;
-				}
-
-				if (status.toString().startsWith("5") && retry5xx > 0) {
-					if (this.#retry5xx.delay !== 0) {
-						await wait(this.#retry5xx.delay);
-					}
-					retry5xx--;
-					continue;
-				}
-
-				throw error;
+			if (
+				res.status === 401 && typeof this.#authProvider !== "string" &&
+				!isTriedRefresh
+			) {
+				const newToken = await this.#authProvider.getAccessToken(true);
+				accessToken = newToken;
+				isTriedRefresh = true;
+				return call();
 			}
-		}
+
+			if (res.status === 429 && retry429 > 0) {
+				if (this.#retry429.delay !== 0) {
+					await wait(this.#retry429.delay);
+				}
+				retry429--;
+				return call();
+			}
+
+			if (res.status.toString().startsWith("5") && retry5xx > 0) {
+				if (this.#retry5xx.delay !== 0) {
+					await wait(this.#retry5xx.delay);
+				}
+				retry5xx--;
+				return call();
+			}
+
+			let error: SpotifyRegularError;
+
+			try {
+				error = await res.json() as SpotifyRegularError;
+			} catch (_) {
+				throw new SpotifyError(
+					"Unable to read response body (not a json value)",
+					res.status,
+				);
+			}
+
+			throw new SpotifyError(error.error.message, res.status);
+		};
+
+		const res = await call();
 
 		if (returnType === "json") {
 			return await res.json() as R;
