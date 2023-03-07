@@ -102,7 +102,7 @@ Or you can try running one of our examples with a simple http server that will g
 
 If you have no experience with Spotify Auth you can read more about it in the [Spotify Authorization Guide](https://developer.spotify.com/documentation/general/guides/authorization/). 
 
-## Flows
+## Auth Flows
 
 Authorization flows are organized into separate namespaces, with each namespace containing all the necessary functions and classes to implement a specific authorization flow. This allows for easy importing of a specific flow.
 
@@ -158,38 +158,21 @@ You can create an `AuthProvider` from `AuthCode`, `PKCEAuthCode`, `ClientCredent
 
 ## Auth Scopes
 
-You will use auth scopes when creating an authorization url using the `getAuthURL` function. You can pass scopes just as raw strings. It will be easy becase you will have autofill for them :)
+Scopes are usually used when creating authorization url. Pay attention to them, because many fields and endpoints may not be available if the correct scopes are not specified. Read the [Spotify guide](https://developer.spotify.com/documentation/general/guides/authorization/scopes/) to learn more.
 
-```ts
-import { AuthCode } from "soundify-web-api";
+In Soundify scopes can be used as strings or with const object `SCOPES`.
 
-AuthCode.getAuthURL({
-  scopes: ["user-read-email", ...],
-  ...
-})
-```
-
-Or you can use the `AUTH_SCOPES` const object, which is used as an enum
-```ts
-import { AuthCode, AUTH_SCOPES } from "soundify-web-api";
+```ts 
+import { SCOPES, AuthCode } from "soundify-web-api";
 
 AuthCode.getAuthURL({
-  scopes: [AUTH_SCOPES.USER_READ_EMAIL],
-  ...
+  scopes: ["user-read-email"],
+  // or like this
+  scopes: [SCOPES.USER_READ_EMAIL]
+  // or use all scopes
+  scopes: Object.values(SCOPES),
 })
 ```
-
-If you need to set all scopes, it may be much easier to use `AUTH_SCOPES` and take all values from it.
-```ts
-import { AuthCode, AUTH_SCOPES } from "soundify-web-api";
-
-AuthCode.getAuthURL({
-  scopes: Object.values(AUTH_SCOPES),
-  ...
-})
-```
-
-Be careful with scopes, because many fields and endpoints may not be available because the auth scope is not set.
 
 All contributions are very welcome ❤️
 

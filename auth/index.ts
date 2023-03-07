@@ -1,4 +1,4 @@
-export { AUTH_SCOPES, type AuthScope } from "./consts.ts";
+export { type AuthScope, SCOPES } from "./consts.ts";
 export {
 	type AccessResponse,
 	type IAuthProvider,

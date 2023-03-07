@@ -9,7 +9,7 @@ export const URL_ENCODED = "application/x-www-form-urlencoded";
  * Scopes provide Spotify users using third-party apps the confidence that only
  * the information they choose to share will be shared, and nothing more.
  */
-export const AUTH_SCOPES = {
+export const SCOPES = {
 	// Images -------------------------------------------------------------------
 	/**
 	 * @description Write access to user-provided images.
@@ -98,4 +98,4 @@ export const AUTH_SCOPES = {
 	USER_READ_PRIVATE: "user-read-private",
 } as const;
 
-export type AuthScope = typeof AUTH_SCOPES[keyof typeof AUTH_SCOPES];
+export type AuthScope = typeof SCOPES[keyof typeof SCOPES];
