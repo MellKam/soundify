@@ -128,7 +128,7 @@ You can take a look at the examples to see how to use each authorization flow.
 - Client Credentials flow - TBD
 - Implicit Grant flow - [examples/react-implicit-grant](https://github.com/MellKam/soundify/tree/main/examples/react-implicit-grant)
 
-## AuthProvider
+## Auth provider and automatic tokens refreshing
 
 As you saw earlier, you can simply pass the Access Token to SpotifyClient.
 But after some time (1 hour to be exact), it will expire and you'll need to deal with it yourself. Somehow get a new Access Token and set it on the client.
