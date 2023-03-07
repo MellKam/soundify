@@ -1,8 +1,8 @@
 import { QueryParams } from "../../utils.ts";
-import { AlbumSimplified } from "../album/index.ts";
-import { Artist } from "../artist/index.ts";
-import { Genre } from "../genre/index.ts";
-import { Market } from "../market/index.ts";
+import { AlbumSimplified } from "../album/album.types.ts";
+import { Artist } from "../artist/artist.types.ts";
+import { Genre } from "../genre/genre.types.ts";
+import { Market } from "../market/market.types.ts";
 import { ExternalIds, ExternalUrls, RestrictionsReason } from "../shared.ts";
 
 export interface Track {
@@ -84,7 +84,7 @@ export interface Track {
 	/**
 	 * The Spotify URI for the track.
 	 */
-	uri: `spotify:track:${string}`;
+	uri: string;
 	/**
 	 * Whether or not the track is from a local file.
 	 */
@@ -170,7 +170,7 @@ export interface AudioFeatures {
 	/**
 	 * The Spotify URI for the track.
 	 */
-	uri: `spotify:track:${string}`;
+	uri: string;
 	/**
 	 * A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. Happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. Sad, depressed, angry).
 	 */

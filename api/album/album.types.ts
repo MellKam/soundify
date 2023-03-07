@@ -5,10 +5,10 @@ import {
 	PagingObject,
 	RestrictionsReason,
 } from "../shared.ts";
-import { Artist, ArtistSimplified } from "../artist/index.ts";
-import { Market } from "../market/index.ts";
-import { Track } from "../track/index.ts";
-import { Genre } from "../genre/index.ts";
+import { Artist, ArtistSimplified } from "../artist/artist.types.ts";
+import { Market } from "../market/market.types.ts";
+import { Track } from "../track/track.types.ts";
+import { Genre } from "../genre/genre.types.ts";
 
 interface AlbumBase {
 	/**
@@ -74,7 +74,7 @@ interface AlbumBase {
 	/**
 	 * The Spotify URI for the album.
 	 */
-	uri: `spotify:album:${string}`;
+	uri: string;
 	/**
 	 * Known external IDs for the track.
 	 */

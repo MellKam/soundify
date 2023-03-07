@@ -1,10 +1,6 @@
 import { type ExternalUrls, type Followers, type Image } from "../shared.ts";
 
-export interface UserPublic {
-	/**
-	 * The name displayed on the user's profile.
-	 */
-	display_name: string | null;
+export interface UserPublicSimplified {
 	/**
 	 * Known external URLs for this user.
 	 */
@@ -22,17 +18,24 @@ export interface UserPublic {
 	 */
 	id: string;
 	/**
-	 * The user's profile image.
-	 */
-	images: Image[];
-	/**
 	 * The object type: "user"
 	 */
 	type: "user";
 	/**
 	 * The Spotify URI for the user.
 	 */
-	uri: `spotify:user:${string}`;
+	uri: string;
+}
+
+export interface UserPublic extends UserPublicSimplified {
+	/**
+	 * The name displayed on the user's profile.
+	 */
+	display_name: string | null;
+	/**
+	 * The user's profile image.
+	 */
+	images: Image[];
 }
 
 export interface UserPrivate extends UserPublic {
@@ -75,5 +78,5 @@ export interface UserPrivate extends UserPublic {
 	 *
 	 * @requires `user-read-private`
 	 */
-	product?: string;
+	product?: "premium" | "free" | "open";
 }

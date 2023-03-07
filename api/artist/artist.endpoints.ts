@@ -1,28 +1,28 @@
-import { ISpotifyClient } from "../../client.ts";
-import { AlbumGroup, AlbumSimplified } from "../album/index.ts";
-import { Market } from "../market/index.ts";
+import { HTTPClient } from "../../client.ts";
 import { PagingObject, PagingOptions } from "../shared.ts";
-import { Track } from "../track/index.ts";
+import { AlbumGroup, AlbumSimplified } from "../album/album.types.ts";
+import { Market } from "../market/market.types.ts";
+import { Track } from "../track/track.types.ts";
 import { Artist } from "./artist.types.ts";
 
 /**
  * Get Spotify catalog information for a single artist identified by their unique Spotify ID.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param artist_id Spotify artist ID
  */
-export const getArtist = async (client: ISpotifyClient, artist_id: string) => {
-	return await client.fetch<Artist>(`/artists/${artist_id}`, "json");
+export const getArtist = async (client: HTTPClient, artist_id: string) => {
+	return await client.fetch<Artist>("/artists/" + artist_id, "json");
 };
 
 /**
  * Get Spotify catalog information for several artists based on their Spotify IDs.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param artist_ids List of the Spotify IDs for the artists. Maximum: 50 IDs.
  */
 export const getArtists = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	artist_ids: string[],
 ) => {
 	return (await client.fetch<{ artists: Artist[] }>("/artists", "json", {
@@ -48,11 +48,11 @@ interface GetArtistAlbumsOpts extends PagingOptions {
 /**
  * Get Spotify catalog information about an artist's albums.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param artist_id Spotify artist ID
  */
 export const getArtistAlbums = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	artist_id: string,
 	opts?: GetArtistAlbumsOpts,
 ) => {
@@ -66,12 +66,12 @@ export const getArtistAlbums = async (
 /**
  * Get Spotify catalog information about an artist's top tracks by country.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param artist_id Spotify artist ID
  * @param market An ISO 3166-1 alpha-2 country code.
  */
 export const getArtistTopTracks = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	artist_id: string,
 	market: Market, // TODO check if it must be required
 ) => {
@@ -90,11 +90,11 @@ export const getArtistTopTracks = async (
  * Get Spotify catalog information about artists similar to a given artist.
  * Similarity is based on analysis of the Spotify community's listening history.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param artist_id Spotify artist ID
  */
 export const getArtistRelatedArtists = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	artist_id: string,
 ) => {
 	return (await client.fetch<{ artists: Artist[] }>(

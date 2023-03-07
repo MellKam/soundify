@@ -1,22 +1,22 @@
-import { ISpotifyClient } from "../../client.ts";
-import { Market } from "../market/index.ts";
+import { HTTPClient } from "../../client.ts";
 import { PagingObject, PagingOptions } from "../shared.ts";
-import { Track } from "../track/index.ts";
-import { Album, AlbumSimplified } from "./index.ts";
+import { Market } from "../market/market.types.ts";
+import { Track } from "../track/track.types.ts";
+import { Album, AlbumSimplified } from "./album.types.ts";
 
 /**
  * Get Spotify catalog information for a single album.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param album_id The Spotify ID of the album
  * @param market An ISO 3166-1 alpha-2 country code
  */
 export const getAlbum = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	album_id: string,
 	market?: Market,
 ) => {
-	return await client.fetch<Album>(`/albums/${album_id}`, "json", {
+	return await client.fetch<Album>("/albums/" + album_id, "json", {
 		query: { market },
 	});
 };
@@ -24,12 +24,12 @@ export const getAlbum = async (
 /**
  * Get Spotify catalog information for multiple albums identified by their Spotify IDs.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param album_ids List of the Spotify IDs for the albums. Maximum: 20 IDs
  * @param market An ISO 3166-1 alpha-2 country code
  */
 export const getAlbums = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	album_ids: string[],
 	market?: Market,
 ) => {
@@ -50,12 +50,12 @@ interface GetAlbumTrackOpts extends PagingOptions {
  * Get Spotify catalog information about an album’s tracks.
  * Optional parameters can be used to limit the number of tracks returned.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param album_id The Spotify ID of the album
  * @param opts Additional option for request
  */
 export const getAlbumTracks = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	album_id: string,
 	opts?: GetAlbumTrackOpts,
 ) => {
@@ -79,11 +79,11 @@ interface GetSavedAlbumsOpts extends PagingOptions {
 /**
  * Get a list of the albums saved in the current Spotify user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param opts Additional option for request
  */
 export const getSavedAlbums = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	opts?: GetSavedAlbumsOpts,
 ) => {
 	return await client.fetch<
@@ -105,11 +105,11 @@ export const getSavedAlbums = async (
 /**
  * Save one or more albums to the current user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param albums_ids List of the Spotify IDs for the albums. Maximum: 20 IDs
  */
 export const saveAlbums = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	albums_ids: string[],
 ) => {
 	await client.fetch("/me/albums", "void", {
@@ -121,21 +121,21 @@ export const saveAlbums = async (
 /**
  * Save album to the current user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param albums_id The Spotify ID of the album
  */
-export const saveAlbum = async (client: ISpotifyClient, album_id: string) => {
+export const saveAlbum = async (client: HTTPClient, album_id: string) => {
 	await saveAlbums(client, [album_id]);
 };
 
 /**
  * Remove one or more albums from the current user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param album_ids List of the Spotify IDs for the albums. Maximum: 20 IDs
  */
 export const removeSavedAlbums = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	album_ids: string[],
 ) => {
 	await client.fetch("/me/albums", "void", {
@@ -149,11 +149,11 @@ export const removeSavedAlbums = async (
 /**
  * Remove album from the current user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param album_id The Spotify ID of the album
  */
 export const removeSavedAlbum = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	album_id: string,
 ) => {
 	await removeSavedAlbums(client, [album_id]);
@@ -162,11 +162,11 @@ export const removeSavedAlbum = async (
 /**
  * Check if one or more albums is already saved in the current Spotify user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param album_ids List of the Spotify IDs for the albums. Maximum: 20 IDs
  */
 export const checkSavedAlbums = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	album_ids: string[],
 ) => {
 	return await client.fetch<boolean[]>("/me/albums/contains", "json", {
@@ -179,11 +179,11 @@ export const checkSavedAlbums = async (
 /**
  * Check if album is already saved in the current Spotify user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param album_id The Spotify ID of the album
  */
 export const checkSavedAlbum = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	album_id: string,
 ) => {
 	return (await checkSavedAlbums(client, [album_id]))[0];
@@ -201,11 +201,11 @@ interface GetNewReleasesOpts extends PagingOptions {
 /**
  * Get a list of new album releases featured in Spotify (shown, for example, on a Spotify player’s “Browse” tab).
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param opts Additional option for request
  */
 export const getNewAlbumReleases = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	opts?: GetNewReleasesOpts,
 ) => {
 	return (await client.fetch<{ albums: PagingObject<AlbumSimplified> }>(

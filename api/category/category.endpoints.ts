@@ -1,7 +1,7 @@
-import { ISpotifyClient } from "../../client.ts";
+import { HTTPClient } from "../../client.ts";
 import { QueryParams } from "../../utils.ts";
-import { Market } from "../market/index.ts";
 import { PagingObject } from "../shared.ts";
+import { Market } from "../market/market.types.ts";
 import { Category } from "./category.types.ts";
 
 interface GetBrowseCategoriesOpts extends QueryParams {
@@ -36,11 +36,11 @@ interface GetBrowseCategoriesOpts extends QueryParams {
  * Get a list of categories used to tag items in Spotify
  * (on, for example, the Spotify player’s “Browse” tab).
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param opts Additional option for request
  */
 export const getBrowseCategories = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	opts?: GetBrowseCategoriesOpts,
 ) => {
 	return (await client.fetch<{ categories: PagingObject<Category> }>(
@@ -69,17 +69,17 @@ interface GetBrowseCategoryOpts extends QueryParams {
  * Get a single category used to tag items in Spotify
  * (on, for example, the Spotify player’s “Browse” tab).
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param category_id The Spotify category ID for the category
  * @param opts Additional option for request
  */
 export const getBrowseCategory = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	category_id: string,
 	opts?: GetBrowseCategoryOpts,
 ) => {
 	return await client.fetch<Category>(
-		`/browse/categories/${category_id}`,
+		"/browse/categories/" + category_id,
 		"json",
 		{
 			query: opts,

@@ -1,3 +1,18 @@
+export type JSONValue =
+	| undefined
+	| null
+	| string
+	| number
+	| boolean
+	| JSONObject
+	| JSONArray;
+
+export type JSONArray = Array<JSONValue>;
+
+export interface JSONObject {
+	[x: string]: JSONValue;
+}
+
 export type QueryParam = string | number | boolean | undefined | string[];
 export type QueryParams = Record<string, QueryParam>;
 

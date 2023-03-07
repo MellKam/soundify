@@ -1,24 +1,24 @@
 import { IAuthProvider } from "./auth/types.ts";
-import { QueryParams, searchParamsFromObj, wait } from "./utils.ts";
+import { JSONValue, QueryParams, searchParamsFromObj, wait } from "./utils.ts";
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 interface FetchOpts {
 	method?: HTTPMethod;
-	body?: Record<string, unknown>;
+	body?: JSONValue;
 	query?: QueryParams;
 }
 
-export interface ISpotifyClient {
+export interface HTTPClient {
 	fetch(
-		baseURL: `/${string}`,
+		baseURL: string,
 		returnType: "void",
 		opts?: FetchOpts,
 	): Promise<void>;
 	fetch<
 		R extends unknown,
 	>(
-		baseURL: `/${string}`,
+		baseURL: string,
 		returnType: "json",
 		opts?: FetchOpts,
 	): Promise<R>;
@@ -76,7 +76,7 @@ export class SpotifyError extends Error {
 /**
  * A client for making requests to the Spotify API.
  */
-export class SpotifyClient implements ISpotifyClient {
+export class SpotifyClient implements HTTPClient {
 	/**
 	 * Access Token or object that implements `IAuthProvider`
 	 */
@@ -111,24 +111,24 @@ export class SpotifyClient implements ISpotifyClient {
 	/**
 	 * Sends an HTTP request to the Spotify API.
 	 *
-	 * @param baseURL The base URL for the API request.
+	 * @param baseURL The base URL for the API request. Must begin with "/"
 	 * @param returnType The expected return type of the API response.
 	 * @param opts Optional request options, such as the request body or query parameters.
 	 */
 	async fetch(
-		baseURL: `/${string}`,
+		baseURL: string,
 		returnType: "void",
 		opts?: FetchOpts,
 	): Promise<void>;
 	async fetch<R = unknown>(
-		baseURL: `/${string}`,
+		baseURL: string,
 		returnType: "json",
 		opts?: FetchOpts,
 	): Promise<R>;
 	async fetch<
 		R extends unknown,
 	>(
-		baseURL: `/${string}`,
+		baseURL: string,
 		returnType: "void" | "json",
 		{ body, query, method }: FetchOpts = {},
 	): Promise<R | void> {
@@ -152,7 +152,7 @@ export class SpotifyClient implements ISpotifyClient {
 				headers: {
 					"Content-Type": "application/json",
 					"Accept": "application/json",
-					"Authorization": `Bearer ${accessToken}`,
+					"Authorization": "Bearer " + accessToken,
 				},
 				body: serializedBody,
 			});

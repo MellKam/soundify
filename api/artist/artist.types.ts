@@ -1,4 +1,4 @@
-import { Genre } from "../genre/index.ts";
+import { Genre } from "../genre/genre.types.ts";
 import { ExternalUrls, Followers, Image } from "../shared.ts";
 
 export interface ArtistSimplified {
@@ -25,7 +25,7 @@ export interface ArtistSimplified {
 	/**
 	 * The Spotify URI for the artist.
 	 */
-	uri: `spotify:artist:${string}`;
+	uri: string;
 }
 
 export interface Artist extends ArtistSimplified {

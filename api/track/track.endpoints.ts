@@ -1,5 +1,5 @@
-import { ISpotifyClient } from "../../client.ts";
-import { Market } from "../market/index.ts";
+import { HTTPClient } from "../../client.ts";
+import { Market } from "../market/market.types.ts";
 import { PagingObject, PagingOptions } from "../shared.ts";
 import {
 	AudioAnalysis,
@@ -13,16 +13,16 @@ import {
  * Get Spotify catalog information for a single track identified
  * by its unique Spotify ID.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_id The Spotify ID for the track
  * @param market An ISO 3166-1 alpha-2 country code
  */
 export const getTrack = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_id: string,
 	market?: Market,
 ) => {
-	return await client.fetch<Track>(`/tracks/${track_id}`, "json", {
+	return await client.fetch<Track>("/tracks/" + track_id, "json", {
 		query: { market },
 	});
 };
@@ -30,12 +30,12 @@ export const getTrack = async (
 /**
  * Get Spotify catalog information for multiple tracks based on their Spotify IDs.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_ids List of Spotify track IDs. Maximum 50 IDs
  * @param market An ISO 3166-1 alpha-2 country code
  */
 export const getTracks = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_ids: string[],
 	market?: Market,
 ) => {
@@ -58,11 +58,11 @@ interface GetSavedTracksOpts extends PagingOptions {
  * Get a list of the songs saved in the current
  * Spotify user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param opts Additional option for request
  */
 export const getSavedTracks = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	opts: GetSavedTracksOpts,
 ) => {
 	return await client.fetch<PagingObject<Track>>("/me/tracks", "json", {
@@ -73,11 +73,11 @@ export const getSavedTracks = async (
 /**
  * Save one or more tracks to the current user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_ids List of the Spotify track IDs. Maximum 50 IDs
  */
 export const saveTracks = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_ids: string[],
 ) => {
 	await client.fetch("/me/tracks", "void", {
@@ -91,21 +91,21 @@ export const saveTracks = async (
 /**
  * Save track to the current user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_id Spotify track ID
  */
-export const saveTrack = async (client: ISpotifyClient, track_id: string) => {
+export const saveTrack = async (client: HTTPClient, track_id: string) => {
 	await saveTracks(client, [track_id]);
 };
 
 /**
  * Remove one or more tracks from the current user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_ids List of the Spotify track IDs. Maximum 50 IDs
  */
 export const removeSavedTracks = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_ids: string[],
 ) => {
 	await client.fetch("/me/tracks", "void", {
@@ -119,11 +119,11 @@ export const removeSavedTracks = async (
 /**
  * Remove track from the current user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_id Spotify track ID
  */
 export const removeSavedTrack = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_id: string,
 ) => {
 	await removeSavedTracks(client, [track_id]);
@@ -132,11 +132,11 @@ export const removeSavedTrack = async (
 /**
  * Check if one or more tracks is already saved in the current Spotify user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_ids List of the Spotify track IDs. Maximum 50 IDs
  */
 export const checkSavedTracks = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_ids: string[],
 ) => {
 	return await client.fetch<boolean[]>("/me/tracks/contains", "json", {
@@ -149,11 +149,11 @@ export const checkSavedTracks = async (
 /**
  * Check if track is already saved in the current Spotify user's 'Your Music' library.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_id Spotify track ID
  */
 export const checkSavedTrack = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_id: string,
 ) => {
 	return (await checkSavedTracks(client, [track_id]))[0];
@@ -162,11 +162,11 @@ export const checkSavedTrack = async (
 /**
  * Get audio features for multiple tracks based on their Spotify IDs.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_ids List of the Spotify track IDs. Maximum 100 IDs
  */
 export const getTracksAudioFeatures = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_ids: string[],
 ) => {
 	return (await client.fetch<{ audio_features: AudioFeatures[] }>(
@@ -183,15 +183,15 @@ export const getTracksAudioFeatures = async (
 /**
  * Get audio features for a track based on its Spotify ID.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_id Spotify track ID
  */
 export const getTrackAudioFeatures = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_id: string,
 ) => {
 	return await client.fetch<AudioFeatures>(
-		`/audio-features/${track_id}`,
+		"/audio-features/" + track_id,
 		"json",
 	);
 };
@@ -200,15 +200,15 @@ export const getTrackAudioFeatures = async (
  * Get a low-level audio analysis for a track in the Spotify catalog.
  * The audio analysis describes the track’s structure and musical content, including rhythm, pitch, and timbre.
  *
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param track_id Spotify track ID
  */
 export const getTracksAudioAnalysis = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	track_id: string,
 ) => {
 	return await client.fetch<AudioAnalysis>(
-		`/audio-analysis/${track_id}`,
+		"/audio-analysis/" + track_id,
 		"json",
 	);
 };
@@ -216,11 +216,11 @@ export const getTracksAudioAnalysis = async (
 /**
  * Recommendations are generated based on the available information for a given seed entity and matched against similar artists and tracks. If there is sufficient information about the provided seeds, a list of tracks will be returned together with pool size details.
 
- * @param client SpotifyClient instance
+ * @param client Spotify HTTPClient
  * @param opts Options and seeds for recomendations
  */
 export const getRecommendations = async (
-	client: ISpotifyClient,
+	client: HTTPClient,
 	opts: GetRecommendationsOpts,
 ) => {
 	return await client.fetch<Recomendations>("/recommendations", "json", {
