@@ -106,20 +106,19 @@ If you have no experience with Spotify Auth you can read more about it in the [S
 
 Authorization flows are organized into separate namespaces, with each namespace containing all the necessary functions and classes to implement a specific authorization flow. This allows for easy importing of a specific flow.
 
-For instance, the following code imports different authorization flows:
+For instance, the following code imports all authorization flow namespaces:
 
 ```ts
-// Importing the Authorization Code flow
-import { AuthCode } from "soundify-web-api"
-
-// Importing the Authorization Code flow with PKCE
-import { PKCEAuthCode } from "soundify-web-api"
-
-// Importing the Client Credentials flow
-import { ClientCredentials } from "soundify-web-api"
-
-// Importing the Implicit Grant flow
-import { ImplicitGrant } from "soundify-web-api"
+import { 
+  // Authorization Code flow
+  AuthCode, 
+  // Authorization Code flow with PKCE
+  PKCEAuthCode, 
+  // Client Credentials flow
+  ClientCredentials,
+  // Implicit Grant flow 
+  ImplicitGrant
+} from "soundify-web-api"
 ```
 
 You can take a look at the examples to see how to use each authorization flow.
