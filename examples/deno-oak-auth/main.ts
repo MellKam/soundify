@@ -1,4 +1,10 @@
-import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import {
+	Application,
+	createHttpError,
+	HttpError,
+	isHttpError,
+	Router,
+} from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import { cleanEnv, str, url } from "https://deno.land/x/envalid@0.1.2/mod.ts";
 import { AuthCode } from "../../mod.ts";
@@ -14,6 +20,21 @@ const env = cleanEnv(config(), {
 });
 
 const app = new Application();
+
+app.use(async (context, next) => {
+	try {
+		await next();
+	} catch (err) {
+		if (isHttpError(err)) {
+			context.response.status = err.status;
+		} else {
+			context.response.status = 500;
+		}
+		context.response.body = { error: err.message };
+		context.response.type = "json";
+	}
+});
+
 const router = new Router();
 
 router
@@ -31,35 +52,30 @@ router
 		}));
 	})
 	.get("/callback", async (ctx) => {
-		const state = await ctx.cookies.get("state");
-		if (!state) {
-			ctx.response.body =
-				"Unable to find `state` in cookies to verify request.";
-			ctx.response.status = 400;
-			return;
-		}
-
-		const code = ctx.request.url.searchParams.get("code");
-		if (!code) {
-			ctx.response.body = "Cannot find `code` in search params";
-			ctx.response.status = 400;
-			return;
-		}
-
 		try {
+			const { code, state } = AuthCode.getCallbackData(
+				ctx.request.url.searchParams,
+			);
+
+			const userState = await ctx.cookies.get("state");
+			if (!userState || !state || state !== userState) {
+				throw new Error(
+					"Unable to verify request with state.",
+				);
+			}
+
 			const grantData = await AuthCode.getGrantData(
 				{
 					client_id: env.SPOTIFY_CLIENT_ID,
 					client_secret: env.SPOTIFY_CLIENT_SECRET,
 					redirect_uri: env.SPOTIFY_REDIRECT_URI,
 					code,
-					state,
 				},
 			);
 
 			ctx.response.body = grantData;
 		} catch (error) {
-			ctx.response.body = String(error);
+			new HttpError(String(error));
 		}
 	});
 

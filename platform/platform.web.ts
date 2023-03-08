@@ -3,11 +3,11 @@ export const encodeToBase64 = (data: string): string => {
 };
 
 export const getPKCECodeChallenge = async (
-	codeVerifier: string,
+	code_verifier: string,
 ): Promise<string> => {
 	const buffer = await crypto.subtle.digest(
 		"SHA-256",
-		new TextEncoder().encode(codeVerifier),
+		new TextEncoder().encode(code_verifier),
 	);
 
 	return btoa(String.fromCharCode(...new Uint8Array(buffer)))

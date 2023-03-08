@@ -86,11 +86,6 @@ export type GetGrantDataOpts = {
 	 * that you specified when you registered your application.
 	 */
 	redirect_uri: string;
-	/**
-	 * This provides protection against attacks such as
-	 * cross-site request forgery.
-	 */
-	state?: string;
 };
 
 export const getGrantData = async (
@@ -114,6 +109,22 @@ export const getGrantData = async (
 	}
 
 	return (await res.json()) as KeypairResponse;
+};
+
+export const getCallbackData = (searchParams: URLSearchParams) => {
+	const error = searchParams.get("error");
+	if (error) {
+		throw new Error(error);
+	}
+
+	const state = searchParams.get("state");
+	const code = searchParams.get("code");
+
+	if (!code) {
+		throw new Error("Cannot find `code` in search params");
+	}
+
+	return { state, code };
 };
 
 export const refresh = async (opts: {
@@ -152,7 +163,7 @@ export class AuthProvider implements IAuthProvider {
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || this.opts.access_token === undefined) {
+		if (forceRefresh || !this.opts.access_token) {
 			const data = await refresh({
 				client_id: this.opts.client_id,
 				client_secret: this.opts.client_secret,
