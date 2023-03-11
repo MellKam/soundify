@@ -58,16 +58,3 @@ export interface ApiTokenReqParams extends Record<string, string | undefined> {
 	code_verifier?: string;
 	grant_type: "refresh_token" | "client_credentials" | "authorization_code";
 }
-
-export interface IAuthProvider {
-	/**
-	 * Function that gives you Spotify access token.
-	 */
-	getAccessToken: (
-		/**
-		 * Should the service refresh the token
-		 * @default false
-		 */
-		forceRefresh?: boolean,
-	) => Promise<string>;
-}

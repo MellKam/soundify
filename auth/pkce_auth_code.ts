@@ -1,4 +1,4 @@
-import { searchParamsFromObj } from "../utils.ts";
+import { IAuthProvider, searchParamsFromObj } from "../general.ts";
 import {
 	API_TOKEN_URL,
 	AUTHORIZE_URL,
@@ -8,10 +8,9 @@ import {
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
-	IAuthProvider,
 	KeypairResponse,
 } from "./types.ts";
-import { getPKCECodeChallenge } from "../platform/platform.deno.ts";
+import { getPKCECodeChallenge } from "./platform/platform.deno.ts";
 
 export type GetAuthURLOpts = {
 	/**
@@ -130,7 +129,7 @@ export const generateCodeVerifier = (
 	return code_verifier;
 };
 
-export { getPKCECodeChallenge as getCodeChallenge } from "../platform/platform.deno.ts";
+export { getPKCECodeChallenge as getCodeChallenge } from "./platform/platform.deno.ts";
 
 /**
  * Shorthand for generating PKCE codes.

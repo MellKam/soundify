@@ -1,5 +1,4 @@
-import { NonNullableRecord } from "../../utils.ts";
-import { Image } from "../shared.ts";
+import { Image, NonNullableRecord } from "../shared.ts";
 
 export interface Category {
 	/**

@@ -1,5 +1,5 @@
-import { AuthCode } from "soundify-web-api";
-import { webcrypto } from "node:crypto";
+import { AuthCode } from "@soundify/node";
+import { randomUUID } from "node:crypto";
 import express from "express";
 import cookieParser from "cookie-parser";
 
@@ -12,10 +12,12 @@ const config = {
 	redirect_uri: process.env.SPOTIFY_REDIRECT_URI!,
 };
 
-app.get("/login", (_req, res) => {
-	const state = webcrypto.randomUUID();
+app.get("/login", (_, res) => {
+	const state = randomUUID();
 
-	res.cookie("state", state);
+	res.cookie("state", state, {
+		httpOnly: true,
+	});
 	res.redirect(
 		AuthCode.getAuthURL({
 			scopes: ["user-read-email"],
@@ -44,7 +46,6 @@ app.get("/callback", async (req, res) => {
 	try {
 		const grantData = await AuthCode.getGrantData({
 			code,
-			state,
 			...config,
 		});
 

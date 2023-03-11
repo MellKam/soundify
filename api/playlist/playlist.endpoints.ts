@@ -1,5 +1,4 @@
-import { HTTPClient } from "../../client.ts";
-import { JSONObject, QueryParams } from "../../utils.ts";
+import { HTTPClient, JSONObject, QueryParams } from "../../general.ts";
 import { Market } from "../market/market.types.ts";
 import { PagingObject, PagingOptions } from "../shared.ts";
 import { Playlist, PlaylistTrack } from "./playlist.types.ts";

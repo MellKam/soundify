@@ -1,4 +1,4 @@
-import { searchParamsFromObj } from "../utils.ts";
+import { searchParamsFromObj } from "../general.ts";
 import { AUTHORIZE_URL, AuthScope } from "./consts.ts";
 import { AccessResponse } from "./types.ts";
 import { AuthorizeReqParams } from "./types.ts";

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCookie, setCookie } from "cookies-next";
-import { AuthCode } from "soundify-web-api";
+import { AuthCode } from "@soundify/node";
 import {
 	env,
 	SPOTIFY_ACCESS_TOKEN,
@@ -17,7 +17,7 @@ export default async function (
 	});
 
 	if (typeof refresh_token !== "string") {
-		res.status(400).send({ error: "Can't find SPOTIFY_REFRESH_TOKEN" });
+		res.status(400).send("Can't find SPOTIFY_REFRESH_TOKEN");
 		return;
 	}
 

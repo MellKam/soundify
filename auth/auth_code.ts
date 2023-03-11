@@ -1,4 +1,4 @@
-import { searchParamsFromObj } from "../utils.ts";
+import { IAuthProvider, searchParamsFromObj } from "../general.ts";
 import {
 	API_TOKEN_URL,
 	AUTHORIZE_URL,
@@ -9,7 +9,6 @@ import { getBasicAuthHeader } from "./helpers.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
-	IAuthProvider,
 	KeypairResponse,
 	ScopedAccessResponse,
 } from "./types.ts";

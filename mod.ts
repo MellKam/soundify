@@ -1,3 +1,3 @@
-export * from "./auth/index.ts";
-export * from "./api/index.ts";
-export * from "./client.ts";
+export * from "./auth/mod.ts";
+export * from "./api/mod.ts";
+export * from "./general.ts";

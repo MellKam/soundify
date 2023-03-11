@@ -1,4 +1,4 @@
-import { QueryParams } from "../../utils.ts";
+import { QueryParams } from "../../general.ts";
 import { AlbumSimplified } from "../album/album.types.ts";
 import { Artist } from "../artist/artist.types.ts";
 import { Genre } from "../genre/genre.types.ts";

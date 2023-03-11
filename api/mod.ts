@@ -16,3 +16,5 @@ export * from "./user/user.endpoints.ts";
 export * from "./user/user.types.ts";
 
 export * from "./shared.ts";
+
+export * from "./client.ts";

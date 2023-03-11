@@ -19,7 +19,7 @@
 		"./auth/**/*.ts"
 	],
 	"exclude": [
-		"./platform/**/*.web.ts",
+		"auth/platform/**/*.web.ts",
 		"./examples/**",
 		"./scripts/**",
 		"./tests/**",

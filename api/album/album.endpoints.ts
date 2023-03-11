@@ -1,4 +1,4 @@
-import { HTTPClient } from "../../client.ts";
+import { HTTPClient } from "../../general.ts";
 import { PagingObject, PagingOptions } from "../shared.ts";
 import { Market } from "../market/market.types.ts";
 import { Track } from "../track/track.types.ts";

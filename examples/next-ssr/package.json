@@ -16,7 +16,8 @@
 		"next": "13.2.3",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"soundify-web-api": "workspace:*",
+		"@soundify/api": "link:../../dist/api",
+		"@soundify/node": "link:../../dist/node",
 		"typescript": "4.9.5"
 	}
 }

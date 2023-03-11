@@ -1,4 +1,8 @@
-import { QueryParams } from "../utils.ts";
+import { QueryParams } from "../general.ts";
+
+export type NonNullableRecord<T> = {
+	[P in keyof T]: NonNullable<T[P]>;
+};
 
 export interface PagingObject<T> {
 	/**

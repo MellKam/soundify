@@ -1,6 +1,7 @@
 import { API_TOKEN_URL, URL_ENCODED } from "./consts.ts";
 import { getBasicAuthHeader } from "./helpers.ts";
-import { AccessResponse, IAuthProvider } from "./types.ts";
+import { AccessResponse } from "./types.ts";
+import { IAuthProvider } from "../general.ts";
 
 export const getAccessToken = async (opts: {
 	client_id: string;

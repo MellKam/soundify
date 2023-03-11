@@ -1,7 +1,6 @@
 import {
 	Application,
 	createHttpError,
-	HttpError,
 	isHttpError,
 	Router,
 } from "https://deno.land/x/oak@v11.1.0/mod.ts";
@@ -21,17 +20,17 @@ const env = cleanEnv(config(), {
 
 const app = new Application();
 
-app.use(async (context, next) => {
+app.use(async (ctx, next) => {
 	try {
 		await next();
 	} catch (err) {
 		if (isHttpError(err)) {
-			context.response.status = err.status;
+			ctx.response.status = err.status;
 		} else {
-			context.response.status = 500;
+			ctx.response.status = 500;
 		}
-		context.response.body = { error: err.message };
-		context.response.type = "json";
+		ctx.response.body = { error: err.message };
+		ctx.response.type = "json";
 	}
 });
 
@@ -52,31 +51,34 @@ router
 		}));
 	})
 	.get("/callback", async (ctx) => {
-		try {
-			const { code, state } = AuthCode.getCallbackData(
-				ctx.request.url.searchParams,
-			);
-
-			const userState = await ctx.cookies.get("state");
-			if (!userState || !state || state !== userState) {
-				throw new Error(
-					"Unable to verify request with state.",
-				);
-			}
-
-			const grantData = await AuthCode.getGrantData(
-				{
-					client_id: env.SPOTIFY_CLIENT_ID,
-					client_secret: env.SPOTIFY_CLIENT_SECRET,
-					redirect_uri: env.SPOTIFY_REDIRECT_URI,
-					code,
-				},
-			);
-
-			ctx.response.body = grantData;
-		} catch (error) {
-			new HttpError(String(error));
+		const error = ctx.request.url.searchParams.get("error");
+		if (error) {
+			throw createHttpError(400, error);
 		}
+
+		const code = ctx.request.url.searchParams.get("code");
+		if (!code) {
+			throw createHttpError(400, "Cannot find `code` in search params");
+		}
+
+		const state = ctx.request.url.searchParams.get("state");
+		const storedState = await ctx.cookies.get("state");
+		if (!storedState || !state || state !== storedState) {
+			throw createHttpError(401, "Unable to verify request with state.");
+		}
+
+		ctx.cookies.delete("state");
+
+		const grantData = await AuthCode.getGrantData(
+			{
+				client_id: env.SPOTIFY_CLIENT_ID,
+				client_secret: env.SPOTIFY_CLIENT_SECRET,
+				redirect_uri: env.SPOTIFY_REDIRECT_URI,
+				code,
+			},
+		);
+
+		console.log(grantData);
 	});
 
 app.use(router.routes());
