@@ -34,20 +34,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Get tag version
         if: startsWith(github.ref, 'refs/tags/')
         id: get_tag_version
         run: echo ::set-output name=TAG_VERSION::${GITHUB_REF/refs\/tags\//}
 
-      - name: Authorize
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm config set //registry.npmjs.org/:_authToken='${NPM_TOKEN}'
-
       - name: build and publish
         if: startsWith(github.ref, 'refs/tags/')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           deno task build npm:shared ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./dist/shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
