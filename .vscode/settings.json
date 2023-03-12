@@ -3,15 +3,14 @@
 		"api",
 		"auth",
 		"scripts",
-		"tests",
-		"platform/platform.deno.ts",
 		"examples/deno-oak-auth",
-		"client.ts",
+		"shared",
 		"mod.ts",
-		"utils.ts"
 	],
+	"deno.unstable": true,
 	"deno.lint": true,
-	"deno.config": "./deno.jsonc",
+	"deno.importMap": "./import_map.json",
+	"deno.config": "./deno.json",
 	"[typescript]": {
 		"editor.defaultFormatter": "denoland.vscode-deno"
 	}

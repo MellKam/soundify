@@ -1,0 +1,7 @@
+{
+	"imports": {
+		"shared/": "./shared/",
+		"api/": "./api/",
+		"auth/": "./auth/"
+	}
+}

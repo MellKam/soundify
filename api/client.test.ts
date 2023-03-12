@@ -1,16 +1,20 @@
-import { AuthCode, SpotifyClient, SpotifyError, UserPrivate } from "../mod.ts";
+import { SpotifyClient, SpotifyError, wait } from "api/client.ts";
+import { UserPrivate } from "api/user/user.types.ts";
 import * as mockFetch from "https://deno.land/x/mock_fetch@0.3.0/mod.ts";
 import {
 	assert,
 	assertInstanceOf,
 	assertObjectMatch,
 } from "https://deno.land/std@0.178.0/testing/asserts.ts";
-import { privateUserStub } from "./stubs/user.stubs.ts";
+import { privateUserStub } from "api/user/user.stubs.ts";
 import {
 	assertSpyCall,
+	assertSpyCallArg,
 	assertSpyCalls,
+	spy,
 	stub,
 } from "https://deno.land/std@0.178.0/testing/mock.ts";
+import { AuthCode } from "auth/mod.ts";
 
 mockFetch.install();
 
@@ -53,7 +57,8 @@ Deno.test("SpotifyClient with access token and put request with body", async () 
 		async (req, match) => {
 			assert(match["playlist_id"] === playlistID);
 
-			const data = await req.json();
+			// deno-lint-ignore no-explicit-any
+			const data = await req.json() as Record<PropertyKey, any>;
 			assertObjectMatch(data, { public: true });
 
 			return new Response("", {
@@ -366,4 +371,21 @@ Deno.test("SpotifyClient tests for setAuthProvider method", async () => {
 	}
 
 	mockFetch.reset();
+});
+
+Deno.test("Must wait 1000ms", async () => {
+	const setTimeoutSpyier = spy(globalThis, "setTimeout");
+
+	const start = new Date().getTime();
+
+	await wait(1000).then(() => {
+		const timePassed = new Date().getTime() - start;
+		const delta = Math.abs(timePassed - 1000);
+
+		console.log(`Waited ${timePassed}ms. Delta ${delta}ms`);
+	});
+
+	assertSpyCallArg(setTimeoutSpyier, 0, 1, 1000);
+
+	setTimeoutSpyier.restore();
 });

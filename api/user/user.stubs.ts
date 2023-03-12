@@ -1,4 +1,4 @@
-import { UserPrivate } from "../../mod.ts";
+import { UserPrivate } from "api/mod.ts";
 
 export const privateUserStub: UserPrivate = {
 	country: "PL",

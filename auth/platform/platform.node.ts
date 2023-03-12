@@ -1,5 +1,5 @@
-import { Buffer } from "buffer";
-import { createHash } from "crypto";
+import { Buffer } from "node:buffer";
+import { createHash } from "node:crypto";
 
 export const encodeToBase64 = (data: string): string => {
 	return Buffer.from(data).toString("base64");

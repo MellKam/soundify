@@ -1,17 +1,17 @@
-import { IAuthProvider, searchParamsFromObj } from "../general.ts";
+import { IAuthProvider, searchParamsFromObj } from "shared/mod.ts";
 import {
 	API_TOKEN_URL,
 	AUTHORIZE_URL,
 	AuthScope,
 	URL_ENCODED,
-} from "./consts.ts";
-import { getBasicAuthHeader } from "./helpers.ts";
+} from "auth/consts.ts";
+import { getBasicAuthHeader } from "auth/helpers.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
 	KeypairResponse,
 	ScopedAccessResponse,
-} from "./types.ts";
+} from "auth/types.ts";
 
 export type GetAuthURLOpts = {
 	/**
@@ -162,7 +162,7 @@ export class AuthProvider implements IAuthProvider {
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || !this.opts.access_token) {
+		if (forceRefresh || this.opts.access_token === undefined) {
 			const data = await refresh({
 				client_id: this.opts.client_id,
 				client_secret: this.opts.client_secret,

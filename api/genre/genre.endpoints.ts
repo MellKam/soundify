@@ -1,5 +1,5 @@
-import { HTTPClient } from "../../general.ts";
-import { Genre } from "./genre.types.ts";
+import { HTTPClient } from "shared/mod.ts";
+import { Genre } from "api/genre/genre.types.ts";
 
 /**
  * Retrieve a list of available genres seed parameter values for recommendations.

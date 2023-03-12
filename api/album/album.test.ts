@@ -1,5 +1,3 @@
-import { getTestEnv } from "./testEnv.ts";
-import { AuthCode, SpotifyClient } from "../mod.ts";
 import {
 	checkSavedAlbum,
 	getAlbum,
@@ -9,18 +7,9 @@ import {
 	getSavedAlbums,
 	removeSavedAlbum,
 	saveAlbum,
-} from "../api/index.ts";
+} from "api/album/album.endpoints.ts";
+import { client } from "api/test_env.ts";
 import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
-
-const env = getTestEnv();
-
-const client = new SpotifyClient(
-	new AuthCode.AuthProvider({
-		client_id: env.SPOTIFY_CLIENT_ID,
-		client_secret: env.SPOTIFY_CLIENT_SECRET,
-		refresh_token: env.SPOTIFY_REFRESH_TOKEN,
-	}),
-);
 
 Deno.test("Get album by ID", async () => {
 	const mockAlbumID = "621cXqrTSSJi1WqDMSLmbL";

@@ -12,20 +12,20 @@ export const searchParamsFromObj = <
 >(
 	obj: T,
 ): URLSearchParams => {
-	const searchParams = new URLSearchParams();
+	const params = new URLSearchParams();
 
 	Object.keys(obj).forEach((key) => {
 		const value = obj[key];
 
 		if (typeof value === "undefined") return;
 		if (Array.isArray(value)) {
-			searchParams.set(key, value.join(","));
+			params.set(key, value.join(","));
 		}
 
-		searchParams.set(key, value.toString());
+		params.set(key, value.toString());
 	});
 
-	return searchParams;
+	return params;
 };
 
 export type JSONValue =

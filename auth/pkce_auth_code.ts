@@ -1,16 +1,16 @@
-import { IAuthProvider, searchParamsFromObj } from "../general.ts";
+import { IAuthProvider, searchParamsFromObj } from "shared/mod.ts";
 import {
 	API_TOKEN_URL,
 	AUTHORIZE_URL,
 	AuthScope,
 	URL_ENCODED,
-} from "./consts.ts";
+} from "auth/consts.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
 	KeypairResponse,
-} from "./types.ts";
-import { getPKCECodeChallenge } from "./platform/platform.deno.ts";
+} from "auth/types.ts";
+import { getPKCECodeChallenge } from "auth/platform/platform.deno.ts";
 
 export type GetAuthURLOpts = {
 	/**

@@ -2,8 +2,9 @@ import {
 	FetchOpts,
 	HTTPClient,
 	IAuthProvider,
+	JSONObject,
 	searchParamsFromObj,
-} from "../general.ts";
+} from "shared/mod.ts";
 
 type Retry = {
 	/**
@@ -108,13 +109,13 @@ export class SpotifyClient implements HTTPClient {
 		returnType: "void",
 		opts?: FetchOpts,
 	): Promise<void>;
-	async fetch<R = unknown>(
+	async fetch<R extends JSONObject = JSONObject>(
 		baseURL: string,
 		returnType: "json",
 		opts?: FetchOpts,
 	): Promise<R>;
 	async fetch<
-		R extends unknown,
+		R extends JSONObject = JSONObject,
 	>(
 		baseURL: string,
 		returnType: "void" | "json",

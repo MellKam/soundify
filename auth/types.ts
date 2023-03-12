@@ -36,7 +36,7 @@ export interface KeypairResponse extends ScopedAccessResponse {
  * Query parameters for the `GET` request to the `/authorize` endpoint
  */
 export interface AuthorizeReqParams
-	extends Record<string, string | undefined | boolean> {
+	extends Record<PropertyKey, string | undefined | boolean> {
 	client_id: string;
 	response_type: "code" | "token";
 	redirect_uri: string;
@@ -50,7 +50,8 @@ export interface AuthorizeReqParams
 /**
  * Query parameters for the `GET` request to the `/api/token` endpoint
  */
-export interface ApiTokenReqParams extends Record<string, string | undefined> {
+export interface ApiTokenReqParams
+	extends Record<PropertyKey, string | undefined> {
 	refresh_token?: string;
 	code?: string;
 	redirect_uri?: string;

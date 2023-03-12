@@ -1,13 +1,13 @@
-import { HTTPClient } from "../../general.ts";
-import { Market } from "../market/market.types.ts";
-import { PagingObject, PagingOptions } from "../shared.ts";
+import { HTTPClient } from "shared/mod.ts";
+import { Market } from "api/market/market.types.ts";
+import { PagingObject, PagingOptions } from "api/general.types.ts";
 import {
 	AudioAnalysis,
 	AudioFeatures,
 	GetRecommendationsOpts,
 	Recomendations,
 	Track,
-} from "./track.types.ts";
+} from "api/track/track.types.ts";
 
 /**
  * Get Spotify catalog information for a single track identified
