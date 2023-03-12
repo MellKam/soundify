@@ -53,5 +53,15 @@ jobs:
         with:
           deno-version: v1.x
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: false
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+
       - name: Build
         run: deno task build
