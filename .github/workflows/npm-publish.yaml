@@ -47,10 +47,10 @@ jobs:
         run: |
           cd ./dist/ && pnpm config set //registry.npmjs.org/:_authToken '${NPM_TOKEN}'
           deno task build npm:shared ${{steps.get_tag_version.outputs.TAG_VERSION}}
-          cd ./shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          cd ./dist/shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
           deno task build npm:api ${{steps.get_tag_version.outputs.TAG_VERSION}}
-          cd ./api/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          cd ./dist/api/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
           deno task build npm:web ${{steps.get_tag_version.outputs.TAG_VERSION}}
-          cd ./web/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          cd ./dist/web/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
           deno task build npm:node ${{steps.get_tag_version.outputs.TAG_VERSION}}
-          cd ./node/ && pnpm publish --ignore-scripts --access public --no-git-checks
+          cd ./dist/node/ && pnpm publish --ignore-scripts --access public --no-git-checks
