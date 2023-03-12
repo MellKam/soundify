@@ -5,7 +5,7 @@
 		"scripts",
 		"examples/deno-oak-auth",
 		"shared",
-		"mod.ts",
+		"mod.ts"
 	],
 	"deno.unstable": true,
 	"deno.lint": true,
