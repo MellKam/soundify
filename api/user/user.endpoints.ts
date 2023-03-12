@@ -1,9 +1,12 @@
-import { Artist } from "../artist/artist.types.ts";
-import { Track } from "../track/track.types.ts";
-import { UserPrivate, UserPublic } from "./user.types.ts";
-import { CursorPagingObject, PagingObject, PagingOptions } from "../shared.ts";
-import { HTTPClient } from "../../client.ts";
-import { QueryParams } from "../../utils.ts";
+import { Artist } from "api/artist/artist.types.ts";
+import { Track } from "api/track/track.types.ts";
+import { UserPrivate, UserPublic } from "api/user/user.types.ts";
+import {
+	CursorPagingObject,
+	PagingObject,
+	PagingOptions,
+} from "api/general.types.ts";
+import { HTTPClient, QueryParams } from "shared/mod.ts";
 
 /**
  * Get detailed profile information about the current user.

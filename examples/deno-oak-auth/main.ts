@@ -1,4 +1,9 @@
-import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import {
+	Application,
+	createHttpError,
+	isHttpError,
+	Router,
+} from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import { cleanEnv, str, url } from "https://deno.land/x/envalid@0.1.2/mod.ts";
 import { AuthCode } from "../../mod.ts";
@@ -14,6 +19,21 @@ const env = cleanEnv(config(), {
 });
 
 const app = new Application();
+
+app.use(async (ctx, next) => {
+	try {
+		await next();
+	} catch (err) {
+		if (isHttpError(err)) {
+			ctx.response.status = err.status;
+		} else {
+			ctx.response.status = 500;
+		}
+		ctx.response.body = { error: err.message };
+		ctx.response.type = "json";
+	}
+});
+
 const router = new Router();
 
 router
@@ -31,36 +51,34 @@ router
 		}));
 	})
 	.get("/callback", async (ctx) => {
-		const state = await ctx.cookies.get("state");
-		if (!state) {
-			ctx.response.body =
-				"Unable to find `state` in cookies to verify request.";
-			ctx.response.status = 400;
-			return;
+		const error = ctx.request.url.searchParams.get("error");
+		if (error) {
+			throw createHttpError(400, error);
 		}
 
 		const code = ctx.request.url.searchParams.get("code");
 		if (!code) {
-			ctx.response.body = "Cannot find `code` in search params";
-			ctx.response.status = 400;
-			return;
+			throw createHttpError(400, "Cannot find `code` in search params");
 		}
 
-		try {
-			const grantData = await AuthCode.getGrantData(
-				{
-					client_id: env.SPOTIFY_CLIENT_ID,
-					client_secret: env.SPOTIFY_CLIENT_SECRET,
-					redirect_uri: env.SPOTIFY_REDIRECT_URI,
-					code,
-					state,
-				},
-			);
-
-			ctx.response.body = grantData;
-		} catch (error) {
-			ctx.response.body = String(error);
+		const state = ctx.request.url.searchParams.get("state");
+		const storedState = await ctx.cookies.get("state");
+		if (!storedState || !state || state !== storedState) {
+			throw createHttpError(401, "Unable to verify request with state.");
 		}
+
+		ctx.cookies.delete("state");
+
+		const grantData = await AuthCode.getGrantData(
+			{
+				client_id: env.SPOTIFY_CLIENT_ID,
+				client_secret: env.SPOTIFY_CLIENT_SECRET,
+				redirect_uri: env.SPOTIFY_REDIRECT_URI,
+				code,
+			},
+		);
+
+		console.log(grantData);
 	});
 
 app.use(router.routes());

@@ -6,7 +6,7 @@ export const encodeToBase64 = (data: string): string => {
 };
 
 export const getPKCECodeChallenge = (
-	codeVerifier: string,
+	code_verifier: string,
 ) => {
-	return createHash("sha256").update(codeVerifier).digest("base64url");
+	return createHash("sha256").update(code_verifier).digest("base64url");
 };

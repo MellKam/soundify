@@ -1,6 +1,10 @@
-import { QueryParams } from "../utils.ts";
+import { JSONObject, QueryParams } from "shared/mod.ts";
 
-export interface PagingObject<T> {
+export type NonNullableJSON<T extends JSONObject> = {
+	[K in keyof T]: NonNullable<T[K]>;
+};
+
+export interface PagingObject<T extends JSONObject> extends JSONObject {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
@@ -28,7 +32,7 @@ export interface PagingObject<T> {
 	items: T[];
 }
 
-export interface CursorPagingObject<T> {
+export interface CursorPagingObject<T extends JSONObject> extends JSONObject {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
@@ -83,7 +87,7 @@ export interface PagingOptions extends QueryParams {
  */
 export type RestrictionsReason = "market" | "product" | "explicit";
 
-export interface Image {
+export interface Image extends JSONObject {
 	/**
 	 * The image height in pixels.
 	 */
@@ -98,7 +102,7 @@ export interface Image {
 	width: number | null;
 }
 
-export interface Followers {
+export interface Followers extends JSONObject {
 	/**
 	 * This will always be set to null, as the Web API does not support it at the moment.
 	 */
@@ -109,11 +113,11 @@ export interface Followers {
 	total: number;
 }
 
-export interface ExternalUrls {
+export interface ExternalUrls extends JSONObject {
 	spotify: string;
 }
 
-export interface ExternalIds {
+export interface ExternalIds extends JSONObject {
 	/**
 	 * [International Standard Recording Code](https://en.wikipedia.org/wiki/International_Standard_Recording_Code).
 	 */

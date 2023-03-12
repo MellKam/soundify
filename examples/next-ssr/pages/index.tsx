@@ -5,7 +5,7 @@ import {
 	getCurrentUserProfile,
 	SpotifyClient,
 	type UserPrivate,
-} from "soundify-web-api";
+} from "@soundify/api";
 import { SPOTIFY_ACCESS_TOKEN } from "../spotify";
 
 export const getServerSideProps: GetServerSideProps<{

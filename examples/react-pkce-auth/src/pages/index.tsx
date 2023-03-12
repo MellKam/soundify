@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUserTopItems } from "soundify-web-api/web";
+import { getUserTopItems } from "@soundify/api";
 import { useSpotify } from "../spotify";
 
 export const Page = () => {

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
-import { AuthScope, PKCEAuthCode, SpotifyClient } from "soundify-web-api/web";
+import { createContext, ReactNode, useContext, useMemo } from "react";
+import { AuthScope, PKCEAuthCode } from "@soundify/web";
+import { SpotifyClient } from "@soundify/api";
 
 export const SPOTIFY_REFRESH_TOKEN = "SPOTIFY_REFRESH_TOKEN";
 export const SPOTIFY_ACCESS_TOKNE = "SPOTIFY_ACCESS_TOKEN";

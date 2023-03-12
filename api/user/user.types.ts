@@ -1,6 +1,11 @@
-import { type ExternalUrls, type Followers, type Image } from "../shared.ts";
+import { JSONObject } from "shared/mod.ts";
+import {
+	type ExternalUrls,
+	type Followers,
+	type Image,
+} from "api/general.types.ts";
 
-export interface UserPublicSimplified {
+export interface UserPublicSimplified extends JSONObject {
 	/**
 	 * Known external URLs for this user.
 	 */
@@ -27,7 +32,7 @@ export interface UserPublicSimplified {
 	uri: string;
 }
 
-export interface UserPublic extends UserPublicSimplified {
+export interface UserPublic extends UserPublicSimplified, JSONObject {
 	/**
 	 * The name displayed on the user's profile.
 	 */
@@ -38,7 +43,7 @@ export interface UserPublic extends UserPublicSimplified {
 	images: Image[];
 }
 
-export interface UserPrivate extends UserPublic {
+export interface UserPrivate extends UserPublic, JSONObject {
 	/**
 	 * The country of the user, as set in the user's account profile.
 	 * An ISO 3166-1 alpha-2 country code.

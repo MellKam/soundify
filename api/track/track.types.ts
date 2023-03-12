@@ -1,11 +1,15 @@
-import { QueryParams } from "../../utils.ts";
-import { AlbumSimplified } from "../album/album.types.ts";
-import { Artist } from "../artist/artist.types.ts";
-import { Genre } from "../genre/genre.types.ts";
-import { Market } from "../market/market.types.ts";
-import { ExternalIds, ExternalUrls, RestrictionsReason } from "../shared.ts";
+import { JSONObject, QueryParams } from "shared/mod.ts";
+import { AlbumSimplified } from "api/album/album.types.ts";
+import { Artist } from "api/artist/artist.types.ts";
+import { Genre } from "api/genre/genre.types.ts";
+import { Market } from "api/market/market.types.ts";
+import {
+	ExternalIds,
+	ExternalUrls,
+	RestrictionsReason,
+} from "api/general.types.ts";
 
-export interface Track {
+export interface Track extends JSONObject {
 	/**
 	 * The album on which the track appears.
 	 */
@@ -91,7 +95,7 @@ export interface Track {
 	is_local: boolean;
 }
 
-export interface AudioFeatures {
+export interface AudioFeatures extends JSONObject {
 	/**
 	 * A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.
 	 */
@@ -177,7 +181,7 @@ export interface AudioFeatures {
 	valence: number;
 }
 
-interface AudioAnalysisMeta {
+interface AudioAnalysisMeta extends JSONObject {
 	/**
 	 * The version of the Analyzer used to analyze this track.
 	 */
@@ -209,7 +213,7 @@ interface AudioAnalysisMeta {
 	input_process: string;
 }
 
-interface AudioAnalysisTrack {
+interface AudioAnalysisTrack extends JSONObject {
 	/**
 	 * The exact number of audio samples analyzed from this track.
 	 */
@@ -332,7 +336,7 @@ interface AudioAnalysisTrack {
 	rhythm_version: number;
 }
 
-interface AudioAnalysisGeneric {
+interface AudioAnalysisGeneric extends JSONObject {
 	/**
 	 * The starting point (in seconds) of the time interval.
 	 */
@@ -347,7 +351,7 @@ interface AudioAnalysisGeneric {
 	confidence: number;
 }
 
-interface AudioAnalysisSection extends AudioAnalysisGeneric {
+interface AudioAnalysisSection extends AudioAnalysisGeneric, JSONObject {
 	/**
 	 * The overall loudness of the section in decibels (dB).
 	 * Loudness values are useful for comparing relative loudness of sections within tracks.
@@ -396,7 +400,7 @@ interface AudioAnalysisSection extends AudioAnalysisGeneric {
 	time_signature_confidence: number;
 }
 
-interface AudioAnalysisSegment extends AudioAnalysisGeneric {
+interface AudioAnalysisSegment extends AudioAnalysisGeneric, JSONObject {
 	/**
 	 * The onset loudness of the segment in decibels (dB).
 	 */
@@ -424,7 +428,7 @@ interface AudioAnalysisSegment extends AudioAnalysisGeneric {
 	timbre: number[];
 }
 
-export interface AudioAnalysis {
+export interface AudioAnalysis extends JSONObject {
 	meta: AudioAnalysisMeta;
 	track: AudioAnalysisTrack;
 	/**
@@ -613,7 +617,7 @@ export interface GetRecommendationsOpts extends QueryParams {
 	target_valence?: number;
 }
 
-export interface Recomendations {
+export interface Recomendations extends JSONObject {
 	/**
 	 * An array of recommendation seed objects.
 	 */

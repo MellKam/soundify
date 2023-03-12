@@ -1,18 +1,17 @@
-import { searchParamsFromObj } from "../utils.ts";
+import { IAuthProvider, searchParamsFromObj } from "shared/mod.ts";
 import {
 	API_TOKEN_URL,
 	AUTHORIZE_URL,
 	AuthScope,
 	URL_ENCODED,
-} from "./consts.ts";
-import { getBasicAuthHeader } from "./helpers.ts";
+} from "auth/consts.ts";
+import { getBasicAuthHeader } from "auth/helpers.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
-	IAuthProvider,
 	KeypairResponse,
 	ScopedAccessResponse,
-} from "./types.ts";
+} from "auth/types.ts";
 
 export type GetAuthURLOpts = {
 	/**
@@ -86,11 +85,6 @@ export type GetGrantDataOpts = {
 	 * that you specified when you registered your application.
 	 */
 	redirect_uri: string;
-	/**
-	 * This provides protection against attacks such as
-	 * cross-site request forgery.
-	 */
-	state?: string;
 };
 
 export const getGrantData = async (
@@ -114,6 +108,22 @@ export const getGrantData = async (
 	}
 
 	return (await res.json()) as KeypairResponse;
+};
+
+export const getCallbackData = (searchParams: URLSearchParams) => {
+	const error = searchParams.get("error");
+	if (error) {
+		throw new Error(error);
+	}
+
+	const state = searchParams.get("state");
+	const code = searchParams.get("code");
+
+	if (!code) {
+		throw new Error("Cannot find `code` in search params");
+	}
+
+	return { state, code };
 };
 
 export const refresh = async (opts: {

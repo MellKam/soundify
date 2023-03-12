@@ -1,8 +1,14 @@
-import { ExternalUrls, Followers, Image, PagingObject } from "../shared.ts";
-import { UserPublic, UserPublicSimplified } from "../user/user.types.ts";
-import { Track } from "../track/track.types.ts";
+import {
+	ExternalUrls,
+	Followers,
+	Image,
+	PagingObject,
+} from "api/general.types.ts";
+import { UserPublic, UserPublicSimplified } from "api/user/user.types.ts";
+import { Track } from "api/track/track.types.ts";
+import { JSONObject } from "shared/mod.ts";
 
-interface PlaylistBase {
+interface PlaylistBase extends JSONObject {
 	/**
 	 * `true` if the owner allows other users to modify the playlist.
 	 */
@@ -66,7 +72,7 @@ interface PlaylistBase {
 	uri: string;
 }
 
-export interface SimplifiedPlaylist extends PlaylistBase {
+export interface SimplifiedPlaylist extends PlaylistBase, JSONObject {
 	/**
 	 * The tracks of the playlist.
 	 */
@@ -76,14 +82,14 @@ export interface SimplifiedPlaylist extends PlaylistBase {
 	};
 }
 
-export interface Playlist extends PlaylistBase {
+export interface Playlist extends PlaylistBase, JSONObject {
 	/**
 	 * The tracks of the playlist.
 	 */
 	tracks: PagingObject<Track>;
 }
 
-export interface PlaylistTrack {
+export interface PlaylistTrack extends JSONObject {
 	/**
 	 * The date and time the track or episode was added.
 	 * Note: some very old playlists may return null in this field.

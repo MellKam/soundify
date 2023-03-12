@@ -1,5 +1,5 @@
-import { HTTPClient } from "../../client.ts";
-import { Market } from "./market.types.ts";
+import { HTTPClient } from "shared/mod.ts";
+import { Market } from "api/market/market.types.ts";
 
 /**
  * Get the list of markets where Spotify is available.

@@ -1,22 +1,11 @@
-import { getTestEnv } from "./testEnv.ts";
-import { AuthCode, SpotifyClient } from "../mod.ts";
+import { client } from "api/test_env.ts";
 import {
 	getArtist,
 	getArtistAlbums,
 	getArtistRelatedArtists,
 	getArtists,
 	getArtistTopTracks,
-} from "../api/index.ts";
-
-const env = getTestEnv();
-
-const client = new SpotifyClient(
-	new AuthCode.AuthProvider({
-		client_id: env.SPOTIFY_CLIENT_ID,
-		client_secret: env.SPOTIFY_CLIENT_SECRET,
-		refresh_token: env.SPOTIFY_REFRESH_TOKEN,
-	}),
-);
+} from "api/artist/artist.endpoints.ts";
 
 Deno.test("Get artist by ID", async () => {
 	const radioheadArtistID = "4Z8W4fKeB5YxbusRsdQVPb";

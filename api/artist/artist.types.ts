@@ -1,7 +1,8 @@
-import { Genre } from "../genre/genre.types.ts";
-import { ExternalUrls, Followers, Image } from "../shared.ts";
+import { JSONObject } from "shared/mod.ts";
+import { Genre } from "api/genre/genre.types.ts";
+import { ExternalUrls, Followers, Image } from "api/general.types.ts";
 
-export interface ArtistSimplified {
+export interface ArtistSimplified extends JSONObject {
 	/**
 	 * Known external URLs for this artist.
 	 */
@@ -28,7 +29,7 @@ export interface ArtistSimplified {
 	uri: string;
 }
 
-export interface Artist extends ArtistSimplified {
+export interface Artist extends ArtistSimplified, JSONObject {
 	/**
 	 * Information about the followers of the artist.
 	 */

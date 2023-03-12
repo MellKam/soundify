@@ -1,8 +1,7 @@
-import { HTTPClient } from "../../client.ts";
-import { QueryParams } from "../../utils.ts";
-import { PagingObject } from "../shared.ts";
-import { Market } from "../market/market.types.ts";
-import { Category } from "./category.types.ts";
+import { HTTPClient, QueryParams } from "shared/mod.ts";
+import { PagingObject } from "api/general.types.ts";
+import { Market } from "api/market/market.types.ts";
+import { Category } from "api/category/category.types.ts";
 
 interface GetBrowseCategoriesOpts extends QueryParams {
 	/**

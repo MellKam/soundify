@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-	getCurrentUserProfile,
-	ImplicitGrant,
-	SpotifyClient,
-} from "soundify-web-api/web";
+import { getCurrentUserProfile, SpotifyClient } from "@soundify/api";
+import { ImplicitGrant } from "@soundify/web";
 
 const useSpotifyClient = () => {
 	const accessToken = localStorage.getItem("SPOTIFY_ACCESS_TOKEN");

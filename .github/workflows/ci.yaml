@@ -53,18 +53,16 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          run_install: false
-
       - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
 
-      - name: Install dependencies
-        run: pnpm --filter=soundify-web-api install --frozen-lockfile
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: false
+          version: 7.29.1
 
       - name: Build
         run: deno task build

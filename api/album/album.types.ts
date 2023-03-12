@@ -4,13 +4,14 @@ import {
 	Image,
 	PagingObject,
 	RestrictionsReason,
-} from "../shared.ts";
-import { Artist, ArtistSimplified } from "../artist/artist.types.ts";
-import { Market } from "../market/market.types.ts";
-import { Track } from "../track/track.types.ts";
-import { Genre } from "../genre/genre.types.ts";
+} from "api/general.types.ts";
+import { Artist, ArtistSimplified } from "api/artist/artist.types.ts";
+import { Market } from "api/market/market.types.ts";
+import { Track } from "api/track/track.types.ts";
+import { Genre } from "api/genre/genre.types.ts";
+import { JSONObject } from "shared/mod.ts";
 
-interface AlbumBase {
+interface AlbumBase extends JSONObject {
 	/**
 	 * The type of the album.
 	 *
@@ -112,7 +113,7 @@ interface AlbumBase {
 
 export type AlbumGroup = "album" | "single" | "compilation" | "appears_on";
 
-export interface AlbumSimplified extends AlbumBase {
+export interface AlbumSimplified extends AlbumBase, JSONObject {
 	/**
 	 * **The field is present when getting an artist's albums.**
 	 * Compare to `album_type` this field represents relationship between the artist and the album.
@@ -124,7 +125,7 @@ export interface AlbumSimplified extends AlbumBase {
 	artists: ArtistSimplified[];
 }
 
-export interface Album extends AlbumBase {
+export interface Album extends AlbumBase, JSONObject {
 	/**
 	 * The artists of the album.
 	 */

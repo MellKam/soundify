@@ -1,4 +1,4 @@
-deno.jsonc
+deno.json
 deno.lock
 tests
 scripts

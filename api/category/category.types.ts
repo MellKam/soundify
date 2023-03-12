@@ -1,7 +1,7 @@
-import { NonNullableRecord } from "../../utils.ts";
-import { Image } from "../shared.ts";
+import { JSONObject } from "shared/mod.ts";
+import { Image, NonNullableJSON } from "api/general.types.ts";
 
-export interface Category {
+export interface Category extends JSONObject {
 	/**
 	 * A link to the Web API endpoint returning full details of the category.
 	 */
@@ -9,7 +9,7 @@ export interface Category {
 	/**
 	 * The category icon, in various sizes.
 	 */
-	icons: NonNullableRecord<Image>[];
+	icons: NonNullableJSON<Image>[];
 	/**
 	 * The Spotify category ID of the category.
 	 */

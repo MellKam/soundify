@@ -1,4 +1,3 @@
-import { AuthCode, SpotifyClient } from "../mod.ts";
 import {
 	checkIfUserFollowsArtist,
 	checkIfUserFollowsPlaylist,
@@ -14,19 +13,9 @@ import {
 	unfollowArtist,
 	unfollowPlaylist,
 	unfollowUser,
-} from "../api/index.ts";
-import { getTestEnv } from "./testEnv.ts";
+} from "../mod.ts";
+import { client } from "../test_env.ts";
 import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
-
-const env = getTestEnv();
-
-const client = new SpotifyClient(
-	new AuthCode.AuthProvider({
-		client_id: env.SPOTIFY_CLIENT_ID,
-		client_secret: env.SPOTIFY_CLIENT_SECRET,
-		refresh_token: env.SPOTIFY_REFRESH_TOKEN,
-	}),
-);
 
 Deno.test("Must return current user profile", async () => {
 	const currentUser = await getCurrentUserProfile(client);

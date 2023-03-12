@@ -1,11 +1,11 @@
-import { encodeToBase64 } from "../platform/platform.deno.ts";
+import { encodeToBase64 } from "auth/platform/platform.deno.ts";
 
 export const getBasicAuthHeader = (
-	CLIENT_ID: string,
-	CLIENT_SECRET: string,
+	client_id: string,
+	client_secret: string,
 ) => {
 	return "Basic " +
 		encodeToBase64(
-			CLIENT_ID + ":" + CLIENT_SECRET,
+			client_id + ":" + client_secret,
 		);
 };

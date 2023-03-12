@@ -1,28 +1,10 @@
-import { IAuthProvider } from "./auth/types.ts";
-import { JSONValue, QueryParams, searchParamsFromObj, wait } from "./utils.ts";
-
-type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-
-interface FetchOpts {
-	method?: HTTPMethod;
-	body?: JSONValue;
-	query?: QueryParams;
-}
-
-export interface HTTPClient {
-	fetch(
-		baseURL: string,
-		returnType: "void",
-		opts?: FetchOpts,
-	): Promise<void>;
-	fetch<
-		R extends unknown,
-	>(
-		baseURL: string,
-		returnType: "json",
-		opts?: FetchOpts,
-	): Promise<R>;
-}
+import {
+	FetchOpts,
+	HTTPClient,
+	IAuthProvider,
+	JSONObject,
+	searchParamsFromObj,
+} from "shared/mod.ts";
 
 type Retry = {
 	/**
@@ -39,20 +21,6 @@ type Retry = {
 	delay: number;
 };
 
-export interface SpotifyClientOpts {
-	/**
-	 * Retry options for errors with status code >= 500
-	 */
-	retry5xx?: Retry;
-	/**
-	 * Retry options for rate limit errors
-	 */
-	retry429?: Retry;
-}
-
-/**
- * @link https://developer.spotify.com/documentation/web-api/#regular-error-object
- */
 interface SpotifyRegularError {
 	error: {
 		/**
@@ -71,6 +39,27 @@ export class SpotifyError extends Error {
 		super(message);
 		this.name = "SpotifyError" + status;
 	}
+}
+
+/**
+ * Returns promise that will be resolved after specified delay
+ * @param delay milliseconds
+ */
+export const wait = (delay: number) => {
+	return new Promise<void>((res) => {
+		setTimeout(res, delay);
+	});
+};
+
+export interface SpotifyClientOpts {
+	/**
+	 * Retry options for errors with status code >= 500
+	 */
+	retry5xx?: Retry;
+	/**
+	 * Retry options for rate limit errors
+	 */
+	retry429?: Retry;
 }
 
 /**
@@ -120,13 +109,13 @@ export class SpotifyClient implements HTTPClient {
 		returnType: "void",
 		opts?: FetchOpts,
 	): Promise<void>;
-	async fetch<R = unknown>(
+	async fetch<R extends JSONObject = JSONObject>(
 		baseURL: string,
 		returnType: "json",
 		opts?: FetchOpts,
 	): Promise<R>;
 	async fetch<
-		R extends unknown,
+		R extends JSONObject = JSONObject,
 	>(
 		baseURL: string,
 		returnType: "void" | "json",

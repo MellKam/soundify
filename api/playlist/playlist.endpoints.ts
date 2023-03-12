@@ -1,8 +1,7 @@
-import { HTTPClient } from "../../client.ts";
-import { JSONObject, QueryParams } from "../../utils.ts";
-import { Market } from "../market/market.types.ts";
-import { PagingObject, PagingOptions } from "../shared.ts";
-import { Playlist, PlaylistTrack } from "./playlist.types.ts";
+import { HTTPClient, JSONObject, QueryParams } from "shared/mod.ts";
+import { Market } from "api/market/market.types.ts";
+import { PagingObject, PagingOptions } from "api/general.types.ts";
+import { Playlist, PlaylistTrack } from "api/playlist/playlist.types.ts";
 
 interface PlaylistFieldsOpts extends QueryParams {
 	/**

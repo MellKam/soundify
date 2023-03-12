@@ -1,9 +1,9 @@
-import { HTTPClient } from "../../client.ts";
-import { PagingObject, PagingOptions } from "../shared.ts";
-import { AlbumGroup, AlbumSimplified } from "../album/album.types.ts";
-import { Market } from "../market/market.types.ts";
-import { Track } from "../track/track.types.ts";
-import { Artist } from "./artist.types.ts";
+import { HTTPClient } from "shared/mod.ts";
+import { PagingObject, PagingOptions } from "api/general.types.ts";
+import { AlbumGroup, AlbumSimplified } from "api/album/album.types.ts";
+import { Market } from "api/market/market.types.ts";
+import { Track } from "api/track/track.types.ts";
+import { Artist } from "api/artist/artist.types.ts";
 
 /**
  * Get Spotify catalog information for a single artist identified by their unique Spotify ID.

@@ -1,14 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { webcrypto } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { setCookie } from "cookies-next";
-import { AuthCode } from "soundify-web-api";
+import { AuthCode } from "@soundify/node";
 import { env, SPOTIFY_STATE } from "../../spotify";
 
 export default function (
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const state = webcrypto.randomUUID();
+	const state = randomUUID();
 
 	setCookie(SPOTIFY_STATE, state, {
 		httpOnly: true,
