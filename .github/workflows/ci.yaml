@@ -65,4 +65,4 @@ jobs:
           version: 7.29.1
 
       - name: Build
-        run: deno task build
+        run: deno task build local

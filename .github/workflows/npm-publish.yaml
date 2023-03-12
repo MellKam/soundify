@@ -35,25 +35,23 @@ jobs:
         with:
           node-version: "18.x"
 
-      - name: Build
-        run: deno task build
-
       - name: Get tag version
         if: startsWith(github.ref, 'refs/tags/')
         id: get_tag_version
         run: echo ::set-output name=TAG_VERSION::${GITHUB_REF/refs\/tags\//}
 
-      - name: npm build
-        run: deno run -A ./scripts/build.ts ${{steps.get_tag_version.outputs.TAG_VERSION}}
-
-      - name: npm publish
+      - name: build and publish
         if: startsWith(github.ref, 'refs/tags/')
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           pnpm config set //registry.npmjs.org/:_authToken '${NPM_TOKEN}'
           cd dist
+          deno task build npm:shared ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          deno task build npm:api ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./api/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          deno task build npm:web ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./web/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          deno task build npm:node ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./node/ && pnpm publish --ignore-scripts --access public --no-git-checks
