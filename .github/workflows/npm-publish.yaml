@@ -45,8 +45,7 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          pnpm config set //registry.npmjs.org/:_authToken '${NPM_TOKEN}'
-          cd ./dist/
+          cd ./dist/ && pnpm config set //registry.npmjs.org/:_authToken '${NPM_TOKEN}'
           deno task build npm:shared ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
           deno task build npm:api ${{steps.get_tag_version.outputs.TAG_VERSION}}
