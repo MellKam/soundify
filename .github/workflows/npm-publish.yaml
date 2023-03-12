@@ -28,6 +28,7 @@ jobs:
         name: Install pnpm
         with:
           run_install: false
+          version: 7.29.1
 
       - name: Setup node
         uses: actions/setup-node@v3
