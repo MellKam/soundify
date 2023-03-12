@@ -72,6 +72,15 @@ await buildPackage({
 	outDir: "./dist/api/",
 	packageName: "@soundify/api",
 	environment: "browser",
+	mappings: {
+		"shared/mod.ts": {
+			name: "@soundify/shared",
+			version: Deno.args[0],
+		},
+	},
+	dependencies: {
+		"@soundify/shared": "link:../shared",
+	},
 	description: "Modern Spotify api wrapper for Node, Deno, and browser 🎧",
 });
 
