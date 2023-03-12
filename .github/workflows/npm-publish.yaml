@@ -53,7 +53,7 @@ jobs:
         run: |
           pnpm config set //registry.npmjs.org/:_authToken '${NPM_TOKEN}'
           cd dist
-          cd shared && pnpm publish --ignore-scripts --access public && cd ..
-          cd api && pnpm publish --ignore-scripts --access public && cd ..
-          cd web && pnpm publish --ignore-scripts --access public && cd ..
-          cd node && pnpm publish --ignore-scripts --access public
+          cd ./shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          cd ./api/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          cd ./web/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ..
+          cd ./node/ && pnpm publish --ignore-scripts --access public --no-git-checks
