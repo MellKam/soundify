@@ -34,11 +34,16 @@
 # Features ✨
 
 - 💻 Multiruntime: supports Node, Deno and Browser environment.
-- 🚀 Modern: It leverages modern web APIs like native `fetch`, `crypto`, `URLSearchParams`, etc.
-- 🔑 Comprehensive auth support: It can handle all Spotify Auth flows and automatically refreshes access token.
-- 📦 Lightweight and treeshakable: It is designed with care for your bundle size. 
-- 🆎 Strictly typed: All entities returned by the api have exact and up to date types.
-- 📖 Great docs: The library comes with extensive documentation and lots of examples.
+- 🚀 Modern: It leverages modern web APIs like native `fetch`, `crypto`,
+  `URLSearchParams`, etc.
+- 🔑 Comprehensive auth support: It can handle all Spotify Auth flows and
+  automatically refreshes access token.
+- 📦 Lightweight and treeshakable: It is designed with care for your bundle
+  size.
+- 🆎 Strictly typed: All entities returned by the api have exact and up to date
+  types.
+- 📖 Great docs: The library comes with extensive documentation and lots of
+  examples.
 
 # Docs
 
