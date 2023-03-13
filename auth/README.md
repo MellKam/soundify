@@ -1,7 +1,7 @@
 # Soundify Authorization
 
 <a href="https://bundlejs.com/?q=%40soundify%2Fweb-auth">
-  <img src="https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth&badge" alt="soundify/web-auth">
+  <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fweb-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth" alt="soundify/web-auth">
 </a>
 
 If you have no experience with Spotify Auth you can read more about it in the
