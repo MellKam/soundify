@@ -141,7 +141,7 @@ const buildWeb = async () => {
 		dependencies: {
 			"@soundify/shared": "workspace:*",
 		},
-		description: "Spoitfy authorization for web platform",
+		description: "🔑 Spoitfy authorization for browser",
 	});
 };
 
@@ -167,7 +167,7 @@ const buildNode = async () => {
 		dependencies: {
 			"@soundify/shared": "workspace:*",
 		},
-		description: "Spoitfy authorization for nodejs platform",
+		description: "🔑 Spoitfy authorization for nodejs",
 	});
 };
 

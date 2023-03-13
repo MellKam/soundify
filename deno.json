@@ -11,9 +11,7 @@
 			"exclude": [
 				"./node_modules/",
 				"./dist/",
-				"./pnpm-lock.yaml",
 				"./deno.lock",
-				"./README.md",
 				"./examples/node-express-auth/dist/",
 				"./examples/node-express-auth/node_modules/",
 				"./examples/react-implicit-grant/node_modules/",
@@ -35,9 +33,7 @@
 			"exclude": [
 				"./node_modules/",
 				"./dist/",
-				"./pnpm-lock.yaml",
 				"./deno.lock",
-				"./README.md",
 				"./examples/node-express-auth/dist/",
 				"./examples/node-express-auth/node_modules/",
 				"./examples/react-implicit-grant/node_modules/",

@@ -1,6 +1,6 @@
 <div align="center">
   <p align="center">
-    <img align="center" width="500px" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
+    <img align="center" width="500px" src="https://user-images.githubusercontent.com/51422045/224772567-305e3fd1-f038-472e-9096-c7a30d717db7.png">
   </p>
   <p align="center">
     <a href="https://www.npmjs.com/package/@soundify/api">
@@ -36,13 +36,9 @@
 - 💻 Multiruntime: supports Node, Deno and Browser environment.
 - 🚀 Modern: It leverages modern web APIs like native `fetch`, `crypto`, `URLSearchParams`, etc.
 - 🔑 Comprehensive auth support: It can handle all Spotify Auth flows and automatically refreshes access token.
-- 📦 Lightweight and treeshakable: It is designed with care for your bundle size (exact size below). 
+- 📦 Lightweight and treeshakable: It is designed with care for your bundle size. 
 - 🆎 Strictly typed: All entities returned by the api have exact and up to date types.
 - 📖 Great docs: The library comes with extensive documentation and lots of examples.
-
-![@soundify/api](https://deno.bundlejs.com/?q=%40soundify%2Fapi&badge=detailed)
-
-![@soundify/web-auth](https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth&badge=detailed)
 
 # Docs
 
