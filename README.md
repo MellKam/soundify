@@ -3,7 +3,7 @@
     <img align="center" width="500px" src="https://user-images.githubusercontent.com/51422045/220605177-226a80c8-9337-4e42-ae40-40787c82a5a9.png">
   </p>
   <p align="center">
-    <a href="https://www.npmjs.com/package/@soundify">
+    <a href="https://www.npmjs.com/package/@soundify/api">
       <img alt="npm" src="https://img.shields.io/npm/v/@soundify/api?color=1DB954">
     </a>
     <a href="https://deno.land/x/soundify">
