@@ -11,9 +11,6 @@ importers:
     devDependencies:
       '@types/node': 18.15.1
 
-  dist/api/esm:
-    specifiers: {}
-
   dist/node-auth:
     specifiers:
       '@soundify/shared': workspace:*
@@ -22,6 +19,9 @@ importers:
       '@soundify/shared': link:../shared
     devDependencies:
       '@types/node': 18.15.1
+
+  dist/node-auth/esm:
+    specifiers: {}
 
   dist/shared:
     specifiers:
