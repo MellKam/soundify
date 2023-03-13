@@ -2,13 +2,13 @@ import { SpecifierMappings } from "https://deno.land/x/dnt@0.33.0/transform.ts";
 import { build, emptyDir } from "https://deno.land/x/dnt@0.33.1/mod.ts";
 
 type Package = "api" | `${"web" | "node"}-auth` | "shared";
-type BuildType = "local" | `npm:${Package}`;
+type BuildType = "all" | Package;
 
 const getArgs = () => {
-	const buildType = Deno.args.at(0) as BuildType | undefined ?? "local";
+	const buildType = Deno.args.at(0) as BuildType | undefined ?? "all";
 
 	let version = Deno.args.at(1);
-	if (buildType === "local" && !version) {
+	if (buildType === "all" && !version) {
 		version = "v0.0.0";
 	}
 	if (!version) {
@@ -101,7 +101,7 @@ const buildShared = async () => {
 	});
 };
 
-const buildApi = async (type: "local" | "npm") => {
+const buildApi = async () => {
 	console.log("\nBuild `@soudnfiy/api` ...\n");
 
 	await buildPackage({
@@ -118,13 +118,13 @@ const buildApi = async (type: "local" | "npm") => {
 			"@types/node": "latest",
 		},
 		dependencies: {
-			"@soundify/shared": type === "local" ? "link:../shared" : version,
+			"@soundify/shared": "workspace:*",
 		},
 		description: "Modern Spotify api wrapper for Node, Deno, and browser 🎧",
 	});
 };
 
-const buildWeb = async (type: "local" | "npm") => {
+const buildWeb = async () => {
 	console.log("\nBuild `@soudnfiy/web-auth` ...\n");
 
 	await buildPackage({
@@ -139,13 +139,13 @@ const buildWeb = async (type: "local" | "npm") => {
 			},
 		},
 		dependencies: {
-			"@soundify/shared": type === "local" ? "link:../shared" : version,
+			"@soundify/shared": "workspace:*",
 		},
 		description: "Spoitfy authorization for web platform",
 	});
 };
 
-const buildNode = async (type: "local" | "npm") => {
+const buildNode = async () => {
 	console.log("\nBuild `@soudnfiy/node-auth` ...\n");
 
 	await buildPackage({
@@ -165,30 +165,30 @@ const buildNode = async (type: "local" | "npm") => {
 			},
 		},
 		dependencies: {
-			"@soundify/shared": type === "local" ? "link:../shared" : version,
+			"@soundify/shared": "workspace:*",
 		},
 		description: "Spoitfy authorization for nodejs platform",
 	});
 };
 
 switch (buildType) {
-	case "local":
+	case "all":
 		await buildShared();
-		await buildApi("local");
-		await buildWeb("local");
-		await buildNode("local");
+		await buildApi();
+		await buildWeb();
+		await buildNode();
 		break;
-	case "npm:shared":
+	case "shared":
 		await buildShared();
 		break;
-	case "npm:api":
-		await buildApi("npm");
+	case "api":
+		await buildApi();
 		break;
-	case "npm:node-auth":
-		await buildNode("npm");
+	case "node-auth":
+		await buildNode();
 		break;
-	case "npm:web-auth":
-		await buildWeb("npm");
+	case "web-auth":
+		await buildWeb();
 		break;
 	default:
 		throw new Error(`Invalid argument for build type. '${buildType}'`);

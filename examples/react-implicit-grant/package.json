@@ -18,7 +18,7 @@
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
 		"react-router-dom": "6.9.0",
-		"@soundify/web-auth": "link:../../dist/web-auth",
-		"@soundify/api": "link:../../dist/api"
+		"@soundify/web-auth": "workspace:*",
+		"@soundify/api": "workspace:*"
 	}
 }
