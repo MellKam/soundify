@@ -46,14 +46,14 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          deno task build npm:shared ${{steps.get_tag_version.outputs.TAG_VERSION}} 
+          deno task build shared ${{steps.get_tag_version.outputs.TAG_VERSION}} 
           cd ./dist/shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ../..
 
-          deno task build npm:api ${{steps.get_tag_version.outputs.TAG_VERSION}}
+          deno task build api ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./dist/api/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ../..
 
-          deno task build npm:web-auth ${{steps.get_tag_version.outputs.TAG_VERSION}}
+          deno task build web-auth ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./dist/web-auth/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ../..
 
-          deno task build npm:node-auth ${{steps.get_tag_version.outputs.TAG_VERSION}}
+          deno task build node-auth ${{steps.get_tag_version.outputs.TAG_VERSION}}
           cd ./dist/node-auth/ && pnpm publish --ignore-scripts --access public --no-git-checks
