@@ -1,9 +1,9 @@
-import { HTTPClient, JSONObject, QueryParams } from "shared/mod.ts";
+import { HTTPClient, JSONObject, SearchParams } from "shared/mod.ts";
 import { Market } from "api/market/market.types.ts";
 import { PagingObject, PagingOptions } from "api/general.types.ts";
 import { Playlist, PlaylistTrack } from "api/playlist/playlist.types.ts";
 
-interface PlaylistFieldsOpts extends QueryParams {
+interface PlaylistFieldsOpts extends SearchParams {
 	/**
 	 * List of item types that your client supports besides the default track type.
 	 */
@@ -15,7 +15,7 @@ interface PlaylistFieldsOpts extends QueryParams {
 	fields?: string;
 }
 
-interface GetPlaylistOpts extends QueryParams, PlaylistFieldsOpts {
+interface GetPlaylistOpts extends SearchParams, PlaylistFieldsOpts {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 * If a country code is specified, only content that is available in that market will be returned.
@@ -80,7 +80,7 @@ export const changePlaylistDetails = async (
 };
 
 interface GetPlaylistTracksOpts
-	extends QueryParams, PlaylistFieldsOpts, PagingOptions {
+	extends SearchParams, PlaylistFieldsOpts, PagingOptions {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 * If a country code is specified, only content that is available in that market will be returned.

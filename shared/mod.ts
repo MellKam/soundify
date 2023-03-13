@@ -1,14 +1,14 @@
-export type QueryParam = string | number | boolean | undefined | string[];
-export type QueryParams = Record<string, QueryParam>;
+export type SearchParam = string | number | boolean | undefined | string[];
+export type SearchParams = Record<string, SearchParam>;
 
 /**
  * Creates URLSearchParams from object
  *
  * You can use `new URLSearchParams(obj)`, when your object
- * `extends Record<string, string>`. Otherwise use this function.
+ * extends `Record<string, string>`. Otherwise use this function.
  */
-export const searchParamsFromObj = <
-	T extends Record<string, QueryParam>,
+export const objectToSearchParams = <
+	T extends SearchParams,
 >(
 	obj: T,
 ): URLSearchParams => {
@@ -18,10 +18,6 @@ export const searchParamsFromObj = <
 		const value = obj[key];
 
 		if (typeof value === "undefined") return;
-		if (Array.isArray(value)) {
-			params.set(key, value.join(","));
-		}
-
 		params.set(key, value.toString());
 	});
 
@@ -37,8 +33,7 @@ export type JSONValue =
 	| JSONObject
 	| JSONArray;
 
-export type JSONArray = Array<JSONValue>;
-
+export type JSONArray = JSONValue[];
 export interface JSONObject {
 	[x: string]: JSONValue;
 }
@@ -48,33 +43,55 @@ export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 export interface FetchOpts {
 	method?: HTTPMethod;
 	body?: JSONValue;
-	query?: QueryParams;
+	query?: SearchParams;
 }
 
+export type ExpectedResponse = "json" | "void";
+
+/**
+ * Interface that provides a fetch method to make HTTP requests.
+ */
 export interface HTTPClient {
+	/**
+	 * Sends an HTTP request.
+	 *
+	 * @param baseURL
+	 * The base URL for the API request. Must begin with "/"
+	 * @param returnType
+	 * The expected return type of the API response.
+	 * @param opts
+	 * Optional request options, such as the request body or query parameters.
+	 */
 	fetch(
 		baseURL: string,
-		returnType: "void",
+		responseType: "void",
 		opts?: FetchOpts,
 	): Promise<void>;
 	fetch<
-		R extends unknown,
+		R extends JSONValue = JSONValue,
 	>(
 		baseURL: string,
-		returnType: "json",
+		responseType: "json",
 		opts?: FetchOpts,
 	): Promise<R>;
 }
 
-export interface IAuthProvider {
+/**
+ * The interface used to provide access token with the ability to refresh it
+ */
+export interface Accessor {
 	/**
-	 * Function that gives you Spotify access token.
+	 * Function that gives you access token.
 	 */
 	getAccessToken: (
 		/**
-		 * Should the service refresh the token
+		 * Does the service have to refresh the token, or give you a cached token
 		 * @default false
 		 */
 		forceRefresh?: boolean,
 	) => Promise<string>;
 }
+
+export type NonNullableJSON<T extends JSONObject> = {
+	[K in keyof T]: NonNullable<T[K]>;
+};

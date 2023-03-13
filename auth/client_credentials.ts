@@ -1,7 +1,7 @@
 import { API_TOKEN_URL, URL_ENCODED } from "auth/consts.ts";
 import { getBasicAuthHeader } from "auth/helpers.ts";
 import { AccessResponse } from "auth/types.ts";
-import { IAuthProvider } from "shared/mod.ts";
+import { Accessor } from "shared/mod.ts";
 
 export const getAccessToken = async (opts: {
 	client_id: string;
@@ -29,7 +29,7 @@ export const getAccessToken = async (opts: {
 	return (await res.json()) as AccessResponse;
 };
 
-export class AuthProvider implements IAuthProvider {
+export class AccessProvider implements Accessor {
 	#access_token: string | null = null;
 
 	constructor(

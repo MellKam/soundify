@@ -1,20 +1,39 @@
 import { SpecifierMappings } from "https://deno.land/x/dnt@0.33.0/transform.ts";
 import { build, emptyDir } from "https://deno.land/x/dnt@0.33.1/mod.ts";
 
-const buildType = Deno.args[0] as
-	| "local"
-	| `npm:${"api" | "web" | "node" | "shared"}`
-	| undefined ?? "local";
+type Package = "api" | `${"web" | "node"}-auth` | "shared";
+type BuildType = "local" | `npm:${Package}`;
 
-const version = Deno.args[1]?.replace(/^v/, "");
+const getArgs = () => {
+	const buildType = Deno.args.at(0) as BuildType | undefined ?? "local";
+
+	let version = Deno.args.at(1);
+	if (buildType === "local" && !version) {
+		version = "v0.0.0";
+	}
+	if (!version) {
+		throw new Error("Need to specify version for npm package");
+	}
+
+	const isValidVersion = /v[0-9]+\.[0-9]+\.[0-9]+/.test(version);
+	if (!isValidVersion) {
+		throw new Error(`Invalid package version format ${version}`);
+	}
+
+	version = version.replace(/^v/, "");
+
+	return { version, buildType };
+};
+
+const { buildType, version } = getArgs();
 
 const buildPackage = async (opts: {
 	packageName: string;
 	entryPoint: string;
 	outDir: string;
-	environment: "browser" | "node";
 	mappings?: SpecifierMappings;
 	dependencies?: Record<string, string>;
+	devDependencies?: Record<string, string>;
 	description: string;
 }) => {
 	await emptyDir(opts.outDir);
@@ -41,10 +60,9 @@ const buildPackage = async (opts: {
 		package: {
 			name: opts.packageName,
 			version,
+			description: opts.description,
 			license: "MIT",
-			devDependencies: {
-				"@types/node": opts.environment === "node" ? "latest" : undefined,
-			},
+			devDependencies: opts.devDependencies,
 			dependencies: opts.dependencies,
 			packageManager: "pnpm@7.29.1",
 			repository: {
@@ -56,6 +74,18 @@ const buildPackage = async (opts: {
 				url: "https://github.com/MellKam",
 			},
 			homepage: "https://github.com/MellKam/soundify/readme",
+			keywords: [
+				"spotify",
+				"api",
+				"wrapper",
+				"music",
+				"client",
+				"soundify",
+				"web",
+				"js",
+				"ts",
+				"deno",
+			],
 		},
 	});
 };
@@ -67,7 +97,6 @@ const buildShared = async () => {
 		entryPoint: "./shared/mod.ts",
 		outDir: "./dist/shared/",
 		packageName: "@soundify/shared",
-		environment: "browser",
 		description: "Shared types and functions for soundify packages",
 	});
 };
@@ -79,12 +108,14 @@ const buildApi = async (type: "local" | "npm") => {
 		entryPoint: "./api/mod.ts",
 		outDir: "./dist/api/",
 		packageName: "@soundify/api",
-		environment: "browser",
 		mappings: {
 			"shared/mod.ts": {
 				name: "@soundify/shared",
 				version,
 			},
+		},
+		devDependencies: {
+			"@types/node": "latest",
 		},
 		dependencies: {
 			"@soundify/shared": type === "local" ? "link:../shared" : version,
@@ -94,13 +125,12 @@ const buildApi = async (type: "local" | "npm") => {
 };
 
 const buildWeb = async (type: "local" | "npm") => {
-	console.log("\nBuild `@soudnfiy/web` ...\n");
+	console.log("\nBuild `@soudnfiy/web-auth` ...\n");
 
 	await buildPackage({
 		entryPoint: "./auth/mod.ts",
-		outDir: "./dist/web/",
-		packageName: "@soundify/web",
-		environment: "browser",
+		outDir: "./dist/web-auth/",
+		packageName: "@soundify/web-auth",
 		mappings: {
 			"auth/platform/platform.deno.ts": "./auth/platform/platform.web.ts",
 			"shared/mod.ts": {
@@ -116,13 +146,15 @@ const buildWeb = async (type: "local" | "npm") => {
 };
 
 const buildNode = async (type: "local" | "npm") => {
-	console.log("\nBuild `@soudnfiy/node` ...\n");
+	console.log("\nBuild `@soudnfiy/node-auth` ...\n");
 
 	await buildPackage({
 		entryPoint: "./auth/mod.ts",
-		outDir: "./dist/node/",
-		packageName: "@soundify/node",
-		environment: "node",
+		outDir: "./dist/node-auth/",
+		packageName: "@soundify/node-auth",
+		devDependencies: {
+			"@types/node": "latest",
+		},
 		mappings: {
 			"auth/platform/platform.deno.ts": "./auth/platform/platform.node.ts",
 			"node:buffer": "buffer",
@@ -139,19 +171,25 @@ const buildNode = async (type: "local" | "npm") => {
 	});
 };
 
-if (buildType === "local") {
-	await buildShared();
-	await buildApi("local");
-	await buildWeb("local");
-	await buildNode("local");
-	Deno.exit(0);
+switch (buildType) {
+	case "local":
+		await buildShared();
+		await buildApi("local");
+		await buildWeb("local");
+		await buildNode("local");
+		break;
+	case "npm:shared":
+		await buildShared();
+		break;
+	case "npm:api":
+		await buildApi("npm");
+		break;
+	case "npm:node-auth":
+		await buildNode("npm");
+		break;
+	case "npm:web-auth":
+		await buildWeb("npm");
+		break;
+	default:
+		throw new Error(`Invalid argument for build type. '${buildType}'`);
 }
-
-const buildMap = {
-	"npm:shared": buildShared,
-	"npm:api": buildApi,
-	"npm:web": buildWeb,
-	"npm:node": buildNode,
-};
-
-await buildMap[buildType]("npm");

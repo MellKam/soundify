@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCookie, setCookie } from "cookies-next";
-import { AuthCode } from "@soundify/node";
+import { AuthCode } from "@soundify/node-auth";
 import {
 	env,
 	SPOTIFY_ACCESS_TOKEN,

@@ -1,4 +1,4 @@
-import { AuthCode } from "@soundify/node";
+import { AuthCode } from "@soundify/node-auth";
 import { randomUUID } from "node:crypto";
 import express from "express";
 import cookieParser from "cookie-parser";

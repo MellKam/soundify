@@ -2,8 +2,8 @@ lockfileVersion: 5.4
 
 specifiers:
   '@soundify/api': link:../../dist/api
-  '@soundify/node': link:../../dist/node
-  '@types/node': 18.15.0
+  '@soundify/node-auth': link:../../dist/node-auth
+  '@types/node': 18.15.1
   '@types/react': 18.0.28
   '@types/react-dom': 18.0.11
   cookies-next: 2.1.1
@@ -14,8 +14,8 @@ specifiers:
 
 dependencies:
   '@soundify/api': link:../../dist/api
-  '@soundify/node': link:../../dist/node
-  '@types/node': 18.15.0
+  '@soundify/node-auth': link:../../dist/node-auth
+  '@types/node': 18.15.1
   '@types/react': 18.0.28
   '@types/react-dom': 18.0.11
   cookies-next: 2.1.1
@@ -161,8 +161,8 @@ packages:
     resolution: {integrity: sha512-wvzClDGQXOCVNU4APPopC2KtMYukaF1MN/W3xAmslx22Z4/IF1/izDMekuyoUlwfnDHYCIZGaj7jMwnJKBTxKw==}
     dev: false
 
-  /@types/node/18.15.0:
-    resolution: {integrity: sha512-z6nr0TTEOBGkzLGmbypWOGnpSpSIBorEhC4L+4HeQ2iezKCi4f77kyslRwvHeNitymGQ+oFyIWGP96l/DPSV9w==}
+  /@types/node/18.15.1:
+    resolution: {integrity: sha512-U2TWca8AeHSmbpi314QBESRk7oPjSZjDsR+c+H4ECC1l+kFgpZf8Ydhv3SJpPy51VyZHHqxlb6mTTqYNNRVAIw==}
     dev: false
 
   /@types/prop-types/15.7.5:

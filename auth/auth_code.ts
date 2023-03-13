@@ -1,4 +1,4 @@
-import { IAuthProvider, searchParamsFromObj } from "shared/mod.ts";
+import { Accessor, objectToSearchParams } from "shared/mod.ts";
 import {
 	API_TOKEN_URL,
 	AUTHORIZE_URL,
@@ -56,7 +56,7 @@ export const getAuthURL = (
 ) => {
 	const url = new URL(AUTHORIZE_URL);
 
-	url.search = searchParamsFromObj<AuthorizeReqParams>({
+	url.search = objectToSearchParams<AuthorizeReqParams>({
 		response_type: "code",
 		scope: scopes?.join(" "),
 		...opts,
@@ -96,7 +96,7 @@ export const getGrantData = async (
 			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
 			"Content-Type": URL_ENCODED,
 		},
-		body: searchParamsFromObj<ApiTokenReqParams>({
+		body: objectToSearchParams<ApiTokenReqParams>({
 			code: opts.code,
 			redirect_uri: opts.redirect_uri,
 			grant_type: "authorization_code",
@@ -137,7 +137,7 @@ export const refresh = async (opts: {
 			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
 			"Content-Type": URL_ENCODED,
 		},
-		body: searchParamsFromObj<ApiTokenReqParams>({
+		body: objectToSearchParams<ApiTokenReqParams>({
 			refresh_token: opts.refresh_token,
 			grant_type: "refresh_token",
 		}),
@@ -150,7 +150,7 @@ export const refresh = async (opts: {
 	return (await res.json()) as ScopedAccessResponse;
 };
 
-export class AuthProvider implements IAuthProvider {
+export class AccessProvider implements Accessor {
 	constructor(
 		private readonly opts: {
 			readonly client_id: string;

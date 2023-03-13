@@ -1,4 +1,4 @@
-import { JSONObject, QueryParams } from "shared/mod.ts";
+import { JSONObject, SearchParams } from "shared/mod.ts";
 import { AlbumSimplified } from "api/album/album.types.ts";
 import { Artist } from "api/artist/artist.types.ts";
 import { Genre } from "api/genre/genre.types.ts";
@@ -455,7 +455,7 @@ export interface AudioAnalysis extends JSONObject {
 	tatums: AudioAnalysisGeneric[];
 }
 
-export interface GetRecommendationsOpts extends QueryParams {
+export interface GetRecommendationsOpts extends SearchParams {
 	/**
 	 * List of Spotify IDs for seed artists. Maximum 5 IDs
 	 */

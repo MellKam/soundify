@@ -1,4 +1,3 @@
-// dnt-shim-ignore
 export const encodeToBase64 = (data: string): string => {
 	return btoa(data);
 };

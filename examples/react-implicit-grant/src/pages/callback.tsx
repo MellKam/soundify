@@ -1,4 +1,4 @@
-import { ImplicitGrant } from "@soundify/web";
+import { ImplicitGrant } from "@soundify/web-auth";
 
 export const Page = () => {
 	const { access_token } = ImplicitGrant.getGrantData(location.hash);

@@ -6,7 +6,7 @@ import {
 	PagingObject,
 	PagingOptions,
 } from "api/general.types.ts";
-import { HTTPClient, QueryParams } from "shared/mod.ts";
+import { HTTPClient, SearchParams } from "shared/mod.ts";
 
 /**
  * Get detailed profile information about the current user.
@@ -17,7 +17,7 @@ export const getCurrentUserProfile = async (client: HTTPClient) => {
 	return await client.fetch<UserPrivate>("/me", "json");
 };
 
-interface GetUserTopItemsOpts extends QueryParams, PagingOptions {
+interface GetUserTopItemsOpts extends SearchParams, PagingOptions {
 	/**
 	 * Over what time frame the affinities are computed.
 	 *
@@ -141,7 +141,7 @@ export const unfollowPlaylist = async (
 };
 
 interface GetFollowedArtistsOpts
-	extends QueryParams, Pick<PagingOptions, "limit"> {
+	extends SearchParams, Pick<PagingOptions, "limit"> {
 	/**
 	 * The last artist ID retrieved from the previous request.
 	 */

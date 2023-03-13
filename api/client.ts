@@ -1,9 +1,10 @@
 import {
+	Accessor,
+	ExpectedResponse,
 	FetchOpts,
 	HTTPClient,
-	IAuthProvider,
-	JSONObject,
-	searchParamsFromObj,
+	JSONValue,
+	objectToSearchParams,
 } from "shared/mod.ts";
 
 type Retry = {
@@ -34,6 +35,9 @@ interface SpotifyRegularError {
 	};
 }
 
+/**
+ * Client will throw this error if spotify will return error
+ */
 export class SpotifyError extends Error {
 	constructor(message: string, public readonly status: number) {
 		super(message);
@@ -67,9 +71,9 @@ export interface SpotifyClientOpts {
  */
 export class SpotifyClient implements HTTPClient {
 	/**
-	 * Access Token or object that implements `IAuthProvider`
+	 * Access token or object that implements `Accessor`
 	 */
-	#authProvider: IAuthProvider | string;
+	#accessor: string | Accessor;
 	#retry5xx: Retry = {
 		times: 0,
 		delay: 0,
@@ -81,49 +85,44 @@ export class SpotifyClient implements HTTPClient {
 
 	constructor(
 		/**
-		 * It is recommended to pass a class that implements `IAuthProvider`
+		 * It is recommended to pass a class that implements `Accessor`
 		 * to automatically update tokens. If you do not need this behavior,
 		 * you can simply pass an access token.
 		 */
-		authProvider: IAuthProvider | string,
+		accessor: Accessor | string,
 		opts: SpotifyClientOpts = {},
 	) {
-		this.#authProvider = authProvider;
+		this.#accessor = accessor;
 		if (opts.retry5xx) this.#retry5xx = opts.retry5xx;
 		if (opts.retry429) this.#retry429 = opts.retry429;
 	}
 
-	setAuthProvider(authProvider: IAuthProvider | string) {
-		this.#authProvider = authProvider;
+	setAccessor(accessor: Accessor | string) {
+		this.#accessor = accessor;
 	}
 
-	/**
-	 * Sends an HTTP request to the Spotify API.
-	 *
-	 * @param baseURL The base URL for the API request. Must begin with "/"
-	 * @param returnType The expected return type of the API response.
-	 * @param opts Optional request options, such as the request body or query parameters.
-	 */
-	async fetch(
+	fetch(
 		baseURL: string,
-		returnType: "void",
+		responseType: "void",
 		opts?: FetchOpts,
 	): Promise<void>;
-	async fetch<R extends JSONObject = JSONObject>(
+	fetch<
+		R extends JSONValue = JSONValue,
+	>(
 		baseURL: string,
-		returnType: "json",
+		responseType: "json",
 		opts?: FetchOpts,
 	): Promise<R>;
 	async fetch<
-		R extends JSONObject = JSONObject,
+		R extends JSONValue = JSONValue,
 	>(
 		baseURL: string,
-		returnType: "void" | "json",
+		responseType: ExpectedResponse,
 		{ body, query, method }: FetchOpts = {},
 	): Promise<R | void> {
 		const url = new URL("https://api.spotify.com/v1" + baseURL);
 		if (query) {
-			url.search = searchParamsFromObj(query).toString();
+			url.search = objectToSearchParams(query).toString();
 		}
 		const serializedBody = body ? JSON.stringify(body) : undefined;
 
@@ -131,9 +130,9 @@ export class SpotifyClient implements HTTPClient {
 		let retry5xx = this.#retry5xx.times;
 		let retry429 = this.#retry429.times;
 
-		let accessToken = typeof this.#authProvider === "string"
-			? this.#authProvider
-			: await this.#authProvider.getAccessToken();
+		let accessToken = typeof this.#accessor === "string"
+			? this.#accessor
+			: await this.#accessor.getAccessToken();
 
 		const call = async (): Promise<Response> => {
 			const res = await fetch(url, {
@@ -149,10 +148,10 @@ export class SpotifyClient implements HTTPClient {
 			if (res.ok) return res;
 
 			if (
-				res.status === 401 && typeof this.#authProvider !== "string" &&
+				res.status === 401 && typeof this.#accessor !== "string" &&
 				!isTriedRefresh
 			) {
-				const newToken = await this.#authProvider.getAccessToken(true);
+				const newToken = await this.#accessor.getAccessToken(true);
 				accessToken = newToken;
 				isTriedRefresh = true;
 				return call();
@@ -190,7 +189,7 @@ export class SpotifyClient implements HTTPClient {
 
 		const res = await call();
 
-		if (returnType === "json") {
+		if (responseType === "json") {
 			return await res.json() as R;
 		}
 		if (res.body) await res.body.cancel();

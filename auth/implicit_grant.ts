@@ -1,4 +1,4 @@
-import { searchParamsFromObj } from "shared/mod.ts";
+import { objectToSearchParams } from "shared/mod.ts";
 import { AUTHORIZE_URL, AuthScope } from "auth/consts.ts";
 import { AccessResponse } from "auth/types.ts";
 import { AuthorizeReqParams } from "auth/types.ts";
@@ -39,7 +39,7 @@ export type GetAuthURLOpts = {
 export const getAuthURL = ({ scopes, ...opts }: GetAuthURLOpts) => {
 	const url = new URL(AUTHORIZE_URL);
 
-	url.search = searchParamsFromObj<AuthorizeReqParams>({
+	url.search = objectToSearchParams<AuthorizeReqParams>({
 		response_type: "token",
 		scope: scopes?.join(" "),
 		...opts,

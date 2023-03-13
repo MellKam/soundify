@@ -2,10 +2,10 @@ import {
 	assert,
 	assertArrayIncludes,
 } from "https://deno.land/std@0.178.0/testing/asserts.ts";
-import { searchParamsFromObj } from "shared/mod.ts";
+import { objectToSearchParams } from "shared/mod.ts";
 
 Deno.test("Create URLSearchParams from object", () => {
-	const searchParams = searchParamsFromObj({
+	const searchParams = objectToSearchParams({
 		a: ["1", "2", "3"],
 		b: true,
 		c: 5,

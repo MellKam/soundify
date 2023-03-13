@@ -1,3 +1,5 @@
+import { SearchParams } from "../shared/mod.ts";
+
 export interface AccessResponse {
 	/**
 	 * An Access Token that can be provided in subsequent calls,
@@ -33,10 +35,9 @@ export interface KeypairResponse extends ScopedAccessResponse {
 }
 
 /**
- * Query parameters for the `GET` request to the `/authorize` endpoint
+ * Search parameters for the `GET` request to the `/authorize` endpoint
  */
-export interface AuthorizeReqParams
-	extends Record<PropertyKey, string | undefined | boolean> {
+export interface AuthorizeReqParams extends SearchParams {
 	client_id: string;
 	response_type: "code" | "token";
 	redirect_uri: string;
@@ -48,10 +49,9 @@ export interface AuthorizeReqParams
 }
 
 /**
- * Query parameters for the `GET` request to the `/api/token` endpoint
+ * Search parameters for the `GET` request to the `/api/token` endpoint
  */
-export interface ApiTokenReqParams
-	extends Record<PropertyKey, string | undefined> {
+export interface ApiTokenReqParams extends SearchParams {
 	refresh_token?: string;
 	code?: string;
 	redirect_uri?: string;

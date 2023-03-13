@@ -1,8 +1,4 @@
-import { JSONObject, QueryParams } from "shared/mod.ts";
-
-export type NonNullableJSON<T extends JSONObject> = {
-	[K in keyof T]: NonNullable<T[K]>;
-};
+import { JSONObject, SearchParams } from "shared/mod.ts";
 
 export interface PagingObject<T extends JSONObject> extends JSONObject {
 	/**
@@ -65,7 +61,7 @@ export interface CursorPagingObject<T extends JSONObject> extends JSONObject {
 	items: T[];
 }
 
-export interface PagingOptions extends QueryParams {
+export interface PagingOptions extends SearchParams {
 	/**
 	 * The maximum number of items to return. Minimum: 1. Maximum: 50.
 	 * @default 20

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { randomUUID } from "node:crypto";
 import { setCookie } from "cookies-next";
-import { AuthCode } from "@soundify/node";
+import { AuthCode } from "@soundify/node-auth";
 import { env, SPOTIFY_STATE } from "../../spotify";
 
 export default function (
