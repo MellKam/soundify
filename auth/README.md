@@ -1,8 +1,21 @@
 # Soundify Authorization
 
-<a href="https://bundlejs.com/?q=%40soundify%2Fweb-auth">
-  <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fweb-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth" alt="soundify/web-auth">
-</a>
+<p>
+  <a href="https://bundlejs.com/?q=%40soundify%2Fnode-auth">
+    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fnode-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fnode-auth" alt="soundify/node-auth">
+  </a>
+  <a href="https://bundlejs.com/?q=%40soundify%2Fweb-auth">
+    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fweb-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth" alt="soundify/web-auth">
+  </a>
+</p>
+
+
+
+      
+
+
+
+
 
 If you have no experience with Spotify Auth you can read more about it in the
 [Spotify Authorization Guide](https://developer.spotify.com/documentation/general/guides/authorization/).

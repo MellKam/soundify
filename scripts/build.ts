@@ -35,6 +35,7 @@ const buildPackage = async (opts: {
 	dependencies?: Record<string, string>;
 	devDependencies?: Record<string, string>;
 	description: string;
+	postBuild?: () => Promise<void> | void;
 }) => {
 	await emptyDir(opts.outDir);
 
@@ -50,6 +51,7 @@ const buildPackage = async (opts: {
 		packageManager: "pnpm",
 		postBuild: async () => {
 			await Deno.copyFile("./LICENSE", opts.outDir + "LICENSE");
+			if (opts.postBuild) await opts.postBuild();
 		},
 		mappings: opts.mappings,
 		compilerOptions: {
@@ -97,7 +99,10 @@ const buildShared = async () => {
 		entryPoint: "./shared/mod.ts",
 		outDir: "./dist/shared/",
 		packageName: "@soundify/shared",
-		description: "Shared types and functions for soundify packages",
+		description: "⚙️ Shared types and functions for soundify packages",
+		postBuild: async () => {
+			await Deno.copyFile("./shared/README.md", "./dist/shared/README.md");
+		},
 	});
 };
 
@@ -120,7 +125,10 @@ const buildApi = async () => {
 		dependencies: {
 			"@soundify/shared": "workspace:*",
 		},
-		description: "Modern Spotify api wrapper for Node, Deno, and browser 🎧",
+		description: "🎧 Modern Spotify api wrapper for Node, Deno, and browser",
+		postBuild: async () => {
+			await Deno.copyFile("./api/README.md", "./dist/api/README.md");
+		},
 	});
 };
 
@@ -142,6 +150,9 @@ const buildWeb = async () => {
 			"@soundify/shared": "workspace:*",
 		},
 		description: "🔑 Spoitfy authorization for browser",
+		postBuild: async () => {
+			await Deno.copyFile("./auth/README.md", "./dist/web-auth/README.md");
+		},
 	});
 };
 
@@ -168,6 +179,9 @@ const buildNode = async () => {
 			"@soundify/shared": "workspace:*",
 		},
 		description: "🔑 Spoitfy authorization for nodejs",
+		postBuild: async () => {
+			await Deno.copyFile("./auth/README.md", "./dist/node-auth/README.md");
+		},
 	});
 };
 
