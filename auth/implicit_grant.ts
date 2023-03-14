@@ -1,7 +1,10 @@
 import { objectToSearchParams } from "shared/mod.ts";
-import { AUTHORIZE_URL, AuthScope } from "auth/consts.ts";
-import { AccessResponse } from "auth/types.ts";
-import { AuthorizeReqParams } from "auth/types.ts";
+import {
+	AccessResponse,
+	AUTHORIZE_URL,
+	AuthorizeReqParams,
+	AuthScope,
+} from "auth/general.ts";
 
 export type GetAuthURLOpts = {
 	/**

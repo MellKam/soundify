@@ -1,17 +1,15 @@
-import { Accessor, objectToSearchParams } from "shared/mod.ts";
+import { IAccessProvider, objectToSearchParams } from "shared/mod.ts";
 import {
 	API_TOKEN_URL,
-	AUTHORIZE_URL,
-	AuthScope,
-	URL_ENCODED,
-} from "auth/consts.ts";
-import { getBasicAuthHeader } from "auth/helpers.ts";
-import {
 	ApiTokenReqParams,
+	AUTHORIZE_URL,
 	AuthorizeReqParams,
+	AuthScope,
+	getBasicAuthHeader,
 	KeypairResponse,
 	ScopedAccessResponse,
-} from "auth/types.ts";
+	URL_ENCODED,
+} from "auth/general.ts";
 
 export type GetAuthURLOpts = {
 	/**
@@ -150,7 +148,7 @@ export const refresh = async (opts: {
 	return (await res.json()) as ScopedAccessResponse;
 };
 
-export class AccessProvider implements Accessor {
+export class AccessProvider implements IAccessProvider {
 	constructor(
 		private readonly opts: {
 			readonly client_id: string;

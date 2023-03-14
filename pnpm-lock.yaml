@@ -9,7 +9,10 @@ importers:
     dependencies:
       '@soundify/shared': link:../shared
     devDependencies:
-      '@types/node': 18.15.1
+      '@types/node': 18.15.3
+
+  dist/api/esm:
+    specifiers: {}
 
   dist/node-auth:
     specifiers:
@@ -18,7 +21,7 @@ importers:
     dependencies:
       '@soundify/shared': link:../shared
     devDependencies:
-      '@types/node': 18.15.1
+      '@types/node': 18.15.3
 
   dist/node-auth/esm:
     specifiers: {}
@@ -48,7 +51,7 @@ importers:
     specifiers:
       '@soundify/api': workspace:*
       '@soundify/node-auth': workspace:*
-      '@types/node': 18.15.1
+      '@types/node': latest
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
       cookies-next: 2.1.1
@@ -59,7 +62,7 @@ importers:
     dependencies:
       '@soundify/api': link:../../dist/api
       '@soundify/node-auth': link:../../dist/node-auth
-      '@types/node': 18.15.1
+      '@types/node': 18.15.3
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
       cookies-next: 2.1.1
@@ -73,7 +76,7 @@ importers:
       '@soundify/node-auth': workspace:*
       '@types/cookie-parser': 1.4.3
       '@types/express': 4.17.17
-      '@types/node': 18.15.1
+      '@types/node': latest
       cookie-parser: 1.4.6
       express: 4.18.2
       typescript: 4.9.5
@@ -84,7 +87,7 @@ importers:
     devDependencies:
       '@types/cookie-parser': 1.4.3
       '@types/express': 4.17.17
-      '@types/node': 18.15.1
+      '@types/node': 18.15.3
       typescript: 4.9.5
 
   examples/react-implicit-grant:
@@ -765,13 +768,13 @@ packages:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 18.15.1
+      '@types/node': 18.15.3
     dev: true
 
   /@types/connect/3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
-      '@types/node': 18.15.1
+      '@types/node': 18.15.3
     dev: true
 
   /@types/cookie-parser/1.4.3:
@@ -787,7 +790,7 @@ packages:
   /@types/express-serve-static-core/4.17.33:
     resolution: {integrity: sha512-TPBqmR/HRYI3eC2E5hmiivIzv+bidAfXofM+sbonAGvyDhySGw9/PQZFt2BLOrjUUR++4eJVpx6KnLQK1Fk9tA==}
     dependencies:
-      '@types/node': 18.15.1
+      '@types/node': 18.15.3
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
     dev: true
@@ -811,6 +814,10 @@ packages:
 
   /@types/node/18.15.1:
     resolution: {integrity: sha512-U2TWca8AeHSmbpi314QBESRk7oPjSZjDsR+c+H4ECC1l+kFgpZf8Ydhv3SJpPy51VyZHHqxlb6mTTqYNNRVAIw==}
+    dev: true
+
+  /@types/node/18.15.3:
+    resolution: {integrity: sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==}
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
@@ -842,7 +849,7 @@ packages:
     resolution: {integrity: sha512-NUo5XNiAdULrJENtJXZZ3fHtfMolzZwczzBbnAeBbqBwG+LaG6YaJtuwzwGSQZ2wsCrxjEhNNjAkKigy3n8teQ==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 18.15.1
+      '@types/node': 18.15.3
     dev: true
 
   /@vitejs/plugin-react/3.1.0_vite@4.1.4:

@@ -324,23 +324,6 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 	mockFetch.reset();
 });
 
-Deno.test("SpotifyClient with not json error body as json response", async () => {
-	mockFetch.mock("GET@/v1/me", () => {
-		return new Response(null, { status: 400 });
-	});
-
-	const client = new SpotifyClient("");
-
-	try {
-		await client.fetch("/me", "void");
-	} catch (error) {
-		assertInstanceOf(error, SpotifyError);
-		assert(error.message === "Unable to read response body (not a json value)");
-	}
-
-	mockFetch.reset();
-});
-
 Deno.test("SpotifyClient tests for setAuthProvider method", async () => {
 	mockFetch.mock("GET@/v1/me", (req) => {
 		const accessToken = req.headers.get("authorization")?.split(" ").at(1);
@@ -349,13 +332,19 @@ Deno.test("SpotifyClient tests for setAuthProvider method", async () => {
 		}
 
 		if (accessToken === "1") {
-			return new Response(null, { status: 401 });
+			return new Response(
+				JSON.stringify({ error: { status: 401, error: "Error" } }),
+				{ status: 401 },
+			);
 		}
 		if (accessToken === "2") {
 			return new Response(null);
 		}
 
-		return new Response(null, { status: 500 });
+		return new Response(
+			JSON.stringify({ error: { status: 500, error: "Error" } }),
+			{ status: 500 },
+		);
 	});
 
 	const client = new SpotifyClient("1");
@@ -366,7 +355,7 @@ Deno.test("SpotifyClient tests for setAuthProvider method", async () => {
 		assertInstanceOf(error, SpotifyError);
 		assert(error.status === 401);
 
-		client.setAccessor("2");
+		client.setAccessProvider("2");
 		await client.fetch("/me", "void");
 	}
 

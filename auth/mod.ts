@@ -1,9 +1,10 @@
-export { type AuthScope, SCOPES } from "auth/consts.ts";
 export {
 	type AccessResponse,
+	type AuthScope,
 	type KeypairResponse,
 	type ScopedAccessResponse,
-} from "auth/types.ts";
+	SCOPES,
+} from "auth/general.ts";
 
 export * as AuthCode from "auth/auth_code.ts";
 export * as PKCEAuthCode from "auth/pkce_auth_code.ts";

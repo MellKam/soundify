@@ -17,14 +17,14 @@ For instance, the following code imports all authorization flow namespaces:
 
 ```ts
 import {
-	// Authorization Code flow
-	AuthCode,
-	// Client Credentials flow
-	ClientCredentials,
-	// Implicit Grant flow
-	ImplicitGrant,
-	// Authorization Code flow with PKCE
-	PKCEAuthCode,
+  // Authorization Code flow
+  AuthCode,
+  // Client Credentials flow
+  ClientCredentials,
+  // Implicit Grant flow
+  ImplicitGrant,
+  // Authorization Code flow with PKCE
+  PKCEAuthCode,
 } from "@soundify/node-auth";
 ```
 
@@ -63,9 +63,9 @@ import { SpotifyClient } from "@soundify/api";
 import { AuthCode } from "@soundify/node-auth";
 
 const authProvider = new AuthCode.AccessProvider({
-	client_id: "YOUR_SPOTIFY_CLIENT_ID",
-	client_secret: "YOUR_SPOTIFY_CLIENT_SECRET",
-	refresh_token: "YOUR_REFRESH_TOKEN",
+  client_id: "YOUR_SPOTIFY_CLIENT_ID",
+  client_secret: "YOUR_SPOTIFY_CLIENT_SECRET",
+  refresh_token: "YOUR_REFRESH_TOKEN",
 });
 
 const client = new SpotifyClient(authProvider);

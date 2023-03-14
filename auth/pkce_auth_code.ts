@@ -1,15 +1,13 @@
-import { Accessor, objectToSearchParams } from "shared/mod.ts";
+import { IAccessProvider, objectToSearchParams } from "shared/mod.ts";
 import {
 	API_TOKEN_URL,
-	AUTHORIZE_URL,
-	AuthScope,
-	URL_ENCODED,
-} from "auth/consts.ts";
-import {
 	ApiTokenReqParams,
+	AUTHORIZE_URL,
 	AuthorizeReqParams,
+	AuthScope,
 	KeypairResponse,
-} from "auth/types.ts";
+	URL_ENCODED,
+} from "auth/general.ts";
 import { getPKCECodeChallenge } from "auth/platform/platform.deno.ts";
 
 export type GetAuthURLOpts = {
@@ -165,7 +163,7 @@ export const refresh = async (opts: {
 	return (await res.json()) as KeypairResponse;
 };
 
-export class AccessProvider implements Accessor {
+export class AccessProvider implements IAccessProvider {
 	constructor(
 		private opts: {
 			readonly client_id: string;

@@ -13,8 +13,7 @@
 	},
 	"include": [
 		"mod.ts",
-		"client.ts",
-		"utils.ts",
+		"./shared/**/*.ts",
 		"./api/**/*.ts",
 		"./auth/**/*.ts"
 	],

@@ -1,8 +1,9 @@
 import {
-	Accessor,
 	ExpectedResponse,
 	FetchOpts,
 	HTTPClient,
+	IAccessProvider,
+	JSONObject,
 	JSONValue,
 	objectToSearchParams,
 } from "shared/mod.ts";
@@ -22,7 +23,7 @@ type Retry = {
 	delay: number;
 };
 
-interface SpotifyRegularError {
+interface SpotifyRegularError extends JSONObject {
 	error: {
 		/**
 		 * A short description of the cause of the error.
@@ -36,11 +37,15 @@ interface SpotifyRegularError {
 }
 
 /**
- * Client will throw this error if spotify will return error
+ * The Spotify client will throw this error if the api response is not "ok" (status >= 400)
  */
 export class SpotifyError extends Error {
-	constructor(message: string, public readonly status: number) {
-		super(message);
+	constructor(
+		message: string,
+		public readonly status: number,
+		options?: ErrorOptions,
+	) {
+		super(message, options);
 		this.name = "SpotifyError" + status;
 	}
 }
@@ -71,9 +76,9 @@ export interface SpotifyClientOpts {
  */
 export class SpotifyClient implements HTTPClient {
 	/**
-	 * Access token or object that implements `Accessor`
+	 * Access token or object that implements `IAccessProvider`
 	 */
-	#accessor: string | Accessor;
+	#accessProvider: IAccessProvider | string;
 	#retry5xx: Retry = {
 		times: 0,
 		delay: 0,
@@ -89,16 +94,16 @@ export class SpotifyClient implements HTTPClient {
 		 * to automatically update tokens. If you do not need this behavior,
 		 * you can simply pass an access token.
 		 */
-		accessor: Accessor | string,
+		accessProvider: IAccessProvider | string,
 		opts: SpotifyClientOpts = {},
 	) {
-		this.#accessor = accessor;
+		this.#accessProvider = accessProvider;
 		if (opts.retry5xx) this.#retry5xx = opts.retry5xx;
 		if (opts.retry429) this.#retry429 = opts.retry429;
 	}
 
-	setAccessor(accessor: Accessor | string) {
-		this.#accessor = accessor;
+	setAccessProvider(accessor: IAccessProvider | string) {
+		this.#accessProvider = accessor;
 	}
 
 	fetch(
@@ -130,9 +135,9 @@ export class SpotifyClient implements HTTPClient {
 		let retry5xx = this.#retry5xx.times;
 		let retry429 = this.#retry429.times;
 
-		let accessToken = typeof this.#accessor === "string"
-			? this.#accessor
-			: await this.#accessor.getAccessToken();
+		let accessToken = typeof this.#accessProvider === "string"
+			? this.#accessProvider
+			: await this.#accessProvider.getAccessToken();
 
 		const call = async (): Promise<Response> => {
 			const res = await fetch(url, {
@@ -148,43 +153,40 @@ export class SpotifyClient implements HTTPClient {
 			if (res.ok) return res;
 
 			if (
-				res.status === 401 && typeof this.#accessor !== "string" &&
+				res.status === 401 && typeof this.#accessProvider !== "string" &&
 				!isTriedRefresh
 			) {
-				const newToken = await this.#accessor.getAccessToken(true);
-				accessToken = newToken;
-				isTriedRefresh = true;
-				return call();
+				try {
+					accessToken = await this.#accessProvider.getAccessToken(true);
+					isTriedRefresh = true;
+					return call();
+				} catch (e) {
+					throw new SpotifyError(
+						(await res.json() as SpotifyRegularError).error.message,
+						res.status,
+						{ cause: e },
+					);
+				}
 			}
 
-			if (res.status === 429 && retry429 > 0) {
-				if (this.#retry429.delay !== 0) {
-					await wait(this.#retry429.delay);
-				}
+			if (res.status === 429 && retry429) {
+				if (this.#retry429.delay) await wait(this.#retry429.delay);
+
 				retry429--;
 				return call();
 			}
 
-			if (res.status.toString().startsWith("5") && retry5xx > 0) {
-				if (this.#retry5xx.delay !== 0) {
-					await wait(this.#retry5xx.delay);
-				}
+			if (res.status.toString().startsWith("5") && retry5xx) {
+				if (this.#retry5xx.delay) await wait(this.#retry5xx.delay);
+
 				retry5xx--;
 				return call();
 			}
 
-			let error: SpotifyRegularError;
-
-			try {
-				error = await res.json() as SpotifyRegularError;
-			} catch (_) {
-				throw new SpotifyError(
-					"Unable to read response body (not a json value)",
-					res.status,
-				);
-			}
-
-			throw new SpotifyError(error.error.message, res.status);
+			throw new SpotifyError(
+				(await res.json() as SpotifyRegularError).error.message,
+				res.status,
+			);
 		};
 
 		const res = await call();
@@ -192,6 +194,6 @@ export class SpotifyClient implements HTTPClient {
 		if (responseType === "json") {
 			return await res.json() as R;
 		}
-		if (res.body) await res.body.cancel();
+		if (res.body) res.body.cancel();
 	}
 }

@@ -25,7 +25,6 @@ export const objectToSearchParams = <
 };
 
 export type JSONValue =
-	| undefined
 	| null
 	| string
 	| number
@@ -35,8 +34,12 @@ export type JSONValue =
 
 export type JSONArray = JSONValue[];
 export interface JSONObject {
-	[x: string]: JSONValue;
+	[x: string]: JSONValue | undefined;
 }
+
+export type NonNullableJSON<T extends JSONObject> = {
+	[K in keyof T]: NonNullable<T[K]>;
+};
 
 export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -79,7 +82,7 @@ export interface HTTPClient {
 /**
  * The interface used to provide access token with the ability to refresh it
  */
-export interface Accessor {
+export interface IAccessProvider {
 	/**
 	 * Function that gives you access token.
 	 */
@@ -91,7 +94,3 @@ export interface Accessor {
 		forceRefresh?: boolean,
 	) => Promise<string>;
 }
-
-export type NonNullableJSON<T extends JSONObject> = {
-	[K in keyof T]: NonNullable<T[K]>;
-};
