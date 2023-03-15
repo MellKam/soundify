@@ -65,7 +65,7 @@ import { SpotifyClient } from "@soundify/api";
 const client = new SpotifyClient("ACCESS_TOKEN");
 // ...
 // Oops, token expires :(
-client.setAccessor("NEW_ACCESS_TOKEN");
+client.setAuthProvider("NEW_ACCESS_TOKEN");
 ```
 
 But if you don't want to deal with all that, you can just create an
