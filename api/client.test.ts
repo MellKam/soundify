@@ -1,4 +1,4 @@
-import { SpotifyClient, SpotifyError, wait } from "api/client.ts";
+import { SpotifyClient, SpotifyError } from "api/client.ts";
 import { UserPrivate } from "api/user/user.types.ts";
 import * as mockFetch from "https://deno.land/x/mock_fetch@0.3.0/mod.ts";
 import {
@@ -9,9 +9,7 @@ import {
 import { privateUserStub } from "api/user/user.stubs.ts";
 import {
 	assertSpyCall,
-	assertSpyCallArg,
 	assertSpyCalls,
-	spy,
 	stub,
 } from "https://deno.land/std@0.178.0/testing/mock.ts";
 import { AuthCode } from "auth/mod.ts";
@@ -242,42 +240,31 @@ Deno.test("SpotifyClient with AuthProvider and double 401 error", async () => {
 	mockFetch.reset();
 });
 
-Deno.test("SpotifyClient with retries on 429", async () => {
+Deno.test("SpotifyClient with retry on 429", async () => {
 	let requestID = 0;
 
-	// will always throw and 429 error
 	mockFetch.mock("GET@/v1/me", () => {
 		requestID++;
-		if (requestID === 4) {
-			return new Response();
-		}
+		if (requestID === 2) return new Response();
 
 		return new Response(
 			JSON.stringify({ error: { message: "Rate limit hit", status: 429 } }),
 			{
+				headers: {
+					"Retry-After": "1", // retry after 1 second
+				},
 				status: 429,
 			},
 		);
 	});
 
-	const authProvider = new AuthCode.AccessProvider({
-		client_id: "",
-		client_secret: "",
-		refresh_token: "",
-		access_token: "",
-	});
-
-	const client = new SpotifyClient(authProvider, {
-		retry429: {
-			delay: 500,
-			times: 3,
-		},
+	const client = new SpotifyClient("", {
+		retryOnRateLimit: true,
 	});
 
 	await client.fetch("/me", "void");
 
-	// first request + 3 retries = 4 requests
-	assert(requestID === 4);
+	assert(requestID === 2);
 
 	mockFetch.reset();
 });
@@ -310,10 +297,8 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 	});
 
 	const client = new SpotifyClient(authProvider, {
-		retry5xx: {
-			delay: 500,
-			times: expectedRequestsCount - 1,
-		},
+		retryDelayOn5xx: 500,
+		retryTimesOn5xx: expectedRequestsCount - 1,
 	});
 
 	await client.fetch("/me", "void");
@@ -360,21 +345,4 @@ Deno.test("SpotifyClient tests for setAuthProvider method", async () => {
 	}
 
 	mockFetch.reset();
-});
-
-Deno.test("Must wait 1000ms", async () => {
-	const setTimeoutSpyier = spy(globalThis, "setTimeout");
-
-	const start = new Date().getTime();
-
-	await wait(1000).then(() => {
-		const timePassed = new Date().getTime() - start;
-		const delta = Math.abs(timePassed - 1000);
-
-		console.log(`Waited ${timePassed}ms. Delta ${delta}ms`);
-	});
-
-	assertSpyCallArg(setTimeoutSpyier, 0, 1, 1000);
-
-	setTimeoutSpyier.restore();
 });

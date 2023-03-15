@@ -51,10 +51,4 @@ export const client = new SpotifyClient(
 		client_secret: env.SPOTIFY_CLIENT_SECRET,
 		refresh_token: env.SPOTIFY_REFRESH_TOKEN,
 	}),
-	{
-		retry5xx: {
-			delay: 200,
-			times: 5,
-		},
-	},
 );

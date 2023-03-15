@@ -8,21 +8,6 @@ import {
 	objectToSearchParams,
 } from "shared/mod.ts";
 
-type Retry = {
-	/**
-	 * How many times do you want to try again until you throw the error
-	 *
-	 * @default 0
-	 */
-	times: number;
-	/**
-	 * How long in miliseconds do you want to wait until the next retry
-	 *
-	 * @default 0
-	 */
-	delay: number;
-};
-
 interface SpotifyRegularError extends JSONObject {
 	error: {
 		/**
@@ -50,25 +35,26 @@ export class SpotifyError extends Error {
 	}
 }
 
-/**
- * Returns promise that will be resolved after specified delay
- * @param delay milliseconds
- */
-export const wait = (delay: number) => {
-	return new Promise<void>((res) => {
-		setTimeout(res, delay);
-	});
-};
-
 export interface SpotifyClientOpts {
 	/**
-	 * Retry options for errors with status code >= 500
+	 * How many times do you want to try again until you throw the error
+	 *
+	 * @default 0
 	 */
-	retry5xx?: Retry;
+	retryTimesOn5xx?: number;
 	/**
-	 * Retry options for rate limit errors
+	 * How long in miliseconds do you want to wait until the next retry
+	 *
+	 * @default 0
 	 */
-	retry429?: Retry;
+	retryDelayOn5xx?: number;
+	/**
+	 * If it is set to true, it would refetch the same request after a paticular time interval sent by the spotify api in the headers `Retry-After` so you cannot face any obstacles.
+	 * Otherwise, it will throw an error.
+	 *
+	 * @default false
+	 */
+	retryOnRateLimit?: boolean;
 }
 
 /**
@@ -79,14 +65,6 @@ export class SpotifyClient implements HTTPClient {
 	 * Access token or object that implements `IAccessProvider`
 	 */
 	#accessProvider: IAccessProvider | string;
-	#retry5xx: Retry = {
-		times: 0,
-		delay: 0,
-	};
-	#retry429: Retry = {
-		times: 0,
-		delay: 0,
-	};
 
 	constructor(
 		/**
@@ -95,11 +73,13 @@ export class SpotifyClient implements HTTPClient {
 		 * you can simply pass an access token.
 		 */
 		accessProvider: IAccessProvider | string,
-		opts: SpotifyClientOpts = {},
+		private readonly opts: SpotifyClientOpts = {
+			retryOnRateLimit: false,
+			retryDelayOn5xx: 0,
+			retryTimesOn5xx: 0,
+		},
 	) {
 		this.#accessProvider = accessProvider;
-		if (opts.retry5xx) this.#retry5xx = opts.retry5xx;
-		if (opts.retry429) this.#retry429 = opts.retry429;
 	}
 
 	setAccessProvider(accessor: IAccessProvider | string) {
@@ -132,8 +112,7 @@ export class SpotifyClient implements HTTPClient {
 		const serializedBody = body ? JSON.stringify(body) : undefined;
 
 		let isTriedRefresh = false;
-		let retry5xx = this.#retry5xx.times;
-		let retry429 = this.#retry429.times;
+		let retry5xx = this.opts.retryTimesOn5xx;
 
 		let accessToken = typeof this.#accessProvider === "string"
 			? this.#accessProvider
@@ -169,15 +148,20 @@ export class SpotifyClient implements HTTPClient {
 				}
 			}
 
-			if (res.status === 429 && retry429) {
-				if (this.#retry429.delay) await wait(this.#retry429.delay);
+			if (res.status === 429 && this.opts.retryOnRateLimit) {
+				// time in seconds
+				const retryAfter = Number(res.headers.get("Retry-After"));
 
-				retry429--;
-				return call();
+				if (retryAfter) {
+					await new Promise((r) => setTimeout(r, retryAfter * 1000));
+					return call();
+				}
 			}
 
 			if (res.status.toString().startsWith("5") && retry5xx) {
-				if (this.#retry5xx.delay) await wait(this.#retry5xx.delay);
+				if (this.opts.retryDelayOn5xx) {
+					await new Promise((r) => setTimeout(r, this.opts.retryDelayOn5xx));
+				}
 
 				retry5xx--;
 				return call();
