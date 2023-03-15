@@ -1,4 +1,4 @@
-import { SearchParams } from "shared/mod.ts";
+import { JSONObject, SearchParams } from "shared/mod.ts";
 import { encodeToBase64 } from "auth/platform/platform.deno.ts";
 
 const AUTH_API_ORIGIN = "https://accounts.spotify.com";
@@ -18,7 +18,7 @@ export const getBasicAuthHeader = (
 		);
 };
 
-export interface AccessResponse {
+export interface AccessResponse extends JSONObject {
 	/**
 	 * An Access Token that can be provided in subsequent calls,
 	 * for example to Spotify Web API services.
@@ -34,7 +34,7 @@ export interface AccessResponse {
 	expires_in: number;
 }
 
-export interface ScopedAccessResponse extends AccessResponse {
+export interface ScopedAccessResponse extends AccessResponse, JSONObject {
 	/**
 	 * A space-separated list of scopes which have been granted
 	 * for this `access_token`
@@ -45,7 +45,7 @@ export interface ScopedAccessResponse extends AccessResponse {
 /**
  * Spotify response data containing refresh and access tokens
  */
-export interface KeypairResponse extends ScopedAccessResponse {
+export interface KeypairResponse extends ScopedAccessResponse, JSONObject {
 	/**
 	 * A token that can be used to generate new `access_token`.
 	 */

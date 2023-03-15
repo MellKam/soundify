@@ -66,7 +66,7 @@ const buildPackage = async (opts: {
 			license: "MIT",
 			devDependencies: opts.devDependencies,
 			dependencies: opts.dependencies,
-			packageManager: "pnpm@7.29.1",
+			packageManager: "pnpm@7.29.3",
 			repository: {
 				type: "git",
 				url: "https://github.com/MellKam/soundify",

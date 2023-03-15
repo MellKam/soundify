@@ -1,4 +1,4 @@
-import { IAccessProvider, objectToSearchParams } from "shared/mod.ts";
+import { IAuthProvider, objectToSearchParams } from "shared/mod.ts";
 import {
 	API_TOKEN_URL,
 	ApiTokenReqParams,
@@ -124,7 +124,7 @@ export const getCallbackData = (searchParams: URLSearchParams) => {
 	return { state, code };
 };
 
-export const refresh = async (opts: {
+export const refresh = async ({ client_id, client_secret, refresh_token }: {
 	client_id: string;
 	client_secret: string;
 	refresh_token: string;
@@ -132,11 +132,11 @@ export const refresh = async (opts: {
 	const res = await fetch(API_TOKEN_URL, {
 		method: "POST",
 		headers: {
-			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
+			"Authorization": getBasicAuthHeader(client_id, client_secret),
 			"Content-Type": URL_ENCODED,
 		},
 		body: objectToSearchParams<ApiTokenReqParams>({
-			refresh_token: opts.refresh_token,
+			refresh_token,
 			grant_type: "refresh_token",
 		}),
 	});
@@ -148,29 +148,33 @@ export const refresh = async (opts: {
 	return (await res.json()) as ScopedAccessResponse;
 };
 
-export class AccessProvider implements IAccessProvider {
+export class AuthProvider implements IAuthProvider {
 	constructor(
-		private readonly opts: {
+		private readonly config: {
 			readonly client_id: string;
 			readonly client_secret: string;
 			readonly refresh_token: string;
 			access_token?: string;
-			readonly onRefresh?: (data: ScopedAccessResponse) => void | Promise<void>;
 		},
+		private readonly opts: {
+			readonly onRefresh?: (data: ScopedAccessResponse) => void | Promise<void>;
+			readonly onRefreshFailure?: (error: unknown) => Promise<void> | void;
+		} = {},
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || this.opts.access_token === undefined) {
-			const data = await refresh({
-				client_id: this.opts.client_id,
-				client_secret: this.opts.client_secret,
-				refresh_token: this.opts.refresh_token,
-			});
+		if (forceRefresh || this.config.access_token === undefined) {
+			try {
+				const data = await refresh(this.config);
 
-			this.opts.access_token = data.access_token;
-			if (this.opts.onRefresh) await this.opts.onRefresh(data);
+				this.config.access_token = data.access_token;
+				if (this.opts.onRefresh) await this.opts.onRefresh(data);
+			} catch (error) {
+				if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
+				throw new Error("Failed to refresh token", { cause: error });
+			}
 		}
 
-		return this.opts.access_token;
+		return this.config.access_token;
 	}
 }

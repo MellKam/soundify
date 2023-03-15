@@ -23,9 +23,6 @@ importers:
     devDependencies:
       '@types/node': 18.15.3
 
-  dist/node-auth/esm:
-    specifiers: {}
-
   dist/shared:
     specifiers:
       '@types/node': ^18.11.9

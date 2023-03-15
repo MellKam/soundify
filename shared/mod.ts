@@ -82,7 +82,7 @@ export interface HTTPClient {
 /**
  * The interface used to provide access token with the ability to refresh it
  */
-export interface IAccessProvider {
+export interface IAuthProvider {
 	/**
 	 * Function that gives you access token.
 	 */

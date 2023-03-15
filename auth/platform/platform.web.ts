@@ -2,6 +2,9 @@ export const encodeToBase64 = (data: string): string => {
 	return btoa(data);
 };
 
+export const getRandomBytes = (size: number) =>
+	crypto.getRandomValues(new Uint8Array(size));
+
 export const getPKCECodeChallenge = async (
 	code_verifier: string,
 ): Promise<string> => {

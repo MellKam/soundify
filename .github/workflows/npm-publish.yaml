@@ -28,7 +28,7 @@ jobs:
         name: Install pnpm
         with:
           run_install: false
-          version: 7.29.1
+          version: 7.29.3
 
       - name: Setup node
         uses: actions/setup-node@v3
@@ -47,7 +47,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           deno task build all ${{steps.get_tag_version.outputs.TAG_VERSION}} 
-          
+
           cd ./dist/shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ../..
 
           cd ./dist/api/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ../..

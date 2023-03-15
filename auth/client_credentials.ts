@@ -4,20 +4,19 @@ import {
 	getBasicAuthHeader,
 	URL_ENCODED,
 } from "auth/general.ts";
-import { IAccessProvider } from "shared/mod.ts";
+import { IAuthProvider } from "shared/mod.ts";
 
 export const getAccessToken = async (opts: {
 	client_id: string;
 	client_secret: string;
 }) => {
-	const basicAuthHeader = getBasicAuthHeader(
-		opts.client_id,
-		opts.client_secret,
-	);
 	const res = await fetch(API_TOKEN_URL, {
 		method: "POST",
 		headers: {
-			"Authorization": basicAuthHeader,
+			"Authorization": getBasicAuthHeader(
+				opts.client_id,
+				opts.client_secret,
+			),
 			"Content-Type": URL_ENCODED,
 		},
 		body: new URLSearchParams({
@@ -32,25 +31,33 @@ export const getAccessToken = async (opts: {
 	return (await res.json()) as AccessResponse;
 };
 
-export class AccessProvider implements IAccessProvider {
-	#access_token: string | null = null;
+export class AccessProvider implements IAuthProvider {
+	#accessToken: string | null = null;
 
 	constructor(
-		private readonly opts: {
+		private readonly config: {
 			readonly client_id: string;
 			readonly client_secret: string;
-			readonly onRefresh?: (data: AccessResponse) => void | Promise<void>;
 		},
+		private readonly opts: {
+			readonly onRefresh?: (data: AccessResponse) => void | Promise<void>;
+			readonly onRefreshFailure?: (error: unknown) => Promise<void> | void;
+		} = {},
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || this.#access_token === null) {
-			const data = await getAccessToken(this.opts);
+		if (forceRefresh || this.#accessToken === null) {
+			try {
+				const data = await getAccessToken(this.config);
 
-			this.#access_token = data.access_token;
-			if (this.opts.onRefresh) await this.opts.onRefresh(data);
+				this.#accessToken = data.access_token;
+				if (this.opts.onRefresh) await this.opts.onRefresh(data);
+			} catch (error) {
+				if (this.opts.onRefreshFailure) this.opts.onRefreshFailure(error);
+				throw new Error("Failed to refresh token", { cause: error });
+			}
 		}
 
-		return this.#access_token;
+		return this.#accessToken;
 	}
 }

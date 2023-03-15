@@ -1,4 +1,4 @@
-import { IAccessProvider, objectToSearchParams } from "shared/mod.ts";
+import { IAuthProvider, objectToSearchParams } from "shared/mod.ts";
 import {
 	API_TOKEN_URL,
 	ApiTokenReqParams,
@@ -8,7 +8,10 @@ import {
 	KeypairResponse,
 	URL_ENCODED,
 } from "auth/general.ts";
-import { getPKCECodeChallenge } from "auth/platform/platform.deno.ts";
+import {
+	getPKCECodeChallenge,
+	getRandomBytes,
+} from "auth/platform/platform.deno.ts";
 
 export type GetAuthURLOpts = {
 	/**
@@ -109,32 +112,32 @@ const PKCEVerifierChars =
  * Generates random PKCE Code Verifier
  *
  * The code verifier is a random string between 43 and 128 characters in length.
- * It can contain letters, digits, underscores, periods, hyphens, or tildes.
+ *
+ * @param length Must be between 43 and 128 characters
+ * @default 64
  */
 export const generateCodeVerifier = (
-	/**
-	 * Must be between 43 and 128 characters
-	 * @default 64
-	 */
 	length = 64,
 ) => {
-	let code_verifier = "";
+	const randomBytes = getRandomBytes(length);
+
+	let codeVerifier = "";
 	for (let i = 0; i < length; i++) {
-		code_verifier += PKCEVerifierChars.charAt(
-			Math.floor(Math.random() * PKCEVerifierChars.length),
-		);
+		codeVerifier +=
+			PKCEVerifierChars[randomBytes[i] % PKCEVerifierChars.length];
 	}
-	return code_verifier;
+
+	return codeVerifier;
 };
 
-export { getPKCECodeChallenge as getCodeChallenge } from "./platform/platform.deno.ts";
+export { getPKCECodeChallenge as getCodeChallenge } from "auth/platform/platform.deno.ts";
 
 /**
  * Shorthand for generating PKCE codes.
  * Uses `generateCodeVerifier` and `getCodeChallenge` under the hood.
  */
-export const generateCodes = async () => {
-	const code_verifier = generateCodeVerifier();
+export const generateCodes = async (verifierLength?: number) => {
+	const code_verifier = generateCodeVerifier(verifierLength);
 	const code_challenge = await getPKCECodeChallenge(code_verifier);
 
 	return { code_verifier, code_challenge };
@@ -163,29 +166,37 @@ export const refresh = async (opts: {
 	return (await res.json()) as KeypairResponse;
 };
 
-export class AccessProvider implements IAccessProvider {
+export class AuthProvider implements IAuthProvider {
 	constructor(
-		private opts: {
+		private readonly config: {
 			readonly client_id: string;
-			access_token?: string;
 			refresh_token: string;
-			readonly onRefresh?: (data: KeypairResponse) => void | Promise<void>;
+			access_token?: string;
 		},
+		private readonly opts: {
+			readonly onRefresh?: (data: KeypairResponse) => void | Promise<void>;
+			readonly onRefreshFailure?: (error: unknown) => Promise<void> | void;
+		} = {},
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || !this.opts.access_token) {
-			const data = await refresh({
-				client_id: this.opts.client_id,
-				refresh_token: this.opts.refresh_token,
-			});
+		if (forceRefresh || !this.config.access_token) {
+			try {
+				const data = await refresh({
+					client_id: this.config.client_id,
+					refresh_token: this.config.refresh_token,
+				});
 
-			this.opts.refresh_token = data.refresh_token;
-			this.opts.access_token = data.access_token;
+				this.config.refresh_token = data.refresh_token;
+				this.config.access_token = data.access_token;
 
-			if (this.opts.onRefresh) await this.opts.onRefresh(data);
+				if (this.opts.onRefresh) await this.opts.onRefresh(data);
+			} catch (error) {
+				if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
+				throw new Error("Failed to refresh token", { cause: error });
+			}
 		}
 
-		return this.opts.access_token!;
+		return this.config.access_token;
 	}
 }

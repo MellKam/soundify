@@ -159,7 +159,7 @@ Deno.test("SpotifyClient with AuthProvider", async () => {
 		);
 	});
 
-	const authProvider = new AuthCode.AccessProvider({
+	const authProvider = new AuthCode.AuthProvider({
 		client_id: "",
 		client_secret: "",
 		refresh_token: "",
@@ -206,7 +206,7 @@ Deno.test("SpotifyClient with AuthProvider and double 401 error", async () => {
 		);
 	});
 
-	const authProvider = new AuthCode.AccessProvider({
+	const authProvider = new AuthCode.AuthProvider({
 		client_id: "",
 		client_secret: "",
 		refresh_token: "",
@@ -289,7 +289,7 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 		);
 	});
 
-	const authProvider = new AuthCode.AccessProvider({
+	const authProvider = new AuthCode.AuthProvider({
 		client_id: "",
 		client_secret: "",
 		refresh_token: "",
@@ -340,7 +340,7 @@ Deno.test("SpotifyClient tests for setAuthProvider method", async () => {
 		assertInstanceOf(error, SpotifyError);
 		assert(error.status === 401);
 
-		client.setAccessProvider("2");
+		client.setAuthProvider("2");
 		await client.fetch("/me", "void");
 	}
 
