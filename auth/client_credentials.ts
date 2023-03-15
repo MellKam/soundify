@@ -31,7 +31,7 @@ export const getAccessToken = async (opts: {
 	return (await res.json()) as AccessResponse;
 };
 
-export class AccessProvider implements IAuthProvider {
+export class AuthProvider implements IAuthProvider {
 	#accessToken: string | null = null;
 
 	constructor(

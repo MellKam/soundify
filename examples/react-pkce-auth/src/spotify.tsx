@@ -61,6 +61,7 @@ export const SpotifyProvider = (
 			client_id: config.client_id,
 			refresh_token: refresh_token!,
 			access_token: access_token ? access_token : undefined,
+		}, {
 			onRefresh: ({ access_token, refresh_token }) => {
 				localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
 				localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);

@@ -69,13 +69,13 @@ client.setAccessor("NEW_ACCESS_TOKEN");
 ```
 
 But if you don't want to deal with all that, you can just create an
-`AccessProvider` and pass it instead of the Access Token.
+`AuthProvider` and pass it instead of the Access Token.
 
 ```ts
 import { SpotifyClient } from "@soundify/api";
 import { AuthCode } from "@soundify/node-auth";
 
-const authProvider = new AuthCode.AccessProvider({
+const authProvider = new AuthCode.AuthProvider({
   client_id: "YOUR_SPOTIFY_CLIENT_ID",
   client_secret: "YOUR_SPOTIFY_CLIENT_SECRET",
   refresh_token: "YOUR_REFRESH_TOKEN",
@@ -84,7 +84,7 @@ const authProvider = new AuthCode.AccessProvider({
 const client = new SpotifyClient(authProvider);
 ```
 
-You can create an `AccessProvider` from `AuthCode`, `PKCEAuthCode`,
+You can create an `AuthProvider` from `AuthCode`, `PKCEAuthCode`,
 `ClientCredentials` flows. Implicit grant does not allow you to implement such a
 thing.
 
