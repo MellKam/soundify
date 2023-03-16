@@ -13,8 +13,8 @@ import {
 	unfollowArtist,
 	unfollowPlaylist,
 	unfollowUser,
-} from "../mod.ts";
-import { client } from "../test_env.ts";
+} from "api/user/user.endpoints.ts";
+import { client } from "api/test_env.ts";
 import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
 
 Deno.test("Must return current user profile", async () => {
@@ -24,8 +24,7 @@ Deno.test("Must return current user profile", async () => {
 });
 
 Deno.test("Must return user public profile", async () => {
-	const mockUserID = "zksczw19rao4pcfdft6o7nn8g";
-	const user = await getUserProfile(client, mockUserID);
+	const user = await getUserProfile(client, "zksczw19rao4pcfdft6o7nn8g");
 
 	console.log(user.display_name);
 });
