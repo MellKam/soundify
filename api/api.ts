@@ -4,7 +4,7 @@ import { HTTPClient } from "shared/mod.ts";
 type OmitFirst<T extends unknown[]> = T extends [unknown, ...infer R] ? R
 	: never;
 
-export type SpoitfyAPI = {
+export type ISpoitfyAPI = {
 	[K in keyof typeof endpoints]: (
 		...args: OmitFirst<Parameters<typeof endpoints[K]>>
 	) => ReturnType<typeof endpoints[K]>;
@@ -29,5 +29,5 @@ export const createSpotifyAPI = <Client extends HTTPClient>(
 			);
 	}
 
-	return client as SpoitfyAPI & Client;
+	return client as ISpoitfyAPI & Client;
 };

@@ -7,23 +7,24 @@ import {
 	followUser,
 	getCurrentUserProfile,
 	getFollowedArtists,
+	getUserProfile,
 	getUserTopArtists,
 	getUserTopTracks,
 	unfollowArtist,
 	unfollowPlaylist,
 	unfollowUser,
 } from "api/user/user.endpoints.ts";
-import { api, client } from "api/test_env.ts";
+import { client } from "api/test_env.ts";
 import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
 
 Deno.test("Must return current user profile", async () => {
-	const currentUser = await api.getCurrentUserProfile();
+	const currentUser = await getCurrentUserProfile(client);
 
 	console.log(currentUser.display_name);
 });
 
 Deno.test("Must return user public profile", async () => {
-	const user = await api.getUserProfile("zksczw19rao4pcfdft6o7nn8g");
+	const user = await getUserProfile(client, "zksczw19rao4pcfdft6o7nn8g");
 
 	console.log(user.display_name);
 });

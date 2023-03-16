@@ -5,7 +5,6 @@ import {
 import { AuthCode } from "auth/mod.ts";
 import { SpotifyClient } from "api/mod.ts";
 import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
-import { createSpotifyAPI } from "./api.ts";
 
 interface TestEnv extends Record<string, string> {
 	SPOTIFY_CLIENT_ID: string;
@@ -52,14 +51,4 @@ export const client = new SpotifyClient(
 		client_secret: env.SPOTIFY_CLIENT_SECRET,
 		refresh_token: env.SPOTIFY_REFRESH_TOKEN,
 	}),
-);
-
-export const api = createSpotifyAPI(
-	new SpotifyClient(
-		new AuthCode.AuthProvider({
-			client_id: env.SPOTIFY_CLIENT_ID,
-			client_secret: env.SPOTIFY_CLIENT_SECRET,
-			refresh_token: env.SPOTIFY_REFRESH_TOKEN,
-		}),
-	),
 );
