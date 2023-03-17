@@ -11,7 +11,7 @@ import {
 	str,
 	url,
 } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { AuthCode, AuthCodeCallbackData } from "soundify";
+import { AuthCode } from "soundify";
 // If you want to copy this code, change this import path to
 // `https://deno.land/x/soundify/mod.ts`
 
