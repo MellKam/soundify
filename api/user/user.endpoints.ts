@@ -13,7 +13,7 @@ import { HTTPClient, SearchParams } from "shared/mod.ts";
  *
  * @param client Spotify HTTPClient
  */
-export const getCurrentUserProfile = async (client: HTTPClient) => {
+export const getCurrentUser = async (client: HTTPClient) => {
 	return await client.fetch<UserPrivate>("/me", "json");
 };
 
@@ -93,7 +93,7 @@ export const getUserTopTracks = async (
  * @param client Spotify HTTPClient
  * @param user_id Spotify user ID
  */
-export const getUserProfile = async (
+export const getUser = async (
 	client: HTTPClient,
 	user_id: string,
 ) => {

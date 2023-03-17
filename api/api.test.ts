@@ -14,6 +14,6 @@ Deno.test("SpotifyAPI creator", () => {
 Deno.test("SpotifyAPI call", async () => {
 	const api = createSpotifyAPI(client);
 
-	const user = await api.getCurrentUserProfile();
+	const user = await api.getCurrentUser();
 	console.log(user.display_name);
 });
