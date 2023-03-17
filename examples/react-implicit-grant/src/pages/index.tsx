@@ -1,39 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentUserProfile, SpotifyClient } from "@soundify/api";
-import { ImplicitGrant } from "@soundify/web-auth";
-
-const useSpotifyClient = () => {
-	const accessToken = localStorage.getItem("SPOTIFY_ACCESS_TOKEN");
-
-	if (!accessToken) {
-		location.replace(ImplicitGrant.getAuthURL({
-			client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-			redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
-			scopes: ["user-read-email"],
-		}));
-	}
-
-	return new SpotifyClient(accessToken!);
-};
+import { getCurrentUserProfile } from "@soundify/api";
+import { useSpotifyClinet } from "../spotifyContext";
 
 export const Page = () => {
-	const spotifyClient = useSpotifyClient();
+  const client = useSpotifyClinet();
 
-	const { status, data: userProfile, error } = useQuery({
-		queryKey: ["user-profile"],
-		queryFn: () => {
-			return getCurrentUserProfile(spotifyClient);
-		},
-		retry: false,
-	});
+  const {
+    status,
+    data: userProfile,
+    error,
+  } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: () => getCurrentUserProfile(client),
+    retry: false,
+  });
 
-	if (status === "error") {
-		return <h1>{String(error)}</h1>;
-	}
+  if (status === "error") {
+    return <h1>{String(error)}</h1>;
+  }
 
-	if (status === "loading") {
-		return <h1>Loading...</h1>;
-	}
+  if (status === "loading") {
+    return <h1>Loading...</h1>;
+  }
 
-	return <h1>Welcome {userProfile.display_name}!</h1>;
+  return <h1>Welcome {userProfile.display_name}!</h1>;
 };

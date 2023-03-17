@@ -6,6 +6,7 @@ import {
 	AuthorizeReqParams,
 	AuthScope,
 	KeypairResponse,
+	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
 import {
@@ -13,7 +14,7 @@ import {
 	getRandomBytes,
 } from "auth/platform/platform.deno.ts";
 
-export type GetAuthURLOpts = {
+export type GetRedirectURLOpts = {
 	/**
 	 * The Client ID generated after registering your Spotify application.
 	 */
@@ -44,8 +45,8 @@ export type GetAuthURLOpts = {
 	scopes?: AuthScope[];
 };
 
-export const getAuthURL = (
-	{ scopes, ...opts }: GetAuthURLOpts,
+export const getRedirectURL = (
+	{ scopes, ...opts }: GetRedirectURLOpts,
 ) => {
 	const url = new URL(AUTHORIZE_URL);
 
@@ -83,6 +84,8 @@ export type GetGrantDataOpts = {
 	redirect_uri: string;
 };
 
+export { parseCallbackData } from "auth/general.ts";
+
 export const getGrantData = async (opts: GetGrantDataOpts) => {
 	const res = await fetch(
 		API_TOKEN_URL,
@@ -99,13 +102,13 @@ export const getGrantData = async (opts: GetGrantDataOpts) => {
 	);
 
 	if (!res.ok) {
-		throw new Error(await res.text());
+		throw new SpotifyAuthError(await res.text(), res.status);
 	}
 
 	return (await res.json()) as KeypairResponse;
 };
 
-const PKCEVerifierChars =
+const PKCE_VERIFIER_CHARS =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
 
 /**
@@ -124,7 +127,7 @@ export const generateCodeVerifier = (
 	let codeVerifier = "";
 	for (let i = 0; i < length; i++) {
 		codeVerifier +=
-			PKCEVerifierChars[randomBytes[i] % PKCEVerifierChars.length];
+			PKCE_VERIFIER_CHARS[randomBytes[i] % PKCE_VERIFIER_CHARS.length];
 	}
 
 	return codeVerifier;
@@ -143,6 +146,9 @@ export const generateCodes = async (verifierLength?: number) => {
 	return { code_verifier, code_challenge };
 };
 
+/**
+ * Requests a new token keypair using your old refresh token and client ID
+ */
 export const refresh = async (opts: {
 	client_id: string;
 	refresh_token: string;
@@ -160,32 +166,33 @@ export const refresh = async (opts: {
 	});
 
 	if (!res.ok) {
-		throw new Error(await res.text());
+		throw new SpotifyAuthError(await res.text(), res.status);
 	}
 
 	return (await res.json()) as KeypairResponse;
 };
 
+export type AuthProviderConfig = {
+	client_id: string;
+	refresh_token: string;
+	access_token?: string;
+};
+
+export type AuthProviderOpts = {
+	onRefresh?: (data: KeypairResponse) => void | Promise<void>;
+	onRefreshFailure?: (error: Error) => Promise<void> | void;
+};
+
 export class AuthProvider implements IAuthProvider {
 	constructor(
-		private readonly config: {
-			readonly client_id: string;
-			refresh_token: string;
-			access_token?: string;
-		},
-		private readonly opts: {
-			readonly onRefresh?: (data: KeypairResponse) => void | Promise<void>;
-			readonly onRefreshFailure?: (error: unknown) => Promise<void> | void;
-		} = {},
+		private readonly config: AuthProviderConfig,
+		private readonly opts: AuthProviderOpts = {},
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
 		if (forceRefresh || !this.config.access_token) {
 			try {
-				const data = await refresh({
-					client_id: this.config.client_id,
-					refresh_token: this.config.refresh_token,
-				});
+				const data = await refresh(this.config);
 
 				this.config.refresh_token = data.refresh_token;
 				this.config.access_token = data.access_token;
@@ -193,7 +200,7 @@ export class AuthProvider implements IAuthProvider {
 				if (this.opts.onRefresh) await this.opts.onRefresh(data);
 			} catch (error) {
 				if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
-				throw new Error("Failed to refresh token", { cause: error });
+				throw error;
 			}
 		}
 

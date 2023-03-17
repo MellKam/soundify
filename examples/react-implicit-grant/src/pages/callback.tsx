@@ -1,9 +1,23 @@
 import { ImplicitGrant } from "@soundify/web-auth";
 
 export const Page = () => {
-	const { access_token } = ImplicitGrant.getGrantData(location.hash);
-	localStorage.setItem("SPOTIFY_ACCESS_TOKEN", access_token);
+  try {
+    const params = ImplicitGrant.parseCallbackData(location.hash);
+    if ("error" in params) {
+      throw new Error(params.error);
+    }
+    const storedState = localStorage.getItem("state");
+    console.log(storedState, params.state);
+    if (!storedState || !params.state || storedState !== params.state) {
+      throw new Error("Invalid state");
+    }
 
-	location.replace("/");
-	return <h1>Redirecting...</h1>;
+    localStorage.removeItem("state");
+    localStorage.setItem("SPOTIFY_ACCESS_TOKEN", params.access_token);
+
+    location.replace("/");
+    return <h1>Redirecting...</h1>;
+  } catch (error) {
+    return <h1>{String(error)}</h1>;
+  }
 };

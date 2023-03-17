@@ -1,9 +1,11 @@
 export {
 	type AccessResponse,
+	type AuthCodeCallbackData,
 	type AuthScope,
 	type KeypairResponse,
 	type ScopedAccessResponse,
 	SCOPES,
+	SpotifyAuthError,
 } from "auth/general.ts";
 
 export * as AuthCode from "auth/auth_code.ts";

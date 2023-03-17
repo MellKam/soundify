@@ -1,12 +1,7 @@
 import { objectToSearchParams } from "shared/mod.ts";
-import {
-	AccessResponse,
-	AUTHORIZE_URL,
-	AuthorizeReqParams,
-	AuthScope,
-} from "auth/general.ts";
+import { AUTHORIZE_URL, AuthorizeReqParams, AuthScope } from "auth/general.ts";
 
-export type GetAuthURLOpts = {
+export type GetRedirectURLOpts = {
 	/**
 	 * List of scopes.
 	 *
@@ -37,9 +32,14 @@ export type GetAuthURLOpts = {
 	 * that you specified when you registered your application.
 	 */
 	redirect_uri: string;
+	/**
+	 * This provides protection against attacks such as
+	 * cross-site request forgery.
+	 */
+	state?: string;
 };
 
-export const getAuthURL = ({ scopes, ...opts }: GetAuthURLOpts) => {
+export const getRedirectURL = ({ scopes, ...opts }: GetRedirectURLOpts) => {
 	const url = new URL(AUTHORIZE_URL);
 
 	url.search = objectToSearchParams<AuthorizeReqParams>({
@@ -51,42 +51,47 @@ export const getAuthURL = ({ scopes, ...opts }: GetAuthURLOpts) => {
 	return url;
 };
 
-// TODO rewrite in future
-export const getGrantData = (urlHash: string, state?: string) => {
-	const searchParams = new URLSearchParams(urlHash.substring(1));
+export interface CallbackErrorData extends Record<string, string | undefined> {
+	/**
+	 * The reason authorization failed, for example: “access_denied”.
+	 */
+	error: string;
+	/**
+	 * The value of the state parameter supplied in the request.
+	 */
+	state?: string;
+}
 
-	const error = searchParams.get("error");
-	if (error) {
-		throw new Error(error);
+export interface CallbackSuccessData
+	extends Record<string, string | undefined> {
+	/**
+	 * An access token that can be provided in subsequent calls, for example to Spotify Web API services.
+	 */
+	access_token: string;
+	token_type: "Bearer";
+	/**
+	 * The time period (in seconds) for which the access token is valid.
+	 */
+	expires_in: string;
+	/**
+	 * The value of the state parameter supplied in the request.
+	 */
+	state?: string;
+}
+
+export type CallbackData = CallbackSuccessData | CallbackErrorData;
+
+export const parseCallbackData = (hash: string) => {
+	const params = Object.fromEntries(
+		new URLSearchParams(hash.substring(1)),
+	) as CallbackData;
+
+	if ("error" in params) return params;
+	if (
+		"access_token" in params && "expires_in" in params && "token_type" in params
+	) {
+		return params;
 	}
 
-	if (state) {
-		const expectedState = searchParams.get("state");
-
-		if (expectedState === null) {
-			throw new Error("Can't find 'state' in query params");
-		}
-
-		if (state !== expectedState) {
-			throw new Error("State from url does not match the passed state");
-		}
-	}
-
-	const access_token = searchParams.get("access_token");
-	const token_type = searchParams.get("token_type");
-	const expires_in = Number(searchParams.get("expires_in"));
-
-	if (isNaN(expires_in)) {
-		throw new Error("Invalid 'expires_in' param");
-	}
-
-	if (!access_token || !token_type) {
-		throw new Error("Cannot get params");
-	}
-
-	return {
-		access_token,
-		token_type,
-		expires_in,
-	} as AccessResponse;
+	throw new Error("Invalid params");
 };

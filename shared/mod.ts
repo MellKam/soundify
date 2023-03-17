@@ -85,12 +85,11 @@ export interface HTTPClient {
 export interface IAuthProvider {
 	/**
 	 * Function that gives you access token.
+	 *
+	 * @param forceRefresh Does the service have to refresh the token, or give you a cached token
+	 * @default false
 	 */
 	getAccessToken: (
-		/**
-		 * Does the service have to refresh the token, or give you a cached token
-		 * @default false
-		 */
 		forceRefresh?: boolean,
 	) => Promise<string>;
 }

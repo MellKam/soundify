@@ -7,13 +7,7 @@ type BuildType = "all" | Package;
 const getArgs = () => {
 	const buildType = Deno.args.at(0) as BuildType | undefined ?? "all";
 
-	let version = Deno.args.at(1);
-	if (buildType === "all" && !version) {
-		version = "v0.0.0";
-	}
-	if (!version) {
-		throw new Error("Need to specify version for npm package");
-	}
+	let version = Deno.args.at(1) ?? "v0.0.0";
 
 	const isValidVersion = /v[0-9]+\.[0-9]+\.[0-9]+/.test(version);
 	if (!isValidVersion) {

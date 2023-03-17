@@ -9,5 +9,5 @@ export * from "api/user/user.types.ts";
 export * from "api/general.types.ts";
 
 export * from "api/endpoints.ts";
-
+export * from "api/api.ts";
 export * from "api/client.ts";

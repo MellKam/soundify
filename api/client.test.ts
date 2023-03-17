@@ -293,7 +293,7 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 		client_id: "",
 		client_secret: "",
 		refresh_token: "",
-		access_token: "",
+		access_token: "TOKEN",
 	});
 
 	const client = new SpotifyClient(authProvider, {

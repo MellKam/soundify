@@ -1,12 +1,13 @@
 {
 	"deno.enablePaths": [
-		"api",
-		"auth",
-		"scripts",
-		"examples/deno-oak-auth",
-		"shared",
-		"mod.ts"
+		"./api/",
+		"./auth/",
+		"./shared/",
+		"./scripts/",
+		"./examples/deno-oak-auth/",
+		"./mod.ts"
 	],
+	// "deno.enable": true,
 	"deno.unstable": true,
 	"deno.lint": true,
 	"deno.importMap": "./import_map.json",

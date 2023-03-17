@@ -21,7 +21,6 @@
 		"auth/platform/**/*.web.ts",
 		"./examples/**",
 		"./scripts/**",
-		"./tests/**",
 		"./dist/**"
 	]
 }

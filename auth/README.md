@@ -10,13 +10,6 @@
 </p>
 
 
-
-      
-
-
-
-
-
 If you have no experience with Spotify Auth you can read more about it in the
 [Spotify Authorization Guide](https://developer.spotify.com/documentation/general/guides/authorization/).
 

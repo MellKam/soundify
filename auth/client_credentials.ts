@@ -2,6 +2,7 @@ import {
 	AccessResponse,
 	API_TOKEN_URL,
 	getBasicAuthHeader,
+	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
 import { IAuthProvider } from "shared/mod.ts";
@@ -25,28 +26,32 @@ export const getAccessToken = async (opts: {
 	});
 
 	if (!res.ok) {
-		throw new Error(await res.text());
+		throw new SpotifyAuthError(await res.text(), res.status);
 	}
 
 	return (await res.json()) as AccessResponse;
+};
+
+export type AuthProviderConfig = {
+	client_id: string;
+	client_secret: string;
+};
+
+export type AuthProviderOpts = {
+	onRefresh?: (data: AccessResponse) => void | Promise<void>;
+	onRefreshFailure?: (error: Error) => Promise<void> | void;
 };
 
 export class AuthProvider implements IAuthProvider {
 	#accessToken: string | null = null;
 
 	constructor(
-		private readonly config: {
-			readonly client_id: string;
-			readonly client_secret: string;
-		},
-		private readonly opts: {
-			readonly onRefresh?: (data: AccessResponse) => void | Promise<void>;
-			readonly onRefreshFailure?: (error: unknown) => Promise<void> | void;
-		} = {},
+		private readonly config: AuthProviderConfig,
+		private readonly opts: AuthProviderOpts = {},
 	) {}
 
 	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || this.#accessToken === null) {
+		if (forceRefresh || !this.#accessToken) {
 			try {
 				const data = await getAccessToken(this.config);
 
@@ -54,7 +59,7 @@ export class AuthProvider implements IAuthProvider {
 				if (this.opts.onRefresh) await this.opts.onRefresh(data);
 			} catch (error) {
 				if (this.opts.onRefreshFailure) this.opts.onRefreshFailure(error);
-				throw new Error("Failed to refresh token", { cause: error });
+				throw error;
 			}
 		}
 

@@ -19,7 +19,7 @@ app.get("/login", (_, res) => {
 		httpOnly: true,
 	});
 	res.redirect(
-		AuthCode.getAuthURL({
+		AuthCode.getRedirectURL({
 			scopes: ["user-read-email"],
 			state,
 			client_id: config.client_id,

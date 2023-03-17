@@ -3,16 +3,21 @@ import {
 	createHttpError,
 	isHttpError,
 	Router,
-} from "https://deno.land/x/oak@v11.1.0/mod.ts";
+} from "https://deno.land/x/oak@v12.1.0/mod.ts";
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
-import { cleanEnv, str, url } from "https://deno.land/x/envalid@0.1.2/mod.ts";
-import { AuthCode } from "../../mod.ts";
+import {
+	cleanEnv,
+	num,
+	str,
+	url,
+} from "https://deno.land/x/envalid@0.1.2/mod.ts";
+import { AuthCode, AuthCodeCallbackData } from "soundify";
 // If you want to copy this code, change this import path to
 // `https://deno.land/x/soundify/mod.ts`
 
-const PORT = 3000;
-
+// get env variables from `.env` file
 const env = cleanEnv(config(), {
+	PORT: num(),
 	SPOTIFY_CLIENT_ID: str(),
 	SPOTIFY_CLIENT_SECRET: str(),
 	SPOTIFY_REDIRECT_URI: url(),
@@ -20,15 +25,12 @@ const env = cleanEnv(config(), {
 
 const app = new Application();
 
+// middleware to handle errors
 app.use(async (ctx, next) => {
 	try {
 		await next();
 	} catch (err) {
-		if (isHttpError(err)) {
-			ctx.response.status = err.status;
-		} else {
-			ctx.response.status = 500;
-		}
+		ctx.response.status = isHttpError(err) ? err.status : 500;
 		ctx.response.body = { error: err.message };
 		ctx.response.type = "json";
 	}
@@ -43,7 +45,7 @@ router
 			httpOnly: true,
 		});
 
-		ctx.response.redirect(AuthCode.getAuthURL({
+		ctx.response.redirect(AuthCode.getRedirectURL({
 			scopes: ["user-read-email"],
 			state,
 			client_id: env.SPOTIFY_CLIENT_ID,
@@ -51,19 +53,14 @@ router
 		}));
 	})
 	.get("/callback", async (ctx) => {
-		const error = ctx.request.url.searchParams.get("error");
-		if (error) {
-			throw createHttpError(400, error);
+		const params = AuthCode.parseCallbackData(ctx.request.url.searchParams);
+
+		if ("error" in params) {
+			throw createHttpError(400, params.error);
 		}
 
-		const code = ctx.request.url.searchParams.get("code");
-		if (!code) {
-			throw createHttpError(400, "Cannot find `code` in search params");
-		}
-
-		const state = ctx.request.url.searchParams.get("state");
 		const storedState = await ctx.cookies.get("state");
-		if (!storedState || !state || state !== storedState) {
+		if (!storedState || !params.state || params.state !== storedState) {
 			throw createHttpError(401, "Unable to verify request with state.");
 		}
 
@@ -74,7 +71,7 @@ router
 				client_id: env.SPOTIFY_CLIENT_ID,
 				client_secret: env.SPOTIFY_CLIENT_SECRET,
 				redirect_uri: env.SPOTIFY_REDIRECT_URI,
-				code,
+				code: params.code,
 			},
 		);
 
@@ -93,4 +90,4 @@ app.addEventListener("listen", (listener) => {
 	);
 });
 
-await app.listen({ port: PORT });
+await app.listen({ port: env.PORT });

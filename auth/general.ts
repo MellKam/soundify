@@ -8,6 +8,57 @@ export const API_TOKEN_URL = `${AUTH_API_ORIGIN}/api/token` as const;
 
 export const URL_ENCODED = "application/x-www-form-urlencoded";
 
+export class SpotifyAuthError extends Error {
+	constructor(
+		message: string,
+		public readonly status: number,
+		options?: ErrorOptions,
+	) {
+		super(message, options);
+		this.name = "SpotifyAuthError" + status;
+	}
+}
+
+export interface AuthCodeCallbackSuccess
+	extends Record<string, string | undefined> {
+	/**
+	 * An authorization code that can be exchanged for an Access Token.
+	 */
+	code: string;
+	/**
+	 * The value of the state parameter supplied in the request
+	 */
+	state?: string;
+}
+
+export interface AuthCodeCallbackError
+	extends Record<string, string | undefined> {
+	/**
+	 * 	The reason authorization failed, for example: “access_denied”
+	 */
+	error: string;
+	/**
+	 * The value of the state parameter supplied in the request
+	 */
+	state?: string;
+}
+
+export type AuthCodeCallbackData =
+	| AuthCodeCallbackSuccess
+	| AuthCodeCallbackError;
+
+export const parseCallbackData = (searchParams: URLSearchParams) => {
+	const params = Object.fromEntries(searchParams) as Partial<
+		AuthCodeCallbackData
+	>;
+
+	if ("code" in params || "error" in params) {
+		return params as AuthCodeCallbackData;
+	}
+
+	throw new Error("Invalid params.");
+};
+
 export const getBasicAuthHeader = (
 	clientId: string,
 	clientSecret: string,

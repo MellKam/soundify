@@ -19,22 +19,17 @@ export default async function (
 
 	const url = new URL(req.url, `http://${req.headers.host}`);
 
-	const error = url.searchParams.get("error");
-	if (error) {
-		res.status(400).send(error);
-		return;
-	}
+	const data = AuthCode.parseCallbackData(url.searchParams);
 
-	const code = url.searchParams.get("code");
-	if (!code) {
-		res.status(400).send("Cannot find `code` in search params");
+	if ("error" in data) {
+		res.status(400).send(data.error);
 		return;
 	}
 
 	const storedState = getCookie(SPOTIFY_STATE, { req, res });
-	const state = url.searchParams.get("state");
-
-	if (typeof state !== "string" || !storedState || state !== storedState) {
+	if (
+		typeof data.state !== "string" || !storedState || data.state !== storedState
+	) {
 		res.status(400).send("Unable to verify request with state.");
 		return;
 	}
@@ -44,7 +39,7 @@ export default async function (
 	try {
 		const { refresh_token, access_token, expires_in } = await AuthCode
 			.getGrantData({
-				code,
+				code: data.code,
 				...env,
 			});
 

@@ -18,7 +18,7 @@ export default function (
 	});
 
 	res.redirect(
-		AuthCode.getAuthURL({
+		AuthCode.getRedirectURL({
 			scopes: ["user-read-email"],
 			state,
 			client_id: env.client_id,
