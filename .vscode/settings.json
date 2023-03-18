@@ -5,6 +5,7 @@
 		"./shared/",
 		"./scripts/",
 		"./examples/deno-oak-auth/",
+		"./examples/deno-client-credentials/",
 		"./mod.ts"
 	],
 	// "deno.enable": true,

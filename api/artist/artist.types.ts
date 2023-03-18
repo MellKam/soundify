@@ -1,5 +1,4 @@
 import { JSONObject } from "shared/mod.ts";
-import { Genre } from "api/genre/genre.types.ts";
 import { ExternalUrls, Followers, Image } from "api/general.types.ts";
 
 export interface ArtistSimplified extends JSONObject {
@@ -38,7 +37,7 @@ export interface Artist extends ArtistSimplified, JSONObject {
 	 * A list of the genres the artist is associated with.
 	 * If not yet classified, the array is empty.
 	 */
-	genres: Genre[];
+	genres: string[];
 	/**
 	 * Images of the artist in various sizes, widest first.
 	 */
