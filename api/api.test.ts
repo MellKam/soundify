@@ -1,4 +1,4 @@
-import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.180.0/testing/asserts.ts";
 import { createSpotifyAPI } from "api/api.ts";
 import * as endpoints from "api/endpoints.ts";
 import { client } from "api/test_env.ts";

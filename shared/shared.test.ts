@@ -1,7 +1,7 @@
 import {
 	assert,
 	assertArrayIncludes,
-} from "https://deno.land/std@0.178.0/testing/asserts.ts";
+} from "https://deno.land/std@0.180.0/testing/asserts.ts";
 import { objectToSearchParams } from "shared/mod.ts";
 
 Deno.test("Create URLSearchParams from object", () => {

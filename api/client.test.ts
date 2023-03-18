@@ -5,13 +5,13 @@ import {
 	assert,
 	assertInstanceOf,
 	assertObjectMatch,
-} from "https://deno.land/std@0.178.0/testing/asserts.ts";
+} from "https://deno.land/std@0.180.0/testing/asserts.ts";
 import { privateUserStub } from "api/user/user.stubs.ts";
 import {
 	assertSpyCall,
 	assertSpyCalls,
 	stub,
-} from "https://deno.land/std@0.178.0/testing/mock.ts";
+} from "https://deno.land/std@0.180.0/testing/mock.ts";
 import { AuthCode } from "auth/mod.ts";
 
 mockFetch.install();
