@@ -1,7 +1,7 @@
 import { HTTPClient } from "shared/mod.ts";
 import { PagingObject, PagingOptions } from "api/general.types.ts";
 import { Market } from "api/market/market.types.ts";
-import { Track } from "api/track/track.types.ts";
+import { TrackSimplified } from "api/track/track.types.ts";
 import { Album, AlbumSimplified } from "api/album/album.types.ts";
 
 /**
@@ -59,7 +59,7 @@ export const getAlbumTracks = async (
 	album_id: string,
 	opts?: GetAlbumTrackOpts,
 ) => {
-	return await client.fetch<PagingObject<Track>>(
+	return await client.fetch<PagingObject<TrackSimplified>>(
 		`/albums/${album_id}/tracks`,
 		"json",
 		{

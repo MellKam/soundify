@@ -6,7 +6,7 @@ const AUTH_API_ORIGIN = "https://accounts.spotify.com";
 export const AUTHORIZE_URL = `${AUTH_API_ORIGIN}/authorize` as const;
 export const API_TOKEN_URL = `${AUTH_API_ORIGIN}/api/token` as const;
 
-export const URL_ENCODED = "application/x-www-form-urlencoded";
+export const URL_ENCODED = "application/x-www-form-urlencoded;charset=UTF-8";
 
 export class SpotifyAuthError extends Error {
 	constructor(

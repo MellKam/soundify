@@ -5,7 +5,12 @@ import {
 	type Image,
 } from "api/general.types.ts";
 
-export interface UserPublicSimplified extends JSONObject {
+export interface UserPublic extends JSONObject {
+	/**
+	 * The name displayed on the user's profile.
+	 * `null` if not available
+	 */
+	display_name: string | null;
 	/**
 	 * Known external URLs for this user.
 	 */
@@ -13,7 +18,7 @@ export interface UserPublicSimplified extends JSONObject {
 	/**
 	 * Information about the followers of the user.
 	 */
-	followers: Followers;
+	followers?: Followers;
 	/**
 	 * A link to the Web API endpoint for this user.
 	 */
@@ -27,20 +32,33 @@ export interface UserPublicSimplified extends JSONObject {
 	 */
 	type: "user";
 	/**
+	 * The user's profile image.
+	 */
+	images?: Image[];
+	/**
 	 * The Spotify URI for the user.
 	 */
 	uri: string;
 }
 
-export interface UserPublic extends UserPublicSimplified, JSONObject {
+/**
+ * The product type in the User object.
+ */
+export type UserProductType = "free" | "open" | "premium";
+
+/**
+ * The spotify api object containing the information of explicit content.
+ */
+export interface ExplicitContentSettings extends JSONObject {
 	/**
-	 * The name displayed on the user's profile.
+	 * When true, indicates that explicit content should not be played.
 	 */
-	display_name: string | null;
+	filter_enabled: boolean;
 	/**
-	 * The user's profile image.
+	 * When true, indicates that the explicit content setting is locked
+	 * and can't be changed by the user.
 	 */
-	images: Image[];
+	filter_locked: boolean;
 }
 
 export interface UserPrivate extends UserPublic, JSONObject {
@@ -50,7 +68,7 @@ export interface UserPrivate extends UserPublic, JSONObject {
 	 *
 	 * @requires `user-read-private`
 	 */
-	country?: string;
+	country: string;
 	/**
 	 * The user's email address, as entered by the user when creating
 	 * their account.
@@ -60,28 +78,26 @@ export interface UserPrivate extends UserPublic, JSONObject {
 	 *
 	 * @requires `user-read-email`
 	 */
-	email?: string;
+	email: string;
 	/**
 	 * The user's explicit content settings.
 	 *
 	 * @requires `user-read-private`
 	 */
-	explicit_content?: {
-		/**
-		 * When true, indicates that explicit content should not be played.
-		 */
-		filter_enabled: boolean;
-		/**
-		 * When true, indicates that the explicit content setting is locked
-		 * and can't be changed by the user.
-		 */
-		filter_locked: boolean;
-	};
+	explicit_content?: ExplicitContentSettings;
 	/**
 	 * The user's Spotify subscription level: "premium", "free", etc.
 	 * (The subscription level "open" can be considered the same as "free".)
 	 *
 	 * @requires `user-read-private`
 	 */
-	product?: "premium" | "free" | "open";
+	product?: UserProductType;
+	/**
+	 * The user's profile image.
+	 */
+	images: Image[];
+	/**
+	 * Information about the followers of the user.
+	 */
+	followers: Followers;
 }

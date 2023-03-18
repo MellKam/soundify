@@ -3,29 +3,47 @@ import { AlbumSimplified } from "api/album/album.types.ts";
 import { Artist } from "api/artist/artist.types.ts";
 import { Genre } from "api/genre/genre.types.ts";
 import { Market } from "api/market/market.types.ts";
+import { ArtistSimplified } from "api/artist/artist.types.ts";
 import {
 	ExternalIds,
 	ExternalUrls,
 	RestrictionsReason,
 } from "api/general.types.ts";
 
-export interface Track extends JSONObject {
+export interface LinkedTrack extends JSONObject {
 	/**
-	 * The album on which the track appears.
+	 * A map of url name and the url.
 	 */
-	album: AlbumSimplified;
+	external_urls: ExternalUrls;
+	/**
+	 * The api url where you can get the full details of the linked track.
+	 */
+	href: string;
+	/**
+	 * The Spotify ID for the track.
+	 */
+	id: string;
+	/**
+	 * The object type: "track".
+	 */
+	type: "track";
+	/**
+	 * The Spotify URI for the track.
+	 */
+	uri: string;
+}
+
+export interface TrackSimplified extends JSONObject {
 	/**
 	 * The artists who performed the track.
 	 */
-	artists: Artist[];
+	artists: ArtistSimplified[];
 	/**
-	 * The markets in which the album is available:
-	 * ISO 3166-1 alpha-2 country codes.
+	 * A list of the countries in which the track can be played.
 	 */
 	available_markets: Market[];
 	/**
-	 * The disc number
-	 * (usually 1 unless the album consists of more than one disc).
+	 * The disc number (usually 1 unless the album consists of more than one disc).
 	 */
 	disc_number: number;
 	/**
@@ -36,28 +54,33 @@ export interface Track extends JSONObject {
 	 * Whether or not the track has explicit lyrics.
 	 */
 	explicit: boolean;
-	/**
-	 * Known external IDs for the track.
-	 */
-	external_ids: ExternalIds;
-	/**
-	 * Known external URLs for this track.
-	 */
+	/** External URLs for this track. */
 	external_urls: ExternalUrls;
 	/**
 	 * A link to the Web API endpoint providing full details of the track.
 	 */
 	href: string;
 	/**
-	 * The Spotify ID for the track.
+	 * Whether or not the track is from a local file.
 	 */
-	id: string;
+	is_local: boolean;
 	/**
 	 * If true, the track is playable in the given market.
 	 * Otherwise false.
 	 */
 	is_playable?: boolean;
-	// TODO linked_from: {};
+	/**
+	 * Part of the response when Track Relinking is applied and is only part of the response if the track linking, in fact, exists.
+	 */
+	linked_from?: LinkedTrack;
+	/**
+	 * The name of the track.
+	 */
+	name: string;
+	/**
+	 * A link to a 30 second preview (MP3 format) of the track.
+	 */
+	preview_url: string | null;
 	/**
 	 * Included in the response when a content restriction is applied.
 	 */
@@ -65,22 +88,13 @@ export interface Track extends JSONObject {
 		reason: RestrictionsReason;
 	};
 	/**
-	 * Name of the track.
-	 */
-	name: string;
-	/**
-	 * The popularity of the track.
-	 * The value will be between 0 and 100, with 100 being the most popular.
-	 */
-	popularity: number;
-	/**
-	 * A link to a 30 second preview (MP3 format) of the track.
-	 */
-	preview_url: string | null;
-	/**
 	 * The number of the track. If an album has several discs, the track number is the number on the specified disc.
 	 */
 	track_number: number;
+	/**
+	 * The Spotify ID for the track.
+	 */
+	id: string;
 	/**
 	 * The object type: "track".
 	 */
@@ -89,10 +103,26 @@ export interface Track extends JSONObject {
 	 * The Spotify URI for the track.
 	 */
 	uri: string;
+}
+
+export interface Track extends TrackSimplified, JSONObject {
 	/**
-	 * Whether or not the track is from a local file.
+	 * The album on which the track appears.
 	 */
-	is_local: boolean;
+	album: AlbumSimplified;
+	/**
+	 * The artists who performed the track.
+	 */
+	artists: Artist[];
+	/**
+	 * Known external IDs for the track.
+	 */
+	external_ids: ExternalIds;
+	/**
+	 * The popularity of the track.
+	 * The value will be between 0 and 100, with 100 being the most popular.
+	 */
+	popularity: number;
 }
 
 export interface AudioFeatures extends JSONObject {
@@ -336,7 +366,7 @@ interface AudioAnalysisTrack extends JSONObject {
 	rhythm_version: number;
 }
 
-interface AudioAnalysisGeneric extends JSONObject {
+interface TimeInterval extends JSONObject {
 	/**
 	 * The starting point (in seconds) of the time interval.
 	 */
@@ -351,7 +381,7 @@ interface AudioAnalysisGeneric extends JSONObject {
 	confidence: number;
 }
 
-interface AudioAnalysisSection extends AudioAnalysisGeneric, JSONObject {
+interface AudioAnalysisSection extends TimeInterval, JSONObject {
 	/**
 	 * The overall loudness of the section in decibels (dB).
 	 * Loudness values are useful for comparing relative loudness of sections within tracks.
@@ -400,7 +430,7 @@ interface AudioAnalysisSection extends AudioAnalysisGeneric, JSONObject {
 	time_signature_confidence: number;
 }
 
-interface AudioAnalysisSegment extends AudioAnalysisGeneric, JSONObject {
+interface AudioAnalysisSegment extends TimeInterval, JSONObject {
 	/**
 	 * The onset loudness of the segment in decibels (dB).
 	 */
@@ -435,12 +465,12 @@ export interface AudioAnalysis extends JSONObject {
 	 * The time intervals of the bars throughout the track.
 	 * A bar (or measure) is a segment of time defined as a given number of beats.
 	 */
-	bars: AudioAnalysisGeneric[];
+	bars: TimeInterval[];
 	/**
 	 * The time intervals of beats throughout the track.
 	 * A beat is the basic time unit of a piece of music; for example, each tick of a metronome. Beats are typically multiples of tatums.
 	 */
-	beats: AudioAnalysisGeneric[];
+	beats: TimeInterval[];
 	/**
 	 * Sections are defined by large variations in rhythm or timbre, e.g. chorus, verse, bridge, guitar solo, etc. Each section contains its own descriptions of `tempo`, `key`, `mode`, `time_signature`, and `loudness`.
 	 */
@@ -452,7 +482,7 @@ export interface AudioAnalysis extends JSONObject {
 	/**
 	 * A tatum represents the lowest regular pulse train that a listener intuitively infers from the timing of perceived musical events (segments).
 	 */
-	tatums: AudioAnalysisGeneric[];
+	tatums: TimeInterval[];
 }
 
 export interface GetRecommendationsOpts extends SearchParams {
@@ -617,41 +647,44 @@ export interface GetRecommendationsOpts extends SearchParams {
 	target_valence?: number;
 }
 
+export interface RecommendationSeed extends JSONObject {
+	/**
+	 * The number of tracks available after min_* and max_* filters have been applied.
+	 */
+	afterFilteringSize: number;
+	/**
+	 * The number of tracks available after relinking for regional availability.
+	 */
+	afterRelinkingSize: number;
+	/**
+	 * A link to the full track or artist data for this seed.
+	 *
+	 * For tracks this will be a link to a Track Object.  \
+	 * For artists a link to an Artist Object. \
+	 * For genre seeds, this value will be null.
+	 */
+	href: string | null;
+	/**
+	 * The id used to select this seed. This will be the same as the string used in the `seed_artists`, `seed_tracks` or `seed_genres` parameter.
+	 */
+	id: string;
+	/**
+	 * The number of recommended tracks available for this seed.
+	 */
+	initialPoolSize: number;
+	/**
+	 * The entity type of this seed.
+	 */
+	type: "artist" | "track" | "genre";
+}
+
 export interface Recomendations extends JSONObject {
 	/**
 	 * An array of recommendation seed objects.
 	 */
-	seeds: {
-		/**
-		 * The number of tracks available after min_* and max_* filters have been applied.
-		 */
-		afterFilteringSize: number;
-		/**
-		 * The number of tracks available after relinking for regional availability.
-		 */
-		afterRelinkingSize: number;
-		/**
-		 * A link to the full track or artist data for this seed.
-		 *
-		 * For tracks this will be a link to a Track Object.  \
-		 * For artists a link to an Artist Object. \
-		 * For genre seeds, this value will be null.
-		 */
-		href: string | null;
-		/**
-		 * The id used to select this seed. This will be the same as the string used in the `seed_artists`, `seed_tracks` or `seed_genres` parameter.
-		 */
-		id: string;
-		/**
-		 * The number of recommended tracks available for this seed.
-		 */
-		initialPoolSize: number;
-		/**
-		 * The entity type of this seed.
-		 *
-		 * TODO check if it is caps or not
-		 */
-		type: "artist" | "track" | "genre";
-	}[];
-	tracks: Track[]; // TODO Simplified track
+	seeds: RecommendationSeed[];
+	/**
+	 * An array of track object (simplified) ordered according to the parameters supplied.
+	 */
+	tracks: TrackSimplified[];
 }

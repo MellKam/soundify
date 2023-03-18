@@ -4,11 +4,11 @@ import {
 	Image,
 	PagingObject,
 } from "api/general.types.ts";
-import { UserPublic, UserPublicSimplified } from "api/user/user.types.ts";
+import { UserPublic } from "api/user/user.types.ts";
 import { Track } from "api/track/track.types.ts";
 import { JSONObject } from "shared/mod.ts";
 
-interface PlaylistBase extends JSONObject {
+interface PlaylistSimplified extends JSONObject {
 	/**
 	 * `true` if the owner allows other users to modify the playlist.
 	 */
@@ -21,10 +21,7 @@ interface PlaylistBase extends JSONObject {
 	 * Known external URLs for this playlist.
 	 */
 	external_urls: ExternalUrls;
-	/**
-	 * Information about the followers of the playlist.
-	 */
-	followers: Followers;
+
 	/**
 	 * A link to the Web API endpoint providing full details of the playlist.
 	 */
@@ -48,15 +45,8 @@ interface PlaylistBase extends JSONObject {
 	/**
 	 * The user who owns the playlist
 	 */
-	owner: Omit<UserPublic, "images">;
-	/**
-	 * The playlist's public/private status:
-	 *
-	 * `true` => the playlist is public \
-	 * `false` => the playlist is private \
-	 * `null` => the playlist status is not relevant
-	 */
-	public: boolean | null;
+	owner: UserPublic;
+
 	/**
 	 * The version identifier for the current playlist.
 	 * Can be supplied in other requests to target a specific playlist version.
@@ -70,25 +60,22 @@ interface PlaylistBase extends JSONObject {
 	 * The Spotify URI for the playlist.
 	 */
 	uri: string;
+	/** A collection containing a link ( href ) to the Web API endpoint where full details of the playlist’s tracks can be retrieved, along with the total number of tracks in the playlist. */
+	tracks: PlaylistTracksReference;
 }
 
-export interface SimplifiedPlaylist extends PlaylistBase, JSONObject {
+export interface PlaylistTracksReference extends JSONObject {
 	/**
-	 * The tracks of the playlist.
+	 * A link to the Web API endpoint where full details of the playlist’s tracks can be retrieved.
 	 */
-	tracks: {
-		href: string;
-		total: number;
-	};
+	href: string;
+	/** The total number of tracks in playlist. */
+	total: number;
 }
 
-export interface Playlist extends PlaylistBase, JSONObject {
-	/**
-	 * The tracks of the playlist.
-	 */
-	tracks: PagingObject<Track>;
-}
-
+/**
+ * The structure containing the details of the Spotify Track in the playlist.
+ */
 export interface PlaylistTrack extends JSONObject {
 	/**
 	 * The date and time the track or episode was added.
@@ -99,10 +86,38 @@ export interface PlaylistTrack extends JSONObject {
 	 * The Spotify user who added the track or episode.
 	 * Note: some very old playlists may return null in this field.
 	 */
-	added_by: UserPublicSimplified;
+	added_by: UserPublic | null;
 	/**
 	 * Whether this track or episode is a local file or not.
 	 */
 	is_local: boolean;
-	track: Track;
+	track: Track | null;
+}
+
+export interface Playlist extends PlaylistSimplified, JSONObject {
+	/**
+	 * Information about the followers of the playlist.
+	 */
+	followers: Followers;
+	/**
+	 * The playlist's public/private status:
+	 *
+	 * `true` => the playlist is public \
+	 * `false` => the playlist is private \
+	 * `null` => the playlist status is not relevant
+	 */
+	public: boolean | null;
+	/**
+	 * The tracks of the playlist.
+	 */
+	tracks: PagingObject<PlaylistTrack>;
+}
+
+export interface FeaturedPlaylists extends JSONObject {
+	/** The message from the featured playlists. */
+	message: string;
+	/**
+	 * The list of the featured playlists wrapped in Paging object.
+	 */
+	playlists: PagingObject<PlaylistTrack>;
 }
