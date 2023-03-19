@@ -117,7 +117,7 @@ type SnapshotResponse = { snapshot_id: string };
  * @param client Spotify HTTPClient
  * @param playlist_id The Spotify ID of the playlist
  * @param uris List of Spotify URIs to add, can be track or episode URIs
- * @param pasition The position to insert the items, a zero-based index
+ * @param position The position to insert the items, a zero-based index
  */
 export const addItemsToPlaylist = async (
 	client: HTTPClient,
@@ -144,7 +144,7 @@ export const addItemsToPlaylist = async (
  * @param client Spotify HTTPClient
  * @param playlist_id The Spotify ID of the playlist
  * @param uri Spotify URIs to add, can be track or episode URIs
- * @param pasition The position to insert the items, a zero-based index
+ * @param position The position to insert the items, a zero-based index
  */
 export const addItemToPlaylist = async (
 	client: HTTPClient,
@@ -153,4 +153,72 @@ export const addItemToPlaylist = async (
 	position?: number,
 ) => {
 	return await addItemsToPlaylist(client, playlist_id, [uri], position);
+};
+
+export interface ReorderPlaylistItemsOpts extends SearchParams {
+	/**
+	 * The position of the first item to be reordered.
+	 */
+	range_start?: number;
+	/**
+	 * The position where the items should be inserted.
+	 */
+	insert_before?: number;
+	/**
+	 * The amount of items to be reordered. Defaults to 1 if not set.
+	 * The range of items to be reordered begins from the `range_start` position, and includes the `range_length` subsequent items.
+	 */
+	range_length?: number;
+	/**
+	 * The playlist's snapshot ID against which you want to make the changes.
+	 */
+	snapshot_id?: string;
+}
+
+/**
+ * Reorder items in a playlist depending on the request's parameters.
+ *
+ * @param client Spotify HTTPClient
+ * @param playlist_id The Spotify ID of the playlist.
+ * @param opts Additional options for request
+ */
+export const reorderPlaylistItems = async (
+	client: HTTPClient,
+	playlist_id: string,
+	opts?: ReorderPlaylistItemsOpts,
+) => {
+	return await client.fetch<SnapshotResponse>(
+		`/playlists/${playlist_id}/tracks`,
+		"json",
+		{
+			method: "PUT",
+			body: opts,
+		},
+	);
+};
+
+/**
+ * Replace items in a playlist. Replacing items in a playlist will overwrite its existing items.
+ * This operation can be used for replacing or clearing items in a playlist.
+ *
+ * @param client
+ * @param playlist_id
+ * @param track_uris List of Spotify URIs to set, can be track or episode URIs. A maximum of 100 items can be set in one request.
+ * @returns
+ */
+export const replacePlaylistItems = async (
+	client: HTTPClient,
+	playlist_id: string,
+	track_uris: string[],
+) => {
+	return await client.fetch<SnapshotResponse>(
+		`/playlists/${playlist_id}/tracks`,
+		"json",
+		{
+			method: "PUT",
+			body: {
+				uris: track_uris,
+			},
+		},
+	);
 };

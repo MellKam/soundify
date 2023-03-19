@@ -18,5 +18,3 @@ const client = new SpotifyClient(
 
 const linkinPark = await getArtist(client, "6XyY86QOPPrYVGvF9ch6wz");
 console.log(linkinPark);
-
-linkinPark.genres;
