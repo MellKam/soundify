@@ -99,13 +99,18 @@ export class SpotifyClient implements HTTPClient {
 	>(
 		baseURL: string,
 		responseType: ExpectedResponse,
-		{ body, query, method }: FetchOpts = {},
+		{ body, query, method, headers }: FetchOpts = {},
 	): Promise<R | void> {
 		const url = new URL("https://api.spotify.com/v1" + baseURL);
 		if (query) {
 			url.search = objectToSearchParams(query).toString();
 		}
 		const serializedBody = body ? JSON.stringify(body) : undefined;
+		const mergedHeaders = new Headers({
+			"Content-Type": "application/json",
+			"Accept": "application/json",
+			...headers,
+		});
 
 		let isTriedRefreshToken = false;
 		let retryTimesOn5xx = this.opts.retryTimesOn5xx;
@@ -115,13 +120,10 @@ export class SpotifyClient implements HTTPClient {
 			: await this.authProvider.getAccessToken();
 
 		const call = async (): Promise<Response> => {
+			mergedHeaders.set("Authorization", "Bearer " + accessToken);
 			const res = await fetch(url, {
 				method,
-				headers: {
-					"Content-Type": "application/json",
-					"Accept": "application/json",
-					"Authorization": "Bearer " + accessToken,
-				},
+				headers: mergedHeaders,
 				body: serializedBody,
 			});
 

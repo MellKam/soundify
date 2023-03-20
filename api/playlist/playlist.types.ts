@@ -8,7 +8,7 @@ import { UserPublic } from "api/user/user.types.ts";
 import { Track } from "api/track/track.types.ts";
 import { JSONObject } from "shared/mod.ts";
 
-interface PlaylistSimplified extends JSONObject {
+export interface PlaylistSimplified extends JSONObject {
 	/**
 	 * `true` if the owner allows other users to modify the playlist.
 	 */

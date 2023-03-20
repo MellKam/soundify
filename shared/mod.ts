@@ -47,6 +47,7 @@ export interface FetchOpts {
 	method?: HTTPMethod;
 	body?: JSONValue;
 	query?: SearchParams;
+	headers?: HeadersInit;
 }
 
 export type ExpectedResponse = "json" | "void";
