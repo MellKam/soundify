@@ -7,6 +7,7 @@ export * from "api/playlist/playlist.types.ts";
 export * from "api/track/track.types.ts";
 export * from "api/user/user.types.ts";
 export * from "api/general.types.ts";
+export * from "api/search/search.types.ts";
 
 export * from "api/endpoints.ts";
 export * from "api/api.ts";

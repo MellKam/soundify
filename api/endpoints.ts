@@ -6,3 +6,4 @@ export * from "api/market/market.endpoints.ts";
 export * from "api/playlist/playlist.endpoints.ts";
 export * from "api/track/track.endpoints.ts";
 export * from "api/user/user.endpoints.ts";
+export * from "api/search/search.endpoints.ts";
