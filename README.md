@@ -62,6 +62,10 @@ Soundify is split into subpackages:
 
 ## [NPM](https://www.npmjs.com/org/soundify)
 
+```bash
+npm i @soundify/api
+```
+
 ```ts
 // "/api" - Can be used both in the browser and in nodejs
 import { ... } from "@soudnfiy/api"
@@ -73,8 +77,166 @@ import { ... } from "@soundify/web-auth"
 import { ... } from "@soundify/node-auth"
 ```
 
+This is minified bundle size of each package without treeshaking
+
+<p>
+  <a href="https://bundlejs.com/?q=%40soundify%2Fapi">
+    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fapi&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fapi" alt="@soundify/api">
+  </a>
+  <a href="https://bundlejs.com/?q=%40soundify%2Fnode-auth">
+    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fnode-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fnode-auth" alt="soundify/node-auth">
+  </a>
+  <a href="https://bundlejs.com/?q=%40soundify%2Fweb-auth">
+    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fweb-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth" alt="soundify/web-auth">
+  </a>
+</p>
+
 ## [Deno](https://deno.land/x/soundify)
 
 ```ts
 import { ... } from "https://deno.land/x/soundify/mod.ts"
 ```
+
+# Gettings started
+
+To get started, you need to create a SpotifyClient, the purpose of which is to create an http request to spotify. It takes an access token as the first parameter. We'll tell you how to get your token later.
+
+```ts
+import { SpotifyClient } from "@soundify/api";
+
+const client = new SpotifyClient("ACCESS_TOKEN");
+```
+
+If you've used other api libraries, you can expect something like a bunch of methods on a single class, but in our case the default recommendation is to use endpoint functions that take the client as the first argument:
+
+```ts
+import { SpotifyClient, getCurrentUser } from "@soundify/api"
+
+const client = new SpotifyClient("ACCESS_TOKEN");
+const user = await getCurrentUser(client);
+
+console.log(user)
+```
+
+If your Access Token is valid it will output something like this
+
+```js
+{
+  "id": "31xofk5q7l22rvsbff7yiechyx6i",
+  "display_name": "Soundify",
+  "type": "user",
+  "uri": "spotify:user:31xofk5q7l22rvsbff7yiechyx6i",
+  // etc...
+}
+```
+
+This may be inconvenient for some users, but it was done primarily to provide a way to treeshake so that clients don't send a lot of unused code.
+
+If you are writing a backend or don't care about the size of the library you can use the `createSpotifyAPI()` function which will bind all the endpoint functions to your client. That way you can use this object throughout your application and not have to worry about imports.
+
+```ts
+import { SpotifyClient, createSpotifyAPI } from "@soundify/api";
+
+const api = createSpotifyAPI(new SpotifyClient("ACCESS_TOKEN"));
+const user = await api.getCurrentUser();
+
+console.log(user);
+```
+
+# Authorization
+
+
+If you have no experience with Spotify Auth you can read more about it in the
+[Spotify Authorization Guide](https://developer.spotify.com/documentation/general/guides/authorization/).
+
+## Auth Flows
+
+Authorization flows are organized into separate namespaces, with each namespace
+containing all the necessary functions and classes to implement a specific
+authorization flow. This allows for easy importing of a specific flow.
+
+For instance, the following code imports all authorization flow namespaces:
+
+```ts
+import {
+  // Authorization Code flow
+  AuthCode,
+  // Client Credentials flow
+  ClientCredentials,
+  // Implicit Grant flow
+  ImplicitGrant,
+  // Authorization Code flow with PKCE
+  PKCEAuthCode,
+} from "@soundify/node-auth";
+```
+
+You can take a look at the examples to see how to use each authorization flow.
+
+- Authorization Code flow -
+  [examples/node-express-auth](https://github.com/MellKam/soundify/tree/main/examples/node-express-auth),
+  [examples/next-ssr](https://github.com/MellKam/soundify/tree/main/examples/next-ssr),
+  [examples/deno-oak-auth](https://github.com/MellKam/soundify/tree/main/examples/deno-oak-auth)
+- Authorization Code flow with PKCE -
+  [examples/react-pkce-auth](https://github.com/MellKam/soundify/tree/main/examples/react-pkce-auth)
+- Client Credentials flow - [examples/deno-client-credentials](https://github.com/MellKam/soundify/tree/main/examples/deno-client-credentials)
+- Implicit Grant flow -
+  [examples/react-implicit-grant](https://github.com/MellKam/soundify/tree/main/examples/react-implicit-grant)
+
+## Auth provider and automatic tokens refreshing
+
+As you saw earlier, you can simply pass the Access Token to SpotifyClient. But
+after some time (1 hour to be exact), it will expire and you'll need to deal
+with it yourself. Somehow get a new Access Token and set it on the client.
+
+```ts
+import { SpotifyClient } from "@soundify/api";
+
+const client = new SpotifyClient("ACCESS_TOKEN");
+// ...
+// Oops, token expires :(
+client.setAuthProvider("NEW_ACCESS_TOKEN");
+```
+
+But if you don't want to deal with all that, you can just create an
+`AuthProvider` and pass it instead of the Access Token.
+
+```ts
+import { SpotifyClient } from "@soundify/api";
+import { AuthCode } from "@soundify/node-auth";
+
+const authProvider = new AuthCode.AuthProvider({
+  client_id: "YOUR_SPOTIFY_CLIENT_ID",
+  client_secret: "YOUR_SPOTIFY_CLIENT_SECRET",
+  refresh_token: "YOUR_REFRESH_TOKEN",
+});
+
+const client = new SpotifyClient(authProvider);
+```
+
+You can create an `AuthProvider` from `AuthCode`, `PKCEAuthCode`,
+`ClientCredentials` flows. Implicit grant does not allow you to implement such a
+thing.
+
+## Auth Scopes
+
+Scopes are usually used when creating authorization url. Pay attention to them,
+because many fields and endpoints may not be available if the correct scopes are
+not specified. Read the
+[Spotify guide](https://developer.spotify.com/documentation/general/guides/authorization/scopes/)
+to learn more.
+
+In Soundify scopes can be used as strings or with const object `SCOPES`.
+
+```ts
+import { SCOPES, AuthCode } from "@soundify/node-auth";
+
+AuthCode.getAuthURL({
+  scopes: ["user-read-email"],
+  // or like this
+  scopes: [SCOPES.USER_READ_EMAIL]
+  // or use all scopes
+  scopes: Object.values(SCOPES),
+})
+```
+
+All contributions are very welcome ❤️
