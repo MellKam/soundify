@@ -127,3 +127,19 @@ export interface ExternalIds extends JSONObject {
 	 */
 	upc?: string;
 }
+
+/**
+ * The copyright object contains the type and the name of copyright.
+ */
+export interface Copyright extends JSONObject {
+	/**
+	 * The copyright text for this content.
+	 */
+	text: string;
+	/**
+	 * The type of copyright: \
+	 * C = the copyright \
+	 * P = the sound recording (performance) copyright
+	 */
+	type: "C" | "P";
+}

@@ -1,4 +1,5 @@
 import {
+	Copyright,
 	ExternalIds,
 	ExternalUrls,
 	Image,
@@ -91,18 +92,7 @@ interface AlbumBase extends JSONObject {
 	/**
 	 * The copyright statements of the album.
 	 */
-	copyrights?: {
-		/**
-		 * The copyright text for this content.
-		 */
-		text: string;
-		/**
-		 * The type of copyright: \
-		 * C = the copyright \
-		 * P = the sound recording (performance) copyright
-		 */
-		type: string;
-	}[];
+	copyrights?: Copyright[];
 	/**
 	 * A list of the genres the album is associated with.
 	 * If not yet classified, the array is empty.
