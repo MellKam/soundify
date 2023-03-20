@@ -9,7 +9,9 @@ const getArgs = () => {
 
 	let version = Deno.args.at(1) ?? "v0.0.0";
 
-	const isValidVersion = /v[0-9]+\.[0-9]+\.[0-9]+/.test(version);
+	const isValidVersion = /([\dvx*]+(?:[-.](?:[\dx*]+|alpha|beta))*)/gm.test(
+		version,
+	);
 	if (!isValidVersion) {
 		throw new Error(`Invalid package version format ${version}`);
 	}
@@ -60,7 +62,7 @@ const buildPackage = async (opts: {
 			license: "MIT",
 			devDependencies: opts.devDependencies,
 			dependencies: opts.dependencies,
-			packageManager: "pnpm@7.29.3",
+			packageManager: "pnpm@7.30.0",
 			repository: {
 				type: "git",
 				url: "https://github.com/MellKam/soundify",
