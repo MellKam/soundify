@@ -72,7 +72,7 @@ Deno.test("SpotifyClient with access token and put request with body", async () 
 		"void",
 		{
 			method: "PUT",
-			body: { public: true },
+			json: { public: true },
 		},
 	);
 
@@ -159,7 +159,7 @@ Deno.test("SpotifyClient with AuthProvider", async () => {
 		);
 	});
 
-	const authProvider = new AuthCode.AuthProvider({
+	const authProvider = await AuthCode.AuthProvider.create({
 		client_id: "",
 		client_secret: "",
 		refresh_token: "",
@@ -210,6 +210,7 @@ Deno.test("SpotifyClient with AuthProvider and double 401 error", async () => {
 		client_id: "",
 		client_secret: "",
 		refresh_token: "",
+		access_token: "",
 	});
 
 	const getAccessTokenStub = stub(authProvider, "getAccessToken");
@@ -293,7 +294,7 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 		client_id: "",
 		client_secret: "",
 		refresh_token: "",
-		access_token: "TOKEN",
+		access_token: "",
 	});
 
 	const client = new SpotifyClient(authProvider, {

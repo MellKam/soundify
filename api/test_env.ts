@@ -45,10 +45,16 @@ const getTestEnv = () => {
 
 const env = getTestEnv();
 
+const spotifyCredentials = {
+	client_id: env.SPOTIFY_CLIENT_ID,
+	client_secret: env.SPOTIFY_CLIENT_SECRET,
+	refresh_token: env.SPOTIFY_REFRESH_TOKEN,
+};
+const data = await AuthCode.refresh(spotifyCredentials);
+
 export const client = new SpotifyClient(
 	new AuthCode.AuthProvider({
-		client_id: env.SPOTIFY_CLIENT_ID,
-		client_secret: env.SPOTIFY_CLIENT_SECRET,
-		refresh_token: env.SPOTIFY_REFRESH_TOKEN,
+		...spotifyCredentials,
+		access_token: data.access_token,
 	}),
 );

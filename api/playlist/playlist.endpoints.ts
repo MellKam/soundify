@@ -85,7 +85,7 @@ export const changePlaylistDetails = async (
 ) => {
 	await client.fetch("/playlists/" + playlist_id, "void", {
 		method: "PUT",
-		body,
+		json: body,
 	});
 };
 
@@ -202,7 +202,7 @@ export const reorderPlaylistItems = async (
 		"json",
 		{
 			method: "PUT",
-			body: opts,
+			json: opts,
 		},
 	);
 };
@@ -225,9 +225,7 @@ export const replacePlaylistItems = async (
 		"json",
 		{
 			method: "PUT",
-			body: {
-				uris,
-			},
+			json: { uris },
 		},
 	);
 };
@@ -251,7 +249,7 @@ export const removePlaylistItems = async (
 		"json",
 		{
 			method: "DELETE",
-			body: {
+			json: {
 				tracks: uris.map((uri) => ({ uri })),
 				snapshot_id,
 			},
@@ -348,7 +346,7 @@ export const createPlaylist = async (
 	body: CreatePlaylistBody,
 ) => {
 	return await client.fetch<Playlist>(`/users/${user_id}/playlists`, "json", {
-		body,
+		json: body,
 		method: "POST",
 	});
 };

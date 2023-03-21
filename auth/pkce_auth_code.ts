@@ -1,11 +1,10 @@
-import { IAuthProvider, objectToSearchParams } from "shared/mod.ts";
+import { IAuthProvider, toQueryString } from "shared/mod.ts";
 import {
-	API_TOKEN_URL,
 	ApiTokenReqParams,
-	AUTHORIZE_URL,
 	AuthorizeReqParams,
 	AuthScope,
 	KeypairResponse,
+	SPOTIFY_AUTH,
 	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
@@ -48,16 +47,14 @@ export type GetRedirectURLOpts = {
 export const getRedirectURL = (
 	{ scopes, ...opts }: GetRedirectURLOpts,
 ) => {
-	const url = new URL(AUTHORIZE_URL);
+	const url = new URL(SPOTIFY_AUTH + "authorize");
 
-	url.search = objectToSearchParams<AuthorizeReqParams>(
-		{
-			response_type: "code",
-			scope: scopes?.join(" "),
-			code_challenge_method: "S256",
-			...opts,
-		},
-	).toString();
+	url.search = toQueryString<AuthorizeReqParams>({
+		response_type: "code",
+		scope: scopes?.join(" "),
+		code_challenge_method: "S256",
+		...opts,
+	});
 
 	return url;
 };
@@ -87,19 +84,18 @@ export type GetGrantDataOpts = {
 export { parseCallbackData } from "auth/general.ts";
 
 export const getGrantData = async (opts: GetGrantDataOpts) => {
-	const res = await fetch(
-		API_TOKEN_URL,
-		{
-			headers: {
-				"Content-Type": URL_ENCODED,
-			},
-			method: "POST",
-			body: objectToSearchParams<ApiTokenReqParams>({
-				grant_type: "authorization_code",
-				...opts,
-			}),
+	const url = new URL(SPOTIFY_AUTH + "api/token");
+	url.search = toQueryString<ApiTokenReqParams>({
+		grant_type: "authorization_code",
+		...opts,
+	});
+
+	const res = await fetch(url, {
+		headers: {
+			"Content-Type": URL_ENCODED,
 		},
-	);
+		method: "POST",
+	});
 
 	if (!res.ok) {
 		throw new SpotifyAuthError(await res.text(), res.status);
@@ -153,16 +149,18 @@ export const refresh = async (opts: {
 	client_id: string;
 	refresh_token: string;
 }) => {
-	const res = await fetch(API_TOKEN_URL, {
+	const url = new URL(SPOTIFY_AUTH + "api/token");
+	url.search = toQueryString<ApiTokenReqParams>({
+		grant_type: "refresh_token",
+		client_id: opts.client_id,
+		refresh_token: opts.refresh_token,
+	});
+
+	const res = await fetch(url, {
 		headers: {
 			"Content-Type": URL_ENCODED,
 		},
 		method: "POST",
-		body: objectToSearchParams<ApiTokenReqParams>({
-			grant_type: "refresh_token",
-			client_id: opts.client_id,
-			refresh_token: opts.refresh_token,
-		}),
 	});
 
 	if (!res.ok) {
@@ -172,38 +170,37 @@ export const refresh = async (opts: {
 	return (await res.json()) as KeypairResponse;
 };
 
-export type AuthProviderConfig = {
-	client_id: string;
-	refresh_token: string;
-	access_token?: string;
-};
-
 export type AuthProviderOpts = {
 	onRefresh?: (data: KeypairResponse) => void | Promise<void>;
-	onRefreshFailure?: (error: Error) => Promise<void> | void;
+	onRefreshFailure?: (error: SpotifyAuthError) => void | Promise<void>;
 };
 
 export class AuthProvider implements IAuthProvider {
-	constructor(
-		private readonly config: AuthProviderConfig,
+	private constructor(
+		private readonly config: {
+			client_id: string;
+			refresh_token: string;
+			access_token: string;
+		},
 		private readonly opts: AuthProviderOpts = {},
 	) {}
 
-	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || !this.config.access_token) {
-			try {
-				const data = await refresh(this.config);
+	async refreshToken() {
+		try {
+			const data = await refresh(this.config);
 
-				this.config.refresh_token = data.refresh_token;
-				this.config.access_token = data.access_token;
+			this.config.refresh_token = data.refresh_token;
+			this.config.access_token = data.access_token;
 
-				if (this.opts.onRefresh) await this.opts.onRefresh(data);
-			} catch (error) {
-				if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
-				throw error;
-			}
+			if (this.opts.onRefresh) await this.opts.onRefresh(data);
+			return this.config.access_token;
+		} catch (error) {
+			if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
+			throw error;
 		}
+	}
 
+	getToken() {
 		return this.config.access_token;
 	}
 }

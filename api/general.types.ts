@@ -1,6 +1,4 @@
-import { JSONObject, SearchParams } from "shared/mod.ts";
-
-export interface PagingObject<T extends JSONObject> extends JSONObject {
+export type PagingObject<T extends JSONObject> = {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
@@ -26,9 +24,9 @@ export interface PagingObject<T extends JSONObject> extends JSONObject {
 	 */
 	total: number;
 	items: T[];
-}
+};
 
-export interface CursorPagingObject<T extends JSONObject> extends JSONObject {
+export type CursorPagingObject<T extends JSONObject> = {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
@@ -59,9 +57,9 @@ export interface CursorPagingObject<T extends JSONObject> extends JSONObject {
 	 */
 	total: number;
 	items: T[];
-}
+};
 
-export interface PagingOptions extends SearchParams {
+export type PagingOptions = {
 	/**
 	 * The maximum number of items to return. Minimum: 1. Maximum: 50.
 	 * @default 20
@@ -72,7 +70,7 @@ export interface PagingOptions extends SearchParams {
 	 * @default 0 (the first item)
 	 */
 	offset?: number;
-}
+};
 
 /**
  * The reason for the restriction.
@@ -83,7 +81,7 @@ export interface PagingOptions extends SearchParams {
  */
 export type RestrictionsReason = "market" | "product" | "explicit";
 
-export interface Image extends JSONObject {
+export type Image = {
 	/**
 	 * The image height in pixels.
 	 */
@@ -96,9 +94,9 @@ export interface Image extends JSONObject {
 	 * The image width in pixels.
 	 */
 	width: number | null;
-}
+};
 
-export interface Followers extends JSONObject {
+export type Followers = {
 	/**
 	 * This will always be set to null, as the Web API does not support it at the moment.
 	 */
@@ -107,13 +105,13 @@ export interface Followers extends JSONObject {
 	 * The total number of followers.
 	 */
 	total: number;
-}
+};
 
-export interface ExternalUrls extends JSONObject {
+export type ExternalUrls = {
 	spotify: string;
-}
+};
 
-export interface ExternalIds extends JSONObject {
+export type ExternalIds = {
 	/**
 	 * [International Standard Recording Code](https://en.wikipedia.org/wiki/International_Standard_Recording_Code).
 	 */
@@ -126,12 +124,12 @@ export interface ExternalIds extends JSONObject {
 	 * [Universal Product Code](http://en.wikipedia.org/wiki/Universal_Product_Code).
 	 */
 	upc?: string;
-}
+};
 
 /**
  * The copyright object contains the type and the name of copyright.
  */
-export interface Copyright extends JSONObject {
+export type Copyright = {
 	/**
 	 * The copyright text for this content.
 	 */
@@ -142,4 +140,21 @@ export interface Copyright extends JSONObject {
 	 * P = the sound recording (performance) copyright
 	 */
 	type: "C" | "P";
+};
+
+export type NonNullableJSON<T extends JSONObject> = {
+	[K in keyof T]: NonNullable<T[K]>;
+};
+
+export type JSONValue =
+	| null
+	| string
+	| number
+	| boolean
+	| JSONObject
+	| JSONArray;
+
+export type JSONArray = JSONValue[];
+export interface JSONObject {
+	[x: string]: JSONValue | undefined;
 }

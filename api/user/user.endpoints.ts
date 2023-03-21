@@ -17,7 +17,7 @@ export const getCurrentUser = async (client: HTTPClient) => {
 	return await client.fetch<UserPrivate>("/me", "json");
 };
 
-interface GetUserTopItemsOpts extends SearchParams, PagingOptions {
+export type GetUserTopItemsOpts = {
 	/**
 	 * Over what time frame the affinities are computed.
 	 *
@@ -28,7 +28,7 @@ interface GetUserTopItemsOpts extends SearchParams, PagingOptions {
 	 * @default "medium_term"
 	 */
 	time_range?: "long_term" | "medium_term" | "short_term";
-}
+} & PagingOptions;
 
 type TopItemType = "artists" | "tracks";
 type TopItem = Artist | Track;
@@ -118,7 +118,7 @@ export const followPlaylist = async (
 		"void",
 		{
 			method: "PUT",
-			body: { public: is_public },
+			json: { public: is_public },
 		},
 	);
 };
