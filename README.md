@@ -194,28 +194,82 @@ import { SpotifyClient } from "@soundify/api";
 const client = new SpotifyClient("ACCESS_TOKEN");
 // ...
 // Oops, token expires :(
-client.setAuthProvider("NEW_ACCESS_TOKEN");
+
+const { access_token } = await AuthCode.refresh({ 
+  client_id: "YOUR_CLIENT_ID", 
+  client_secret: "YOUR_CLIENT_SECRET", 
+  refresh_token: "YOUR_REFRESH_TOKEN" 
+});
+// set new token to your client
+client.setAuthProvider(access_token);
 ```
 
 But if you don't want to deal with all that, you can just create an
-`AuthProvider` and pass it instead of the Access Token.
+`AuthProvider` and pass it instead of the Access Token. It will automatically refresh your token.
 
 ```ts
 import { SpotifyClient } from "@soundify/api";
 import { AuthCode } from "@soundify/node-auth";
 
 const authProvider = new AuthCode.AuthProvider({
-  client_id: "YOUR_SPOTIFY_CLIENT_ID",
-  client_secret: "YOUR_SPOTIFY_CLIENT_SECRET",
+  client_id: "YOUR_CLIENT_ID",
+  client_secret: "YOUR_CLIENT_SECRET",
   refresh_token: "YOUR_REFRESH_TOKEN",
+  access_token: "YOUR_ACCESS_TOKEN",
 });
 
 const client = new SpotifyClient(authProvider);
 ```
 
+Note that to create an `AuthProvider` you must pass an access token to its constructor. For example, if you will store a user refresh token in the database and want to use it, you will have to refresh the token first. There are shortcuts to do this:
+
+```ts
+import { SpotifyClient } from "@soundify/api";
+import { AuthCode } from "@soundify/node-auth";
+
+const authProvider = await AuthCode.AuthProvider.create({
+  client_id: "YOUR_CLIENT_ID",
+  client_secret: "YOUR_CLIENT_SECRET",
+  refresh_token: "YOUR_REFRESH_TOKEN",
+  // no need to provide access token
+});
+
+const client = new SpotifyClient(authProvider);
+```
+
+`.create` - is a static method that will automatically refresh the token and create the AuthProvider for you.
+
 You can create an `AuthProvider` from `AuthCode`, `PKCEAuthCode`,
 `ClientCredentials` flows. Implicit grant does not allow you to implement such a
 thing.
+
+### Refresh Events
+
+AuthProvider provides an additional option for callback events that may be usefull in some cases.
+
+```ts
+import { PKCEAuthCode } from "@soundify/web-auth";
+
+const authProvider = new PKCEAuthCode.AuthProvider(
+  {
+    client_id: "YOUR_CLIENT_ID",
+    refresh_token: "YOUR_REFRESH_TOKEN",
+    access_token: "YOUR_ACCESS_TOKEN",
+  },
+  {
+    onRefresh: (data) => {
+      // do something with new token
+      // for example, store it in localStorage
+      localStorage.setItem("access_token", data.access_token);
+    },
+    onRefreshFailure: (error) => {
+      // do something with error
+      // for example, ask you to login again
+      location.replace(PKCEAuthCode.getAuthURL({ ... }));
+    }
+  }
+);
+```
 
 ## Auth Scopes
 
