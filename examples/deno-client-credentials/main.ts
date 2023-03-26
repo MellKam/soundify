@@ -9,12 +9,12 @@ const env = cleanEnv(config(), {
 	SPOTIFY_CLIENT_SECRET: str(),
 });
 
-const client = new SpotifyClient(
-	new ClientCredentials.AuthProvider({
-		client_id: env.SPOTIFY_CLIENT_ID,
-		client_secret: env.SPOTIFY_CLIENT_SECRET,
-	}),
-);
+const authProvider = await ClientCredentials.AuthProvider.create({
+	client_id: env.SPOTIFY_CLIENT_ID,
+	client_secret: env.SPOTIFY_CLIENT_SECRET,
+});
+
+const client = new SpotifyClient(authProvider);
 
 const linkinPark = await getArtist(client, "6XyY86QOPPrYVGvF9ch6wz");
 console.log(linkinPark);

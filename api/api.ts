@@ -1,5 +1,5 @@
 import * as endpoints from "api/endpoints.ts";
-import { HTTPClient } from "shared/mod.ts";
+import { HTTPClient } from "api/client.ts";
 
 type OmitFirst<T extends unknown[]> = T extends [unknown, ...infer R] ? R
 	: never;

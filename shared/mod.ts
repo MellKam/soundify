@@ -1,96 +1,26 @@
-export type SearchParam = string | number | boolean | undefined | string[];
-export type SearchParams = Record<string, SearchParam>;
+export type SearchParam = string | number | boolean | SearchParamArray;
+export type SearchParamArray = SearchParam[];
+export type SearchParams = { [k: string]: SearchParam | undefined };
 
 /**
- * Creates URLSearchParams from object
- *
- * You can use `new URLSearchParams(obj)`, when your object
- * extends `Record<string, string>`. Otherwise use this function.
+ * Creates a query string from the object and skips `undefined`.
  */
-export const objectToSearchParams = <
-	T extends SearchParams,
->(
+export const toQueryString = <T extends SearchParams>(
 	obj: T,
-): URLSearchParams => {
+): string => {
 	const params = new URLSearchParams();
 
-	Object.keys(obj).forEach((key) => {
-		const value = obj[key];
+	for (const [name, value] of Object.entries(obj)) {
+		if (typeof value !== "undefined") params.set(name, value.toString());
+	}
 
-		if (typeof value === "undefined") return;
-		params.set(key, value.toString());
-	});
-
-	return params;
+	return params.toString();
 };
-
-export type JSONValue =
-	| null
-	| string
-	| number
-	| boolean
-	| JSONObject
-	| JSONArray;
-
-export type JSONArray = JSONValue[];
-export interface JSONObject {
-	[x: string]: JSONValue | undefined;
-}
-
-export type NonNullableJSON<T extends JSONObject> = {
-	[K in keyof T]: NonNullable<T[K]>;
-};
-
-export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-
-export interface FetchOpts {
-	method?: HTTPMethod;
-	body?: JSONValue;
-	query?: SearchParams;
-	headers?: HeadersInit;
-}
-
-export type ExpectedResponse = "json" | "void";
-
-/**
- * Interface that provides a fetch method to make HTTP requests.
- */
-export interface HTTPClient {
-	/**
-	 * Sends an HTTP request.
-	 *
-	 * @param baseURL
-	 * The base URL for the API request. Must begin with "/"
-	 * @param returnType
-	 * The expected return type of the API response.
-	 * @param opts
-	 * Optional request options, such as the request body or query parameters.
-	 */
-	fetch(
-		baseURL: string,
-		responseType: "void",
-		opts?: FetchOpts,
-	): Promise<void>;
-	fetch<
-		R extends JSONValue = JSONValue,
-	>(
-		baseURL: string,
-		responseType: "json",
-		opts?: FetchOpts,
-	): Promise<R>;
-}
 
 /**
  * The interface used to provide access token with the ability to refresh it
  */
 export interface IAuthProvider {
-	/**
-	 * Function that gives you access token.
-	 *
-	 * @param forceRefresh Does the service have to refresh the token, or give you a cached token
-	 * @default false
-	 */
-	getAccessToken: (
-		forceRefresh?: boolean,
-	) => Promise<string>;
+	refreshToken(): Promise<string>;
+	getToken(): string;
 }

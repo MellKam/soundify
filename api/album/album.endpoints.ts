@@ -1,4 +1,4 @@
-import { HTTPClient } from "shared/mod.ts";
+import { HTTPClient } from "api/client.ts";
 import { PagingObject, PagingOptions } from "api/general.types.ts";
 import { Market } from "api/market/market.types.ts";
 import { TrackSimplified } from "api/track/track.types.ts";

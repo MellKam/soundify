@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { randomUUID } from "node:crypto";
 import { setCookie } from "cookies-next";
 import { AuthCode } from "@soundify/node-auth";
-import { env, SPOTIFY_STATE } from "../../spotify";
+import { env, STATE } from "../../consts";
 
 export default function (
 	req: NextApiRequest,
@@ -10,7 +10,7 @@ export default function (
 ) {
 	const state = randomUUID();
 
-	setCookie(SPOTIFY_STATE, state, {
+	setCookie(STATE, state, {
 		httpOnly: true,
 		path: "/api/callback",
 		req,

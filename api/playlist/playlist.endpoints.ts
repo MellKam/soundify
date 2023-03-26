@@ -1,9 +1,4 @@
-import {
-	HTTPClient,
-	JSONObject,
-	NonNullableJSON,
-	SearchParams,
-} from "shared/mod.ts";
+import { SearchParams } from "shared/mod.ts";
 import { Market } from "api/market/market.types.ts";
 import { Image, PagingObject, PagingOptions } from "api/general.types.ts";
 import {
@@ -12,6 +7,8 @@ import {
 	PlaylistSimplified,
 	PlaylistTrack,
 } from "api/playlist/playlist.types.ts";
+import { HTTPClient } from "api/client.ts";
+import { JSONObject, NonNullableJSON } from "api/general.types.ts";
 
 interface PlaylistFieldsOpts extends SearchParams {
 	/**
@@ -85,7 +82,7 @@ export const changePlaylistDetails = async (
 ) => {
 	await client.fetch("/playlists/" + playlist_id, "void", {
 		method: "PUT",
-		body,
+		json: body,
 	});
 };
 
@@ -202,7 +199,7 @@ export const reorderPlaylistItems = async (
 		"json",
 		{
 			method: "PUT",
-			body: opts,
+			json: opts,
 		},
 	);
 };
@@ -225,9 +222,7 @@ export const replacePlaylistItems = async (
 		"json",
 		{
 			method: "PUT",
-			body: {
-				uris,
-			},
+			json: { uris },
 		},
 	);
 };
@@ -251,7 +246,7 @@ export const removePlaylistItems = async (
 		"json",
 		{
 			method: "DELETE",
-			body: {
+			json: {
 				tracks: uris.map((uri) => ({ uri })),
 				snapshot_id,
 			},
@@ -348,7 +343,7 @@ export const createPlaylist = async (
 	body: CreatePlaylistBody,
 ) => {
 	return await client.fetch<Playlist>(`/users/${user_id}/playlists`, "json", {
-		body,
+		json: body,
 		method: "POST",
 	});
 };

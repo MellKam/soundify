@@ -1,4 +1,4 @@
-import { JSONObject, NonNullableJSON } from "shared/mod.ts";
+import { JSONObject, NonNullableJSON } from "api/general.types.ts";
 import { Image } from "api/general.types.ts";
 
 export interface Category extends JSONObject {

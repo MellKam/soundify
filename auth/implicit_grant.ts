@@ -1,5 +1,5 @@
-import { objectToSearchParams } from "shared/mod.ts";
-import { AUTHORIZE_URL, AuthorizeReqParams, AuthScope } from "auth/general.ts";
+import { toQueryString } from "shared/mod.ts";
+import { AuthorizeReqParams, AuthScope, SPOTIFY_AUTH } from "auth/general.ts";
 
 export type GetRedirectURLOpts = {
 	/**
@@ -40,13 +40,13 @@ export type GetRedirectURLOpts = {
 };
 
 export const getRedirectURL = ({ scopes, ...opts }: GetRedirectURLOpts) => {
-	const url = new URL(AUTHORIZE_URL);
+	const url = new URL(SPOTIFY_AUTH + "authorize");
 
-	url.search = objectToSearchParams<AuthorizeReqParams>({
+	url.search = toQueryString<AuthorizeReqParams>({
 		response_type: "token",
 		scope: scopes?.join(" "),
 		...opts,
-	}).toString();
+	});
 
 	return url;
 };

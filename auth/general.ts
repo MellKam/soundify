@@ -1,11 +1,6 @@
-import { JSONObject, SearchParams } from "shared/mod.ts";
 import { encodeToBase64 } from "auth/platform/platform.deno.ts";
 
-const AUTH_API_ORIGIN = "https://accounts.spotify.com";
-
-export const AUTHORIZE_URL = `${AUTH_API_ORIGIN}/authorize` as const;
-export const API_TOKEN_URL = `${AUTH_API_ORIGIN}/api/token` as const;
-
+export const SPOTIFY_AUTH = "https://accounts.spotify.com/";
 export const URL_ENCODED = "application/x-www-form-urlencoded;charset=UTF-8";
 
 export class SpotifyAuthError extends Error {
@@ -15,12 +10,11 @@ export class SpotifyAuthError extends Error {
 		options?: ErrorOptions,
 	) {
 		super(message, options);
-		this.name = "SpotifyAuthError" + status;
+		this.name = "SpotifyAuthError";
 	}
 }
 
-export interface AuthCodeCallbackSuccess
-	extends Record<string, string | undefined> {
+export type AuthCodeCallbackSuccess = {
 	/**
 	 * An authorization code that can be exchanged for an Access Token.
 	 */
@@ -29,10 +23,9 @@ export interface AuthCodeCallbackSuccess
 	 * The value of the state parameter supplied in the request
 	 */
 	state?: string;
-}
+};
 
-export interface AuthCodeCallbackError
-	extends Record<string, string | undefined> {
+export type AuthCodeCallbackError = {
 	/**
 	 * 	The reason authorization failed, for example: “access_denied”
 	 */
@@ -41,7 +34,7 @@ export interface AuthCodeCallbackError
 	 * The value of the state parameter supplied in the request
 	 */
 	state?: string;
-}
+};
 
 export type AuthCodeCallbackData =
 	| AuthCodeCallbackSuccess
@@ -69,7 +62,7 @@ export const getBasicAuthHeader = (
 		);
 };
 
-export interface AccessResponse extends JSONObject {
+export interface AccessResponse {
 	/**
 	 * An Access Token that can be provided in subsequent calls,
 	 * for example to Spotify Web API services.
@@ -85,7 +78,7 @@ export interface AccessResponse extends JSONObject {
 	expires_in: number;
 }
 
-export interface ScopedAccessResponse extends AccessResponse, JSONObject {
+export interface ScopedAccessResponse extends AccessResponse {
 	/**
 	 * A space-separated list of scopes which have been granted
 	 * for this `access_token`
@@ -96,7 +89,7 @@ export interface ScopedAccessResponse extends AccessResponse, JSONObject {
 /**
  * Spotify response data containing refresh and access tokens
  */
-export interface KeypairResponse extends ScopedAccessResponse, JSONObject {
+export interface KeypairResponse extends ScopedAccessResponse {
 	/**
 	 * A token that can be used to generate new `access_token`.
 	 */
@@ -106,7 +99,7 @@ export interface KeypairResponse extends ScopedAccessResponse, JSONObject {
 /**
  * Search parameters for the `GET` request to the `/authorize` endpoint
  */
-export interface AuthorizeReqParams extends SearchParams {
+export type AuthorizeReqParams = {
 	client_id: string;
 	response_type: "code" | "token";
 	redirect_uri: string;
@@ -115,19 +108,19 @@ export interface AuthorizeReqParams extends SearchParams {
 	show_dialog?: boolean;
 	code_challenge_method?: "S256";
 	code_challenge?: string;
-}
+};
 
 /**
  * Search parameters for the `GET` request to the `/api/token` endpoint
  */
-export interface ApiTokenReqParams extends SearchParams {
+export type ApiTokenReqParams = {
 	refresh_token?: string;
 	code?: string;
 	redirect_uri?: string;
 	client_id?: string;
 	code_verifier?: string;
 	grant_type: "refresh_token" | "client_credentials" | "authorization_code";
-}
+};
 
 /**
  * Scopes provide Spotify users using third-party apps the confidence that only

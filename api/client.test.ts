@@ -3,76 +3,74 @@ import { UserPrivate } from "api/user/user.types.ts";
 import * as mockFetch from "https://deno.land/x/mock_fetch@0.3.0/mod.ts";
 import {
 	assert,
+	assertEquals,
 	assertInstanceOf,
-	assertObjectMatch,
-} from "https://deno.land/std@0.180.0/testing/asserts.ts";
+} from "https://deno.land/std@0.181.0/testing/asserts.ts";
 import { privateUserStub } from "api/user/user.stubs.ts";
 import {
 	assertSpyCall,
 	assertSpyCalls,
-	stub,
-} from "https://deno.land/std@0.180.0/testing/mock.ts";
+	spy,
+} from "https://deno.land/std@0.181.0/testing/mock.ts";
 import { AuthCode } from "auth/mod.ts";
+import { JSONObject } from "./mod.ts";
+import { IAuthProvider, toQueryString } from "../shared/mod.ts";
 
 mockFetch.install();
 
-Deno.test("SpotifyClient with access token and simple get request", async () => {
-	const accessTokenMock = crypto.randomUUID();
+Deno.test("SpotifyClient: raw string token as auth provider and simple GET request", async () => {
+	const accessToken = crypto.randomUUID();
 
 	mockFetch.mock("GET@/v1/me", (req) => {
-		const authHeader = req.headers.get("Authorization");
-		if (!authHeader) {
-			throw new Error("Cannot find Authorization header");
+		const token = req.headers.get("Authorization")?.split(" ").at(1);
+		if (!token) {
+			throw new Error("Invalid 'Authorization' header");
 		}
 
-		const accessToken = authHeader.split(" ")[1];
-		if (accessToken !== accessTokenMock) {
+		if (token !== accessToken) {
 			throw new Error(
-				`Access token not equal to mock token. Got "${accessToken}". Must be "${accessTokenMock}"`,
+				`Access token not equal to mock token. Got "${token}". Must be "${accessToken}"`,
 			);
 		}
 
-		return new Response(JSON.stringify(privateUserStub), {
-			status: 200,
-		});
+		return new Response(JSON.stringify(privateUserStub));
 	});
 
-	const client = new SpotifyClient(accessTokenMock);
-
+	const client = new SpotifyClient(accessToken);
 	const user = await client.fetch<UserPrivate>("/me", "json");
 
-	// deno-lint-ignore no-explicit-any
-	assertObjectMatch(user, privateUserStub as any);
+	assertEquals(
+		user,
+		privateUserStub,
+		"Received user object not equals expected object",
+	);
 
 	mockFetch.reset();
 });
 
-Deno.test("SpotifyClient with access token and put request with body", async () => {
+Deno.test("SpotifyClient: PUT request with json body", async () => {
 	const playlistID = crypto.randomUUID();
 
 	mockFetch.mock(
-		`PUT@/v1/playlists/:playlist_id/followers`,
+		"PUT@/v1/playlists/:playlist_id/followers",
 		async (req, match) => {
 			assert(match["playlist_id"] === playlistID);
 
-			// deno-lint-ignore no-explicit-any
-			const data = await req.json() as Record<PropertyKey, any>;
-			assertObjectMatch(data, { public: true });
+			const data = await req.json() as JSONObject;
+			assertEquals(data, { public: true });
 
-			return new Response("", {
-				status: 200,
-			});
+			return new Response(null);
 		},
 	);
 
-	const client = new SpotifyClient("");
+	const client = new SpotifyClient("TOKEN");
 
 	const result = await client.fetch(
 		`/playlists/${playlistID}/followers`,
 		"void",
 		{
 			method: "PUT",
-			body: { public: true },
+			json: { public: true },
 		},
 	);
 
@@ -81,35 +79,32 @@ Deno.test("SpotifyClient with access token and put request with body", async () 
 	mockFetch.reset();
 });
 
-Deno.test("SpotifyClient with query params", async () => {
+Deno.test("SpotifyClient: Search params", async () => {
+	const objParams = { a: "2", b: true, c: 5 };
+	const stringParams = toQueryString(objParams);
+
 	mockFetch.mock(
-		`DELETE@/v1/me`,
+		`GET@/v1/me`,
 		(req) => {
-			const url = new URL(req.url);
-			assert(url.search === "?c=5");
+			assert(new URL(req.url).search === ("?" + stringParams));
 
 			return new Response();
 		},
 	);
 
-	const client = new SpotifyClient("");
+	const client = new SpotifyClient("TOKEN");
 
 	await client.fetch(
 		"/me",
 		"void",
-		{
-			method: "DELETE",
-			query: {
-				c: 5,
-			},
-		},
+		{ query: objParams },
 	);
 
 	mockFetch.reset();
 });
 
-Deno.test("SpotifyClient and bad request error", async () => {
-	mockFetch.mock("GET@/v1/me", (_) => {
+Deno.test("SpotifyClient: Bad request error (400)", async () => {
+	mockFetch.mock("GET@/v1/me", () => {
 		return new Response(
 			JSON.stringify({ error: { message: "Oops", status: 400 } }),
 			{
@@ -118,7 +113,7 @@ Deno.test("SpotifyClient and bad request error", async () => {
 		);
 	});
 
-	const client = new SpotifyClient("");
+	const client = new SpotifyClient("TOKEN");
 
 	try {
 		await client.fetch<UserPrivate>("/me", "json");
@@ -133,16 +128,17 @@ Deno.test("SpotifyClient and bad request error", async () => {
 	mockFetch.reset();
 });
 
-Deno.test("SpotifyClient with AuthProvider", async () => {
-	// Throws a 401 if no token is set, returns 200 and data otherwise
+Deno.test("SpotifyClient: AuthProvider", async () => {
+	const STALE_TOKEN = crypto.randomUUID();
+	const VALID_TOKEN = crypto.randomUUID();
+
 	mockFetch.mock("GET@/v1/me", (req) => {
-		const authHeader = req.headers.get("Authorization");
-		if (authHeader === null) {
-			throw new Error("Cannot find Authorization header");
+		const token = req.headers.get("Authorization")?.split(" ").at(1);
+		if (!token) {
+			throw new Error("Invalid 'Authorization' header");
 		}
 
-		const accessToken = authHeader.split(" ")[1];
-		if (!accessToken) {
+		if (token !== VALID_TOKEN) {
 			return new Response(
 				JSON.stringify({ error: { message: "Not authorized", status: 401 } }),
 				{
@@ -151,52 +147,47 @@ Deno.test("SpotifyClient with AuthProvider", async () => {
 			);
 		}
 
-		return new Response(
-			JSON.stringify(privateUserStub),
-			{
-				status: 200,
-			},
-		);
+		return new Response(JSON.stringify(privateUserStub));
 	});
 
-	const authProvider = new AuthCode.AuthProvider({
-		client_id: "",
-		client_secret: "",
-		refresh_token: "",
-	});
+	class MockProvider implements IAuthProvider {
+		constructor(public access_token: string) {}
 
-	const expectedToken = crypto.randomUUID();
+		getToken(): string {
+			return this.access_token;
+		}
 
-	const getAccessTokenStub = stub(
-		authProvider,
-		"getAccessToken",
-		// deno-lint-ignore require-await
-		async (forceRefresh) => {
-			if (forceRefresh) return expectedToken;
-			return "";
-		},
-	);
+		refreshToken(): Promise<string> {
+			return new Promise((resolve) => {
+				this.access_token = VALID_TOKEN;
+				resolve(this.access_token);
+			});
+		}
+	}
+
+	const authProvider = new MockProvider(STALE_TOKEN);
+
+	const getAccessTokenSpyier = spy(authProvider, "getToken");
+	const refreshTokenSpyier = spy(authProvider, "refreshToken");
 
 	const client = new SpotifyClient(authProvider);
-
 	await client.fetch<UserPrivate>("/me", "json");
 
-	// first time -> when the first request is made
-	assertSpyCall(getAccessTokenStub, 0);
-	// secodn time -> on receiving a 401 and trying to update
-	assertSpyCall(getAccessTokenStub, 1, {
-		args: [true],
-	});
+	// when the first request is made
+	assertSpyCall(getAccessTokenSpyier, 0);
+	// on receiving a 401 and trying to refresh
+	assertSpyCall(refreshTokenSpyier, 0);
 
-	// should not try to update the token more than once
-	assertSpyCalls(getAccessTokenStub, 2);
+	// should not try to get and update the token more than once
+	assertSpyCalls(getAccessTokenSpyier, 1);
+	assertSpyCalls(refreshTokenSpyier, 1);
 
-	getAccessTokenStub.restore();
+	getAccessTokenSpyier.restore();
+	refreshTokenSpyier.restore();
 	mockFetch.reset();
 });
 
-Deno.test("SpotifyClient with AuthProvider and double 401 error", async () => {
-	// will always throw and 401 error
+Deno.test("SpotifyClient: AuthProvider and double 401 error", async () => {
 	mockFetch.mock("GET@/v1/me", () => {
 		return new Response(
 			JSON.stringify({ error: { message: "Not authorized", status: 401 } }),
@@ -206,13 +197,25 @@ Deno.test("SpotifyClient with AuthProvider and double 401 error", async () => {
 		);
 	});
 
-	const authProvider = new AuthCode.AuthProvider({
-		client_id: "",
-		client_secret: "",
-		refresh_token: "",
-	});
+	class MockProvider implements IAuthProvider {
+		constructor(public access_token: string) {}
 
-	const getAccessTokenStub = stub(authProvider, "getAccessToken");
+		getToken(): string {
+			return this.access_token;
+		}
+
+		refreshToken(): Promise<string> {
+			return new Promise((resolve) => {
+				resolve(this.access_token);
+			});
+		}
+	}
+
+	const authProvider = new MockProvider("TOKEN");
+
+	const getAccessTokenSpyier = spy(authProvider, "getToken");
+	const refreshTokenSpyier = spy(authProvider, "refreshToken");
+
 	const client = new SpotifyClient(authProvider);
 
 	try {
@@ -226,17 +229,17 @@ Deno.test("SpotifyClient with AuthProvider and double 401 error", async () => {
 		assert(error.message === "Not authorized");
 	}
 
-	// first time -> when the first request is made
-	assertSpyCall(getAccessTokenStub, 0);
-	// secodn time -> on receiving a 401 and trying to update
-	assertSpyCall(getAccessTokenStub, 1, {
-		args: [true],
-	});
+	// when the first request is made
+	assertSpyCall(getAccessTokenSpyier, 0);
+	// on receiving a 401 and trying to refresh
+	assertSpyCall(refreshTokenSpyier, 0);
 
-	// should not try to update the token more than once
-	assertSpyCalls(getAccessTokenStub, 2);
+	// should not try to get and update the token more than once
+	assertSpyCalls(getAccessTokenSpyier, 1);
+	assertSpyCalls(refreshTokenSpyier, 1);
 
-	getAccessTokenStub.restore();
+	getAccessTokenSpyier.restore();
+	refreshTokenSpyier.restore();
 	mockFetch.reset();
 });
 
@@ -258,7 +261,7 @@ Deno.test("SpotifyClient with retry on 429", async () => {
 		);
 	});
 
-	const client = new SpotifyClient("", {
+	const client = new SpotifyClient("TOKEN", {
 		retryOnRateLimit: true,
 	});
 
@@ -293,11 +296,11 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 		client_id: "",
 		client_secret: "",
 		refresh_token: "",
-		access_token: "TOKEN",
+		access_token: "",
 	});
 
 	const client = new SpotifyClient(authProvider, {
-		retryDelayOn5xx: 500,
+		retryDelayOn5xx: 200,
 		retryTimesOn5xx: expectedRequestsCount - 1,
 	});
 
@@ -309,40 +312,20 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 	mockFetch.reset();
 });
 
-Deno.test("SpotifyClient tests for setAuthProvider method", async () => {
-	mockFetch.mock("GET@/v1/me", (req) => {
-		const accessToken = req.headers.get("authorization")?.split(" ").at(1);
-		if (!accessToken) {
-			throw new Error("Can't get access token from headers");
-		}
+Deno.test("SpotifyClient: setAuthProvider method", () => {
+	const FIRST_TOKEN = crypto.randomUUID();
+	const SECOND_TOKEN = crypto.randomUUID();
+	const PROVIDER = {} as IAuthProvider;
 
-		if (accessToken === "1") {
-			return new Response(
-				JSON.stringify({ error: { status: 401, error: "Error" } }),
-				{ status: 401 },
-			);
-		}
-		if (accessToken === "2") {
-			return new Response(null);
-		}
+	const client = new SpotifyClient(FIRST_TOKEN);
+	assert(client["authProvider"] === FIRST_TOKEN);
 
-		return new Response(
-			JSON.stringify({ error: { status: 500, error: "Error" } }),
-			{ status: 500 },
-		);
-	});
+	client.setAuthProvider(SECOND_TOKEN);
+	assert(client["authProvider"] === SECOND_TOKEN);
 
-	const client = new SpotifyClient("1");
-
-	try {
-		await client.fetch("/me", "void");
-	} catch (error) {
-		assertInstanceOf(error, SpotifyError);
-		assert(error.status === 401);
-
-		client.setAuthProvider("2");
-		await client.fetch("/me", "void");
-	}
-
-	mockFetch.reset();
+	client.setAuthProvider(PROVIDER);
+	assertEquals<IAuthProvider>(
+		client["authProvider"] as unknown as IAuthProvider,
+		PROVIDER,
+	);
 });

@@ -1,10 +1,13 @@
-import { JSONObject } from "shared/mod.ts";
 import {
 	type ExternalUrls,
 	type Followers,
 	type Image,
+	JSONObject,
 } from "api/general.types.ts";
 
+/**
+ * The spotify api object containing details of a user's public details.
+ */
 export interface UserPublic extends JSONObject {
 	/**
 	 * The name displayed on the user's profile.
@@ -61,14 +64,19 @@ export interface ExplicitContentSettings extends JSONObject {
 	filter_locked: boolean;
 }
 
-export interface UserPrivate extends UserPublic, JSONObject {
+/**
+ * The spotify api object containing details of a user's public and private details.
+ *
+ * For complete information, you might consider including scopes: `user-read-private`, `user-read-email`.
+ */
+export interface UserPrivate extends UserPublic {
 	/**
 	 * The country of the user, as set in the user's account profile.
 	 * An ISO 3166-1 alpha-2 country code.
 	 *
 	 * @requires `user-read-private`
 	 */
-	country: string;
+	country?: string;
 	/**
 	 * The user's email address, as entered by the user when creating
 	 * their account.
@@ -78,7 +86,7 @@ export interface UserPrivate extends UserPublic, JSONObject {
 	 *
 	 * @requires `user-read-email`
 	 */
-	email: string;
+	email?: string;
 	/**
 	 * The user's explicit content settings.
 	 *

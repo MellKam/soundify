@@ -54,15 +54,13 @@ export const SpotifyProvider = ({
 	const client = useMemo(() => {
 		const access_token = localStorage.getItem(SPOTIFY_ACCESS_TOKNE);
 		const refresh_token = localStorage.getItem(SPOTIFY_REFRESH_TOKEN);
-		if (!refresh_token) {
-			return null;
-		}
+		if (!refresh_token) return null;
 
 		const authProvider = new PKCEAuthCode.AuthProvider(
 			{
 				client_id: config.client_id,
-				refresh_token: refresh_token!,
-				access_token: access_token ? access_token : undefined,
+				refresh_token,
+				access_token: access_token ?? "",
 			},
 			{
 				onRefresh: ({ access_token, refresh_token }) => {

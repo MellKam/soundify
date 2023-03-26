@@ -40,9 +40,7 @@ const buildPackage = async (opts: {
 		entryPoints: [opts.entryPoint],
 		outDir: opts.outDir,
 		test: false,
-		shims: {
-			deno: "dev",
-		},
+		shims: {},
 		typeCheck: true,
 		packageManager: "pnpm",
 		postBuild: async () => {
@@ -52,7 +50,7 @@ const buildPackage = async (opts: {
 		mappings: opts.mappings,
 		compilerOptions: {
 			target: "Latest",
-			lib: ["dom", "esnext"],
+			lib: ["dom", "esnext", "dom.iterable"],
 		},
 		scriptModule: false,
 		package: {
@@ -114,9 +112,6 @@ const buildApi = async () => {
 				name: "@soundify/shared",
 				version,
 			},
-		},
-		devDependencies: {
-			"@types/node": "latest",
 		},
 		dependencies: {
 			"@soundify/shared": "workspace:*",

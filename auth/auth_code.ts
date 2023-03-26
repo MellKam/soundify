@@ -1,13 +1,12 @@
-import { IAuthProvider, objectToSearchParams } from "shared/mod.ts";
+import { IAuthProvider, toQueryString } from "shared/mod.ts";
 import {
-	API_TOKEN_URL,
 	ApiTokenReqParams,
-	AUTHORIZE_URL,
 	AuthorizeReqParams,
 	AuthScope,
 	getBasicAuthHeader,
 	KeypairResponse,
 	ScopedAccessResponse,
+	SPOTIFY_AUTH,
 	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
@@ -53,16 +52,18 @@ export type GetRedirectURLOpts = {
 export const getRedirectURL = (
 	{ scopes, ...opts }: GetRedirectURLOpts,
 ) => {
-	const url = new URL(AUTHORIZE_URL);
+	const url = new URL(SPOTIFY_AUTH + "authorize");
 
-	url.search = objectToSearchParams<AuthorizeReqParams>({
+	url.search = toQueryString<AuthorizeReqParams>({
 		response_type: "code",
 		scope: scopes?.join(" "),
 		...opts,
-	}).toString();
+	});
 
 	return url;
 };
+
+export { parseCallbackData } from "auth/general.ts";
 
 export type GetGrantDataOpts = {
 	/**
@@ -86,22 +87,22 @@ export type GetGrantDataOpts = {
 	redirect_uri: string;
 };
 
-export { parseCallbackData } from "auth/general.ts";
-
 export const getGrantData = async (
 	opts: GetGrantDataOpts,
 ) => {
-	const res = await fetch(API_TOKEN_URL, {
+	const url = new URL(SPOTIFY_AUTH + "api/token");
+	url.search = toQueryString<ApiTokenReqParams>({
+		code: opts.code,
+		redirect_uri: opts.redirect_uri,
+		grant_type: "authorization_code",
+	});
+
+	const res = await fetch(url, {
 		method: "POST",
 		headers: {
 			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
 			"Content-Type": URL_ENCODED,
 		},
-		body: objectToSearchParams<ApiTokenReqParams>({
-			code: opts.code,
-			redirect_uri: opts.redirect_uri,
-			grant_type: "authorization_code",
-		}),
 	});
 
 	if (!res.ok) {
@@ -119,16 +120,18 @@ export const refresh = async (opts: {
 	client_secret: string;
 	refresh_token: string;
 }) => {
-	const res = await fetch(API_TOKEN_URL, {
+	const url = new URL(SPOTIFY_AUTH + "api/token");
+	url.search = toQueryString<ApiTokenReqParams>({
+		refresh_token: opts.refresh_token,
+		grant_type: "refresh_token",
+	});
+
+	const res = await fetch(url, {
 		method: "POST",
 		headers: {
 			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
 			"Content-Type": URL_ENCODED,
 		},
-		body: objectToSearchParams<ApiTokenReqParams>({
-			refresh_token: opts.refresh_token,
-			grant_type: "refresh_token",
-		}),
 	});
 
 	if (!res.ok) {
@@ -142,14 +145,12 @@ export type AuthProviderConfig = {
 	client_id: string;
 	client_secret: string;
 	refresh_token: string;
-	access_token?: string;
+	access_token: string;
 };
 
 export type AuthProviderOpts = {
 	onRefresh?: (data: ScopedAccessResponse) => void | Promise<void>;
-	onRefreshFailure?: (
-		error: Error,
-	) => Promise<void> | void;
+	onRefreshFailure?: (error: Error) => void | Promise<void>;
 };
 
 export class AuthProvider implements IAuthProvider {
@@ -158,21 +159,34 @@ export class AuthProvider implements IAuthProvider {
 		private readonly opts: AuthProviderOpts = {},
 	) {}
 
-	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || !this.config.access_token) {
-			try {
-				const data = await refresh(this.config);
+	static async create(
+		config: Omit<AuthProviderConfig, "access_tokne">,
+		opts?: AuthProviderOpts,
+	) {
+		const data = await refresh(config);
 
-				this.config.access_token = data.access_token;
-				if (this.opts.onRefresh) await this.opts.onRefresh(data);
-			} catch (error) {
-				if (this.opts.onRefreshFailure) {
-					await this.opts.onRefreshFailure(error);
-				}
-				throw error;
-			}
-		}
+		return new AuthProvider(
+			{ ...config, access_token: data.access_token },
+			opts,
+		);
+	}
 
+	getToken() {
 		return this.config.access_token;
+	}
+
+	async refreshToken() {
+		try {
+			const data = await refresh(this.config);
+
+			this.config.access_token = data.access_token;
+			if (this.opts.onRefresh) await this.opts.onRefresh(data);
+			return this.config.access_token;
+		} catch (error) {
+			if (this.opts.onRefreshFailure) {
+				await this.opts.onRefreshFailure(error);
+			}
+			throw error;
+		}
 	}
 }

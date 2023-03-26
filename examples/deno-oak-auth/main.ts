@@ -66,14 +66,12 @@ router
 
 		ctx.cookies.delete("state");
 
-		const grantData = await AuthCode.getGrantData(
-			{
-				client_id: env.SPOTIFY_CLIENT_ID,
-				client_secret: env.SPOTIFY_CLIENT_SECRET,
-				redirect_uri: env.SPOTIFY_REDIRECT_URI,
-				code: params.code,
-			},
-		);
+		const grantData = await AuthCode.getGrantData({
+			client_id: env.SPOTIFY_CLIENT_ID,
+			client_secret: env.SPOTIFY_CLIENT_SECRET,
+			redirect_uri: env.SPOTIFY_REDIRECT_URI,
+			code: params.code,
+		});
 
 		console.log(grantData);
 	});

@@ -1,4 +1,4 @@
-import { JSONObject, SearchParams } from "shared/mod.ts";
+import { SearchParams } from "shared/mod.ts";
 
 export interface PagingObject<T extends JSONObject> extends JSONObject {
 	/**
@@ -142,4 +142,21 @@ export interface Copyright extends JSONObject {
 	 * P = the sound recording (performance) copyright
 	 */
 	type: "C" | "P";
+}
+
+export type NonNullableJSON<T extends JSONObject> = {
+	[K in keyof T]: NonNullable<T[K]>;
+};
+
+export type JSONValue =
+	| null
+	| string
+	| number
+	| boolean
+	| JSONObject
+	| JSONArray;
+
+export type JSONArray = JSONValue[];
+export interface JSONObject {
+	[x: string]: JSONValue | undefined;
 }

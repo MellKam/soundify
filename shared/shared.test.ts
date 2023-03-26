@@ -1,11 +1,8 @@
-import {
-	assert,
-	assertArrayIncludes,
-} from "https://deno.land/std@0.180.0/testing/asserts.ts";
-import { objectToSearchParams } from "shared/mod.ts";
+import { assert } from "https://deno.land/std@0.181.0/testing/asserts.ts";
+import { toQueryString } from "shared/mod.ts";
 
 Deno.test("Create URLSearchParams from object", () => {
-	const searchParams = objectToSearchParams({
+	const queryString = toQueryString({
 		a: ["1", "2", "3"],
 		b: true,
 		c: 5,
@@ -13,7 +10,5 @@ Deno.test("Create URLSearchParams from object", () => {
 		e: undefined,
 	});
 
-	assertArrayIncludes(searchParams.get("a")?.split(",")!, ["1", "2", "3"]);
-
-	assert(searchParams.toString() === "a=1%2C2%2C3&b=true&c=5&d=abc");
+	assert(queryString === "a=1%2C2%2C3&b=true&c=5&d=abc");
 });

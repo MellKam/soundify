@@ -1,7 +1,7 @@
 import {
 	AccessResponse,
-	API_TOKEN_URL,
 	getBasicAuthHeader,
+	SPOTIFY_AUTH,
 	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
@@ -11,7 +11,7 @@ export const getAccessToken = async (opts: {
 	client_id: string;
 	client_secret: string;
 }) => {
-	const res = await fetch(API_TOKEN_URL, {
+	const res = await fetch(SPOTIFY_AUTH + "api/token", {
 		method: "POST",
 		headers: {
 			"Authorization": getBasicAuthHeader(
@@ -35,34 +35,46 @@ export const getAccessToken = async (opts: {
 export type AuthProviderConfig = {
 	client_id: string;
 	client_secret: string;
+	access_token: string;
 };
 
 export type AuthProviderOpts = {
 	onRefresh?: (data: AccessResponse) => void | Promise<void>;
-	onRefreshFailure?: (error: Error) => Promise<void> | void;
+	onRefreshFailure?: (error: Error) => void | Promise<void>;
 };
 
 export class AuthProvider implements IAuthProvider {
-	#accessToken: string | null = null;
-
 	constructor(
 		private readonly config: AuthProviderConfig,
 		private readonly opts: AuthProviderOpts = {},
 	) {}
 
-	async getAccessToken(forceRefresh = false) {
-		if (forceRefresh || !this.#accessToken) {
-			try {
-				const data = await getAccessToken(this.config);
+	static async create(
+		config: Omit<AuthProviderConfig, "access_token">,
+		opts?: AuthProviderOpts,
+	) {
+		const data = await getAccessToken(config);
 
-				this.#accessToken = data.access_token;
-				if (this.opts.onRefresh) await this.opts.onRefresh(data);
-			} catch (error) {
-				if (this.opts.onRefreshFailure) this.opts.onRefreshFailure(error);
-				throw error;
-			}
+		return new AuthProvider(
+			{ ...config, access_token: data.access_token },
+			opts,
+		);
+	}
+
+	getToken(): string {
+		return this.config.access_token;
+	}
+
+	async refreshToken() {
+		try {
+			const data = await getAccessToken(this.config);
+
+			this.config.access_token = data.access_token;
+			if (this.opts.onRefresh) await this.opts.onRefresh(data);
+			return this.config.access_token;
+		} catch (error) {
+			if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
+			throw error;
 		}
-
-		return this.#accessToken;
 	}
 }

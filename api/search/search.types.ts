@@ -3,7 +3,8 @@ import { AlbumSimplified } from "api/album/album.types.ts";
 import { Artist } from "api/artist/artist.types.ts";
 import { Track } from "api/track/track.types.ts";
 import { PlaylistSimplified } from "api/playlist/playlist.types.ts";
-import { JSONObject, SearchParams } from "../../shared/mod.ts";
+import { SearchParams } from "shared/mod.ts";
+import { JSONObject } from "api/general.types.ts";
 
 /**
  * Item types to search across.
