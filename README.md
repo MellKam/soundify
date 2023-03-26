@@ -190,6 +190,7 @@ with it yourself. Somehow get a new Access Token and set it on the client.
 
 ```ts
 import { SpotifyClient } from "@soundify/api";
+import { AuthCode } from "@soundify/node-auth";
 
 const client = new SpotifyClient("ACCESS_TOKEN");
 // ...
@@ -264,7 +265,7 @@ const authProvider = new PKCEAuthCode.AuthProvider(
     },
     onRefreshFailure: (error) => {
       // do something with error
-      // for example, ask you to login again
+      // for example, ask user to login again
       location.replace(PKCEAuthCode.getAuthURL({ ... }));
     }
   }
