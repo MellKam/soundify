@@ -50,7 +50,7 @@ const buildPackage = async (opts: {
 		mappings: opts.mappings,
 		compilerOptions: {
 			target: "Latest",
-			lib: ["dom", "esnext"],
+			lib: ["dom", "esnext", "dom.iterable"],
 		},
 		scriptModule: false,
 		package: {
