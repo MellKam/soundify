@@ -40,9 +40,7 @@ const buildPackage = async (opts: {
 		entryPoints: [opts.entryPoint],
 		outDir: opts.outDir,
 		test: false,
-		shims: {
-			deno: "dev",
-		},
+		shims: {},
 		typeCheck: true,
 		packageManager: "pnpm",
 		postBuild: async () => {
@@ -114,9 +112,6 @@ const buildApi = async () => {
 				name: "@soundify/shared",
 				version,
 			},
-		},
-		devDependencies: {
-			"@types/node": "latest",
 		},
 		dependencies: {
 			"@soundify/shared": "workspace:*",

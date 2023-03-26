@@ -2,9 +2,13 @@ import {
 	type ExternalUrls,
 	type Followers,
 	type Image,
+	JSONObject,
 } from "api/general.types.ts";
 
-export type UserPublic = {
+/**
+ * The spotify api object containing details of a user's public details.
+ */
+export interface UserPublic extends JSONObject {
 	/**
 	 * The name displayed on the user's profile.
 	 * `null` if not available
@@ -38,7 +42,7 @@ export type UserPublic = {
 	 * The Spotify URI for the user.
 	 */
 	uri: string;
-};
+}
 
 /**
  * The product type in the User object.
@@ -48,7 +52,7 @@ export type UserProductType = "free" | "open" | "premium";
 /**
  * The spotify api object containing the information of explicit content.
  */
-export type ExplicitContentSettings = {
+export interface ExplicitContentSettings extends JSONObject {
 	/**
 	 * When true, indicates that explicit content should not be played.
 	 */
@@ -58,16 +62,21 @@ export type ExplicitContentSettings = {
 	 * and can't be changed by the user.
 	 */
 	filter_locked: boolean;
-};
+}
 
-export type UserPrivate = UserPublic & {
+/**
+ * The spotify api object containing details of a user's public and private details.
+ *
+ * For complete information, you might consider including scopes: `user-read-private`, `user-read-email`.
+ */
+export interface UserPrivate extends UserPublic {
 	/**
 	 * The country of the user, as set in the user's account profile.
 	 * An ISO 3166-1 alpha-2 country code.
 	 *
 	 * @requires `user-read-private`
 	 */
-	country: string;
+	country?: string;
 	/**
 	 * The user's email address, as entered by the user when creating
 	 * their account.
@@ -77,7 +86,7 @@ export type UserPrivate = UserPublic & {
 	 *
 	 * @requires `user-read-email`
 	 */
-	email: string;
+	email?: string;
 	/**
 	 * The user's explicit content settings.
 	 *
@@ -99,4 +108,4 @@ export type UserPrivate = UserPublic & {
 	 * Information about the followers of the user.
 	 */
 	followers: Followers;
-};
+}

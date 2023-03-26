@@ -1,7 +1,8 @@
-import { HTTPClient, SearchParams } from "shared/mod.ts";
+import { SearchParams } from "shared/mod.ts";
 import { PagingObject } from "api/general.types.ts";
 import { Market } from "api/market/market.types.ts";
 import { Category } from "api/category/category.types.ts";
+import { HTTPClient } from "api/client.ts";
 
 interface GetBrowseCategoriesOpts extends SearchParams {
 	/**

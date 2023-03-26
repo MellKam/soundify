@@ -10,7 +10,7 @@ export class SpotifyAuthError extends Error {
 		options?: ErrorOptions,
 	) {
 		super(message, options);
-		this.name = "SpotifyAuthError" + status;
+		this.name = "SpotifyAuthError";
 	}
 }
 

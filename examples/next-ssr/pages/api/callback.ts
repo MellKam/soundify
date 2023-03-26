@@ -1,12 +1,7 @@
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { AuthCode } from "@soundify/node-auth";
-import {
-	env,
-	SPOTIFY_ACCESS_TOKEN,
-	SPOTIFY_REFRESH_TOKEN,
-	SPOTIFY_STATE,
-} from "../../spotify";
+import { ACCESS_TOKEN, env, REFRESH_TOKEN, STATE } from "../../consts";
 
 export default async function (
 	req: NextApiRequest,
@@ -26,7 +21,7 @@ export default async function (
 		return;
 	}
 
-	const storedState = getCookie(SPOTIFY_STATE, { req, res });
+	const storedState = getCookie(STATE, { req, res });
 	if (
 		typeof data.state !== "string" || !storedState || data.state !== storedState
 	) {
@@ -34,7 +29,7 @@ export default async function (
 		return;
 	}
 
-	deleteCookie(SPOTIFY_STATE, { req, res });
+	deleteCookie(STATE, { req, res });
 
 	try {
 		const { refresh_token, access_token, expires_in } = await AuthCode
@@ -43,7 +38,7 @@ export default async function (
 				...env,
 			});
 
-		setCookie(SPOTIFY_REFRESH_TOKEN, refresh_token, {
+		setCookie(REFRESH_TOKEN, refresh_token, {
 			httpOnly: true,
 			sameSite: "strict",
 			path: "/api/refresh",
@@ -51,7 +46,7 @@ export default async function (
 			res,
 		});
 
-		setCookie(SPOTIFY_ACCESS_TOKEN, access_token, {
+		setCookie(ACCESS_TOKEN, access_token, {
 			req,
 			res,
 			maxAge: expires_in,

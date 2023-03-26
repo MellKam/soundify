@@ -1,4 +1,6 @@
-export type PagingObject<T extends JSONObject> = {
+import { SearchParams } from "shared/mod.ts";
+
+export interface PagingObject<T extends JSONObject> extends JSONObject {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
@@ -24,9 +26,9 @@ export type PagingObject<T extends JSONObject> = {
 	 */
 	total: number;
 	items: T[];
-};
+}
 
-export type CursorPagingObject<T extends JSONObject> = {
+export interface CursorPagingObject<T extends JSONObject> extends JSONObject {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
@@ -57,9 +59,9 @@ export type CursorPagingObject<T extends JSONObject> = {
 	 */
 	total: number;
 	items: T[];
-};
+}
 
-export type PagingOptions = {
+export interface PagingOptions extends SearchParams {
 	/**
 	 * The maximum number of items to return. Minimum: 1. Maximum: 50.
 	 * @default 20
@@ -70,7 +72,7 @@ export type PagingOptions = {
 	 * @default 0 (the first item)
 	 */
 	offset?: number;
-};
+}
 
 /**
  * The reason for the restriction.
@@ -81,7 +83,7 @@ export type PagingOptions = {
  */
 export type RestrictionsReason = "market" | "product" | "explicit";
 
-export type Image = {
+export interface Image extends JSONObject {
 	/**
 	 * The image height in pixels.
 	 */
@@ -94,9 +96,9 @@ export type Image = {
 	 * The image width in pixels.
 	 */
 	width: number | null;
-};
+}
 
-export type Followers = {
+export interface Followers extends JSONObject {
 	/**
 	 * This will always be set to null, as the Web API does not support it at the moment.
 	 */
@@ -105,13 +107,13 @@ export type Followers = {
 	 * The total number of followers.
 	 */
 	total: number;
-};
+}
 
-export type ExternalUrls = {
+export interface ExternalUrls extends JSONObject {
 	spotify: string;
-};
+}
 
-export type ExternalIds = {
+export interface ExternalIds extends JSONObject {
 	/**
 	 * [International Standard Recording Code](https://en.wikipedia.org/wiki/International_Standard_Recording_Code).
 	 */
@@ -124,12 +126,12 @@ export type ExternalIds = {
 	 * [Universal Product Code](http://en.wikipedia.org/wiki/Universal_Product_Code).
 	 */
 	upc?: string;
-};
+}
 
 /**
  * The copyright object contains the type and the name of copyright.
  */
-export type Copyright = {
+export interface Copyright extends JSONObject {
 	/**
 	 * The copyright text for this content.
 	 */
@@ -140,7 +142,7 @@ export type Copyright = {
 	 * P = the sound recording (performance) copyright
 	 */
 	type: "C" | "P";
-};
+}
 
 export type NonNullableJSON<T extends JSONObject> = {
 	[K in keyof T]: NonNullable<T[K]>;

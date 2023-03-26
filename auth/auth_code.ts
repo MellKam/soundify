@@ -63,6 +63,8 @@ export const getRedirectURL = (
 	return url;
 };
 
+export { parseCallbackData } from "auth/general.ts";
+
 export type GetGrantDataOpts = {
 	/**
 	 * An authorization code that can be exchanged for an Access Token.
@@ -84,8 +86,6 @@ export type GetGrantDataOpts = {
 	 */
 	redirect_uri: string;
 };
-
-export { parseCallbackData } from "auth/general.ts";
 
 export const getGrantData = async (
 	opts: GetGrantDataOpts,
@@ -141,23 +141,35 @@ export const refresh = async (opts: {
 	return (await res.json()) as ScopedAccessResponse;
 };
 
+export type AuthProviderConfig = {
+	client_id: string;
+	client_secret: string;
+	refresh_token: string;
+	access_token: string;
+};
+
 export type AuthProviderOpts = {
 	onRefresh?: (data: ScopedAccessResponse) => void | Promise<void>;
-	onRefreshFailure?: (
-		error: Error,
-	) => Promise<void> | void;
+	onRefreshFailure?: (error: Error) => void | Promise<void>;
 };
 
 export class AuthProvider implements IAuthProvider {
 	constructor(
-		private readonly config: {
-			client_id: string;
-			client_secret: string;
-			refresh_token: string;
-			access_token: string;
-		},
+		private readonly config: AuthProviderConfig,
 		private readonly opts: AuthProviderOpts = {},
 	) {}
+
+	static async create(
+		config: Omit<AuthProviderConfig, "access_tokne">,
+		opts?: AuthProviderOpts,
+	) {
+		const data = await refresh(config);
+
+		return new AuthProvider(
+			{ ...config, access_token: data.access_token },
+			opts,
+		);
+	}
 
 	getToken() {
 		return this.config.access_token;

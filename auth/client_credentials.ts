@@ -32,20 +32,34 @@ export const getAccessToken = async (opts: {
 	return (await res.json()) as AccessResponse;
 };
 
+export type AuthProviderConfig = {
+	client_id: string;
+	client_secret: string;
+	access_token: string;
+};
+
 export type AuthProviderOpts = {
 	onRefresh?: (data: AccessResponse) => void | Promise<void>;
-	onRefreshFailure?: (error: SpotifyAuthError) => void | Promise<void>;
+	onRefreshFailure?: (error: Error) => void | Promise<void>;
 };
 
 export class AuthProvider implements IAuthProvider {
 	constructor(
-		private readonly config: {
-			client_id: string;
-			client_secret: string;
-			access_token: string;
-		},
+		private readonly config: AuthProviderConfig,
 		private readonly opts: AuthProviderOpts = {},
 	) {}
+
+	static async create(
+		config: Omit<AuthProviderConfig, "access_token">,
+		opts?: AuthProviderOpts,
+	) {
+		const data = await getAccessToken(config);
+
+		return new AuthProvider(
+			{ ...config, access_token: data.access_token },
+			opts,
+		);
+	}
 
 	getToken(): string {
 		return this.config.access_token;

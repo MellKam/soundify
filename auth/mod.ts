@@ -1,6 +1,8 @@
 export {
 	type AccessResponse,
 	type AuthCodeCallbackData,
+	type AuthCodeCallbackError,
+	type AuthCodeCallbackSuccess,
 	type AuthScope,
 	type KeypairResponse,
 	type ScopedAccessResponse,

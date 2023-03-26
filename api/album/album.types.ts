@@ -10,7 +10,7 @@ import { Artist, ArtistSimplified } from "api/artist/artist.types.ts";
 import { Market } from "api/market/market.types.ts";
 import { TrackSimplified } from "api/track/track.types.ts";
 import { Genre } from "api/genre/genre.types.ts";
-import { JSONObject } from "shared/mod.ts";
+import { JSONObject } from "api/general.types.ts";
 
 /**
  * The types of album.

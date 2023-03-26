@@ -1,4 +1,4 @@
-import { JSONObject } from "shared/mod.ts";
+import { JSONObject } from "api/general.types.ts";
 import { ExternalUrls, Followers, Image } from "api/general.types.ts";
 
 export interface ArtistSimplified extends JSONObject {

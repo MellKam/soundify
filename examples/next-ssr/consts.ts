@@ -5,6 +5,6 @@ export const env = {
 };
 
 /** Names for cookies */
-export const SPOTIFY_ACCESS_TOKEN = "SPOTIFY_ACCESS_TOKEN";
-export const SPOTIFY_REFRESH_TOKEN = "SPOTIFY_REFRESH_TOKEN";
-export const SPOTIFY_STATE = "SPOTIFY_STATE";
+export const ACCESS_TOKEN = "SPOTIFY_ACCESS_TOKEN";
+export const REFRESH_TOKEN = "SPOTIFY_REFRESH_TOKEN";
+export const STATE = "SPOTIFY_STATE";

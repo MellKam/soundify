@@ -5,11 +5,8 @@ importers:
   dist/api:
     specifiers:
       '@soundify/shared': workspace:*
-      '@types/node': latest
     dependencies:
       '@soundify/shared': link:../shared
-    devDependencies:
-      '@types/node': 18.15.3
 
   dist/api/esm:
     specifiers: {}
@@ -27,10 +24,7 @@ importers:
     specifiers: {}
 
   dist/shared:
-    specifiers:
-      '@types/node': ^18.11.9
-    devDependencies:
-      '@types/node': 18.15.1
+    specifiers: {}
 
   dist/shared/esm:
     specifiers: {}
@@ -38,11 +32,8 @@ importers:
   dist/web-auth:
     specifiers:
       '@soundify/shared': workspace:*
-      '@types/node': ^18.11.9
     dependencies:
       '@soundify/shared': link:../shared
-    devDependencies:
-      '@types/node': 18.15.1
 
   dist/web-auth/esm:
     specifiers: {}
@@ -811,10 +802,6 @@ packages:
   /@types/node/16.18.16:
     resolution: {integrity: sha512-ZOzvDRWp8dCVBmgnkIqYCArgdFOO9YzocZp8Ra25N/RStKiWvMOXHMz+GjSeVNe5TstaTmTWPucGJkDw0XXJWA==}
     dev: false
-
-  /@types/node/18.15.1:
-    resolution: {integrity: sha512-U2TWca8AeHSmbpi314QBESRk7oPjSZjDsR+c+H4ECC1l+kFgpZf8Ydhv3SJpPy51VyZHHqxlb6mTTqYNNRVAIw==}
-    dev: true
 
   /@types/node/18.15.3:
     resolution: {integrity: sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==}

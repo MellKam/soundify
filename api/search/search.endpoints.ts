@@ -1,4 +1,4 @@
-import { HTTPClient, SearchParams } from "shared/mod.ts";
+import { SearchParams } from "shared/mod.ts";
 import { Market } from "api/market/market.types.ts";
 import {
 	SearchFilters,
@@ -6,6 +6,7 @@ import {
 	SearchType,
 	SearchTypeLiteral,
 } from "api/search/search.types.ts";
+import { HTTPClient } from "api/client.ts";
 
 export interface SearchOpts extends SearchParams {
 	/**

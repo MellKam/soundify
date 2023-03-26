@@ -1,23 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCookie, setCookie } from "cookies-next";
 import { AuthCode } from "@soundify/node-auth";
-import {
-	env,
-	SPOTIFY_ACCESS_TOKEN,
-	SPOTIFY_REFRESH_TOKEN,
-} from "../../spotify";
+import { ACCESS_TOKEN, env, REFRESH_TOKEN } from "../../consts";
 
 export default async function (
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const refresh_token = getCookie(SPOTIFY_REFRESH_TOKEN, {
+	const refresh_token = getCookie(REFRESH_TOKEN, {
 		req,
 		res,
 	});
 
 	if (typeof refresh_token !== "string") {
-		res.status(400).send("Can't find SPOTIFY_REFRESH_TOKEN");
+		res.status(400).send("Can't find REFRESH_TOKEN");
 		return;
 	}
 
@@ -28,7 +24,7 @@ export default async function (
 			refresh_token,
 		});
 
-		setCookie(SPOTIFY_ACCESS_TOKEN, access_token, {
+		setCookie(ACCESS_TOKEN, access_token, {
 			maxAge: expires_in,
 			req,
 			res,

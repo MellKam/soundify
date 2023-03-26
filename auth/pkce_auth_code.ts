@@ -170,20 +170,38 @@ export const refresh = async (opts: {
 	return (await res.json()) as KeypairResponse;
 };
 
+export type AuthProviderConfig = {
+	client_id: string;
+	refresh_token: string;
+	access_token: string;
+};
+
 export type AuthProviderOpts = {
 	onRefresh?: (data: KeypairResponse) => void | Promise<void>;
-	onRefreshFailure?: (error: SpotifyAuthError) => void | Promise<void>;
+	onRefreshFailure?: (error: Error) => void | Promise<void>;
 };
 
 export class AuthProvider implements IAuthProvider {
-	private constructor(
-		private readonly config: {
-			client_id: string;
-			refresh_token: string;
-			access_token: string;
-		},
+	constructor(
+		private readonly config: AuthProviderConfig,
 		private readonly opts: AuthProviderOpts = {},
 	) {}
+
+	static async create(
+		config: Omit<AuthProviderConfig, "access_token">,
+		opts?: AuthProviderOpts,
+	) {
+		const data = await refresh(config);
+
+		return new AuthProvider(
+			{ ...config, access_token: data.access_token },
+			opts,
+		);
+	}
+
+	getToken() {
+		return this.config.access_token;
+	}
 
 	async refreshToken() {
 		try {
@@ -198,9 +216,5 @@ export class AuthProvider implements IAuthProvider {
 			if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
 			throw error;
 		}
-	}
-
-	getToken() {
-		return this.config.access_token;
 	}
 }

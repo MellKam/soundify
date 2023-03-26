@@ -6,7 +6,8 @@ import {
 	PagingObject,
 	PagingOptions,
 } from "api/general.types.ts";
-import { HTTPClient, SearchParams } from "shared/mod.ts";
+import { SearchParams } from "shared/mod.ts";
+import { HTTPClient } from "api/client.ts";
 
 /**
  * Get detailed profile information about the current user.
@@ -41,6 +42,8 @@ interface TopItemMap extends Record<TopItemType, TopItem> {
  * Get the current user's top artists or tracks
  * based on calculated affinity.
  *
+ * @requires `user-top-read`
+ *
  * @param client Spotify HTTPClient
  * @param type The type of entity to return. ("artists" or "tracks")
  * @param opts Additional option for request
@@ -64,6 +67,8 @@ export const getUserTopItems = async <
 /**
  * Get the current user's top artists based on calculated affinity.
  *
+ * @requires `user-top-read`
+ *
  * @param client Spotify HTTPClient
  * @param opts Additional option for request
  */
@@ -76,6 +81,8 @@ export const getUserTopArtists = async (
 
 /**
  * Get the current user's top tracks based on calculated affinity.
+ *
+ * @requires `user-top-read`
  *
  * @param client Spotify HTTPClient
  * @param opts Additional option for request
@@ -103,6 +110,8 @@ export const getUser = async (
 /**
  * Add the current user as a follower of a playlist.
  *
+ * @requires `playlist-modify-public` or `playlist-modify-private`
+ *
  * @param client Spotify HTTPClient
  * @param playlist_id Spotify playlist ID
  * @param is_public If true the playlist will be included in user's public
@@ -125,6 +134,8 @@ export const followPlaylist = async (
 
 /**
  * Remove the current user as a follower of a playlist.
+ *
+ * @requires `playlist-modify-public` or `playlist-modify-private`
  *
  * @param client Spotify HTTPClient
  * @param playlist_id Spotify playlist ID
@@ -151,6 +162,8 @@ interface GetFollowedArtistsOpts
 /**
  * Get the current user's followed artists.
  *
+ * @requires `user-follow-read`
+ *
  * @param client Spotify HTTPClient
  * @param opts Additional option for request
  */
@@ -173,6 +186,8 @@ export const getFollowedArtists = async (
 /**
  * Add the current user as a follower of one or more artists.
  *
+ * @requires `user-follow-modify`
+ *
  * @param client Spotify HTTPClient
  * @param artist_ids List of Spotify artist IDs. Maximum 50
  */
@@ -192,6 +207,8 @@ export const followArtists = async (
 /**
  * Add the current user as a follower of an artist.
  *
+ * @requires `user-follow-modify`
+ *
  * @param client Spotify HTTPClient
  * @param artist_id Spotify artist ID
  */
@@ -204,6 +221,8 @@ export const followArtist = async (
 
 /**
  * Add the current user as a follower of one or more Spotify users.
+ *
+ * @requires `user-follow-modify`
  *
  * @param client Spotify HTTPClient
  * @param artist_ids List of Spotify user IDs. Maximum 50
@@ -224,6 +243,8 @@ export const followUsers = async (
 /**
  * Add the current user as a follower of an user.
  *
+ * @requires `user-follow-modify`
+ *
  * @param client Spotify HTTPClient
  * @param artist_id Spotify user ID
  */
@@ -236,6 +257,8 @@ export const followUser = async (
 
 /**
  * Remove the current user as a follower of one or more artists.
+ *
+ * @requires `user-follow-modify`
  *
  * @param client Spotify HTTPClient
  * @param artist_ids List of Spotify artist IDs. Maximum 50
@@ -256,6 +279,8 @@ export const unfollowArtists = async (
 /**
  * Remove the current user as a follower of specified artist.
  *
+ * @requires `user-follow-modify`
+ *
  * @param client Spotify HTTPClient
  * @param artist_id Spotify artist ID
  */
@@ -268,6 +293,8 @@ export const unfollowArtist = async (
 
 /**
  * Remove the current user as a follower of one or more Spotify users.
+ *
+ * @requires `user-follow-modify`
  *
  * @param client Spotify HTTPClient
  * @param user_ids List of Spotify user IDs. Maximum 50
@@ -288,6 +315,8 @@ export const unfollowUsers = async (
 /**
  * Remove the current user as a follower of specified Spotify user.
  *
+ * @requires `user-follow-modify`
+ *
  * @param client Spotify HTTPClient
  * @param artist_id Spotify user ID
  */
@@ -300,6 +329,8 @@ export const unfollowUser = async (
 
 /**
  * Check to see if the current user is following one or more artists.
+ *
+ * @requires `user-follow-read`
  *
  * @param client Spotify HTTPClient
  * @param artist_ids List of Spotify artist IDs. Maximum 50
@@ -319,6 +350,8 @@ export const checkIfUserFollowsArtists = async (
 /**
  * Check to see if the current user is following artist.
  *
+ * @requires `user-follow-read`
+ *
  * @param client Spotify HTTPClient
  * @param artist_id Spotify artist ID
  */
@@ -331,6 +364,8 @@ export const checkIfUserFollowsArtist = async (
 
 /**
  * Check to see if the current user is following one or more Spotify users.
+ *
+ * @requires `user-follow-read`
  *
  * @param client Spotify HTTPClient
  * @param user_ids List of Spotify user IDs. Maximum 50
@@ -349,6 +384,8 @@ export const checkIfUserFollowsUsers = async (
 
 /**
  * Check to see if the current user is following artist.
+ *
+ * @requires `user-follow-read`
  *
  * @param client Spotify HTTPClient
  * @param user_id Spotify user ID

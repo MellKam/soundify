@@ -1,9 +1,10 @@
-import { HTTPClient } from "shared/mod.ts";
+import { HTTPClient } from "api/client.ts";
 import { PagingObject, PagingOptions } from "api/general.types.ts";
 import { AlbumGroup, AlbumSimplified } from "api/album/album.types.ts";
 import { Market } from "api/market/market.types.ts";
 import { Track } from "api/track/track.types.ts";
 import { Artist } from "api/artist/artist.types.ts";
+import { SearchParams } from "shared/mod.ts";
 
 /**
  * Get Spotify catalog information for a single artist identified by their unique Spotify ID.
@@ -32,7 +33,7 @@ export const getArtists = async (
 	})).artists;
 };
 
-interface GetArtistAlbumsOpts extends PagingOptions {
+interface GetArtistAlbumsOpts extends PagingOptions, SearchParams {
 	/**
 	 * List of keywords that will be used to filter the response.
 	 * If not supplied, all album types will be returned.

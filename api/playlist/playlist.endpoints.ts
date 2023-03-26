@@ -1,9 +1,4 @@
-import {
-	HTTPClient,
-	JSONObject,
-	NonNullableJSON,
-	SearchParams,
-} from "shared/mod.ts";
+import { SearchParams } from "shared/mod.ts";
 import { Market } from "api/market/market.types.ts";
 import { Image, PagingObject, PagingOptions } from "api/general.types.ts";
 import {
@@ -12,6 +7,8 @@ import {
 	PlaylistSimplified,
 	PlaylistTrack,
 } from "api/playlist/playlist.types.ts";
+import { HTTPClient } from "api/client.ts";
+import { JSONObject, NonNullableJSON } from "api/general.types.ts";
 
 interface PlaylistFieldsOpts extends SearchParams {
 	/**

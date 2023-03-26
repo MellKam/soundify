@@ -1,4 +1,4 @@
-import { JSONObject, SearchParams } from "shared/mod.ts";
+import { SearchParams } from "shared/mod.ts";
 import { AlbumSimplified } from "api/album/album.types.ts";
 import { Artist } from "api/artist/artist.types.ts";
 import { Genre } from "api/genre/genre.types.ts";
@@ -7,6 +7,7 @@ import { ArtistSimplified } from "api/artist/artist.types.ts";
 import {
 	ExternalIds,
 	ExternalUrls,
+	JSONObject,
 	RestrictionsReason,
 } from "api/general.types.ts";
 

@@ -1,7 +1,7 @@
 import { IAuthProvider, SearchParams, toQueryString } from "shared/mod.ts";
-import { JSONObject, JSONValue } from "api/general.types.ts";
+import { JSONValue } from "api/general.types.ts";
 
-interface SpotifyRegularError extends JSONObject {
+type SpotifyRegularError = {
 	error: {
 		/**
 		 * A short description of the cause of the error.
@@ -12,9 +12,9 @@ interface SpotifyRegularError extends JSONObject {
 		 */
 		status: number;
 	};
-}
+};
 
-export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 /**
  * Options for fetch method on HTTPClient interface
@@ -43,9 +43,9 @@ export interface FetchOpts {
 export type ExpectedResponse = "json" | "void";
 
 /**
- * Interface that provides a fetch method to make HTTP requests.
+ * Interface that provides a fetch method to make HTTP requests to Spotify API.
  */
-export interface ISpotifyClient {
+export interface HTTPClient {
 	/**
 	 * Sends an HTTP request.
 	 *
@@ -80,7 +80,7 @@ export class SpotifyError extends Error {
 		options?: ErrorOptions,
 	) {
 		super(message, options);
-		this.name = "SpotifyError" + status;
+		this.name = "SpotifyError";
 	}
 }
 
@@ -109,7 +109,7 @@ export interface SpotifyClientOpts {
 /**
  * A client for making requests to the Spotify API.
  */
-export class SpotifyClient implements ISpotifyClient {
+export class SpotifyClient implements HTTPClient {
 	private BASE_HEADERS: HeadersInit = {
 		"Content-Type": "application/json",
 		"Accept": "application/json",
@@ -170,12 +170,13 @@ export class SpotifyClient implements ISpotifyClient {
 		let isTriedRefreshToken = false;
 		let retryTimesOn5xx = this.opts.retryTimesOn5xx;
 
-		let accessToken = typeof this.authProvider === "string"
-			? this.authProvider
-			: this.authProvider.getToken();
+		let accessToken = typeof this.authProvider === "object"
+			? this.authProvider.getToken()
+			: this.authProvider;
 
 		const call = async (): Promise<Response> => {
 			_headers.set("Authorization", "Bearer " + accessToken);
+
 			const res = await fetch(url, {
 				method,
 				headers: _headers,
@@ -185,7 +186,7 @@ export class SpotifyClient implements ISpotifyClient {
 			if (res.ok) return res;
 
 			if (
-				res.status === 401 && typeof this.authProvider !== "string" &&
+				res.status === 401 && typeof this.authProvider === "object" &&
 				!isTriedRefreshToken
 			) {
 				accessToken = await this.authProvider.refreshToken();
@@ -212,10 +213,21 @@ export class SpotifyClient implements ISpotifyClient {
 				return call();
 			}
 
-			const error = await res.json() as SpotifyRegularError;
+			let message: string;
+
+			if (!res.body) {
+				message = "Empty error";
+			} else {
+				const text = await res.text();
+				try {
+					message = (JSON.parse(text) as SpotifyRegularError).error.message;
+				} catch (_) {
+					message = text;
+				}
+			}
 
 			throw new SpotifyError(
-				error.error.message,
+				message,
 				res.status,
 			);
 		};
@@ -223,8 +235,10 @@ export class SpotifyClient implements ISpotifyClient {
 		const res = await call();
 
 		if (responseType === "json") {
+			if (!res.body) throw new Error("Not found body");
 			return await res.json() as R;
 		}
+
 		if (res.body) await res.body.cancel();
 	}
 }

@@ -9,7 +9,7 @@ import {
 	saveAlbum,
 } from "api/album/album.endpoints.ts";
 import { client } from "api/test_env.ts";
-import { assert } from "https://deno.land/std@0.180.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.181.0/testing/asserts.ts";
 
 Deno.test("Get album by ID", async () => {
 	const mockAlbumID = "621cXqrTSSJi1WqDMSLmbL";
