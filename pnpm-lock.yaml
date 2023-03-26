@@ -2,6 +2,12 @@ lockfileVersion: 5.4
 
 importers:
 
+  dist:
+    specifiers:
+      '@types/node': latest
+    devDependencies:
+      '@types/node': 18.15.10
+
   dist/api:
     specifiers:
       '@soundify/shared': workspace:*
@@ -85,7 +91,7 @@ importers:
     specifiers:
       '@soundify/api': workspace:*
       '@soundify/web-auth': workspace:*
-      '@tanstack/react-query': 4.26.1
+      '@tanstack/react-query': 4.27.0
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
       '@vitejs/plugin-react': 3.1.0
@@ -97,7 +103,7 @@ importers:
     dependencies:
       '@soundify/api': link:../../dist/api
       '@soundify/web-auth': link:../../dist/web-auth
-      '@tanstack/react-query': 4.26.1_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-query': 4.27.0_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-router-dom: 6.9.0_biqbaboplfbrettd7655fr4n2y
@@ -112,7 +118,7 @@ importers:
     specifiers:
       '@soundify/api': workspace:*
       '@soundify/web-auth': workspace:*
-      '@tanstack/react-query': 4.26.1
+      '@tanstack/react-query': 4.27.0
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
       '@vitejs/plugin-react': 3.1.0
@@ -124,7 +130,7 @@ importers:
     dependencies:
       '@soundify/api': link:../../dist/api
       '@soundify/web-auth': link:../../dist/web-auth
-      '@tanstack/react-query': 4.26.1_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-query': 4.27.0_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-router-dom: 6.9.0_biqbaboplfbrettd7655fr4n2y
@@ -733,12 +739,12 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@tanstack/query-core/4.26.1:
-    resolution: {integrity: sha512-Zrx2pVQUP4ndnsu6+K/m8zerXSVY8QM+YSbxA1/jbBY21GeCd5oKfYl92oXPK0hPEUtoNuunIdiq0ZMqLos+Zg==}
+  /@tanstack/query-core/4.27.0:
+    resolution: {integrity: sha512-sm+QncWaPmM73IPwFlmWSKPqjdTXZeFf/7aEmWh00z7yl2FjqophPt0dE1EHW9P1giMC5rMviv7OUbSDmWzXXA==}
     dev: false
 
-  /@tanstack/react-query/4.26.1_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-i3dnz4TOARGIXrXQ5P7S25Zfi4noii/bxhcwPurh2nrf5EUCcAt/95TB2HSmMweUBx206yIMWUMEQ7ptd6zwDg==}
+  /@tanstack/react-query/4.27.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-9S49LTFenWbxVHx0iR6qUXP+MKL5kwz/mV9pzfNXvdIM1R0vT+hiecCCL+ox/tD2glAQ51JHHMffQaRuH7wYRA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -749,7 +755,7 @@ packages:
       react-native:
         optional: true
     dependencies:
-      '@tanstack/query-core': 4.26.1
+      '@tanstack/query-core': 4.27.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
@@ -802,6 +808,10 @@ packages:
   /@types/node/16.18.16:
     resolution: {integrity: sha512-ZOzvDRWp8dCVBmgnkIqYCArgdFOO9YzocZp8Ra25N/RStKiWvMOXHMz+GjSeVNe5TstaTmTWPucGJkDw0XXJWA==}
     dev: false
+
+  /@types/node/18.15.10:
+    resolution: {integrity: sha512-9avDaQJczATcXgfmMAW3MIWArOO7A+m90vuCFLr8AotWf8igO/mRoYukrk2cqZVtv38tHs33retzHEilM7FpeQ==}
+    dev: true
 
   /@types/node/18.15.3:
     resolution: {integrity: sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==}
