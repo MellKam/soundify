@@ -216,7 +216,7 @@ export class SpotifyClient implements HTTPClient {
 			let message: string;
 
 			if (!res.body) {
-				message = "Empty error";
+				message = "null";
 			} else {
 				const text = await res.text();
 				try {
@@ -235,7 +235,7 @@ export class SpotifyClient implements HTTPClient {
 		const res = await call();
 
 		if (responseType === "json") {
-			if (!res.body) throw new Error("Not found body");
+			if (!res.body) throw new Error("Body not found");
 			return await res.json() as R;
 		}
 
