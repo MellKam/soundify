@@ -1,8 +1,6 @@
-export const encodeToBase64 = (data: string): string => {
-	return btoa(data);
-};
+export const encodeToBase64 = (data: string): string => btoa(data);
 
-export const getRandomBytes = (size: number) =>
+export const getRandomBytes = (size: number): Uint8Array =>
 	crypto.getRandomValues(new Uint8Array(size));
 
 export const getPKCECodeChallenge = async (

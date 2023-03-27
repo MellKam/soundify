@@ -1,11 +1,11 @@
 import { Buffer } from "node:buffer";
 import { createHash, randomBytes } from "node:crypto";
 
-export const encodeToBase64 = (data: string): string => {
-	return Buffer.from(data).toString("base64");
-};
+export const encodeToBase64 = (data: string): string =>
+	Buffer.from(data).toString("base64");
 
-export const getRandomBytes = randomBytes;
+export const getRandomBytes = (size: number): Uint8Array =>
+	new Uint8Array(randomBytes(size));
 
 // deno-lint-ignore require-await
 export const getPKCECodeChallenge = async (

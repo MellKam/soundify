@@ -3,7 +3,7 @@ import { encode as encodeBase64URL } from "https://deno.land/std@0.181.0/encodin
 
 export const encodeToBase64 = (data: string): string => encodeBase64(data);
 
-export const getRandomBytes = (size: number) =>
+export const getRandomBytes = (size: number): Uint8Array =>
 	crypto.getRandomValues(new Uint8Array(size));
 
 export const getPKCECodeChallenge = async (
