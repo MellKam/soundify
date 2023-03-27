@@ -81,13 +81,13 @@ This is minified bundle size of each package without treeshaking
 
 <p>
   <a href="https://bundlejs.com/?q=%40soundify%2Fapi">
-    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fapi&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fapi" alt="@soundify/api">
+    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fapi&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fapi@latest" alt="@soundify/api">
   </a>
   <a href="https://bundlejs.com/?q=%40soundify%2Fnode-auth">
-    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fnode-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fnode-auth" alt="soundify/node-auth">
+    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fnode-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fnode-auth@latest" alt="soundify/node-auth">
   </a>
   <a href="https://bundlejs.com/?q=%40soundify%2Fweb-auth">
-    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fweb-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth" alt="soundify/web-auth">
+    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fweb-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth@latest" alt="soundify/web-auth">
   </a>
 </p>
 
