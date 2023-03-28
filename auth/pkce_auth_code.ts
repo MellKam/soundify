@@ -173,7 +173,7 @@ export const refresh = async (opts: {
 export type AuthProviderConfig = {
 	client_id: string;
 	refresh_token: string;
-	access_token: string;
+	access_token?: string;
 };
 
 export type AuthProviderOpts = {
@@ -182,21 +182,13 @@ export type AuthProviderOpts = {
 };
 
 export class AuthProvider implements IAuthProvider {
+	private readonly config: Required<AuthProviderConfig>;
+
 	constructor(
-		private readonly config: AuthProviderConfig,
+		config: AuthProviderConfig,
 		private readonly opts: AuthProviderOpts = {},
-	) {}
-
-	static async create(
-		config: Omit<AuthProviderConfig, "access_token">,
-		opts?: AuthProviderOpts,
 	) {
-		const data = await refresh(config);
-
-		return new AuthProvider(
-			{ ...config, access_token: data.access_token },
-			opts,
-		);
+		this.config = { ...config, access_token: config.access_token ?? "" };
 	}
 
 	getToken() {

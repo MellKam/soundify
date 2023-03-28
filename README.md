@@ -216,29 +216,10 @@ const authProvider = new AuthCode.AuthProvider({
   client_id: "YOUR_CLIENT_ID",
   client_secret: "YOUR_CLIENT_SECRET",
   refresh_token: "YOUR_REFRESH_TOKEN",
-  access_token: "YOUR_ACCESS_TOKEN",
 });
 
 const client = new SpotifyClient(authProvider);
 ```
-
-Note that to create an `AuthProvider` you must pass an access token to its constructor. For example, if you will store a user refresh token in the database and want to use it, you will have to refresh the token first. There are shortcuts to do this:
-
-```ts
-import { SpotifyClient } from "@soundify/api";
-import { AuthCode } from "@soundify/node-auth";
-
-const authProvider = await AuthCode.AuthProvider.create({
-  client_id: "YOUR_CLIENT_ID",
-  client_secret: "YOUR_CLIENT_SECRET",
-  refresh_token: "YOUR_REFRESH_TOKEN",
-  // no need to provide access token
-});
-
-const client = new SpotifyClient(authProvider);
-```
-
-`.create` - is a static method that will automatically refresh the token and create the AuthProvider for you.
 
 You can create an `AuthProvider` from `AuthCode`, `PKCEAuthCode`,
 `ClientCredentials` flows. Implicit grant does not allow you to implement such a

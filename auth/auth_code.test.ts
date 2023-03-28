@@ -3,7 +3,10 @@ import {
 	assertEquals,
 	assertRejects,
 } from "https://deno.land/std@0.181.0/testing/asserts.ts";
+import { describe } from "https://deno.land/std@0.181.0/testing/bdd.ts";
 import {
+	AuthProvider,
+	AuthProviderConfig,
 	getGrantData,
 	GetGrantDataOpts,
 	getRedirectURL,
@@ -18,6 +21,12 @@ import {
 	SpotifyAuthError,
 } from "auth/general.ts";
 import * as mockFetch from "https://deno.land/x/mock_fetch@0.3.0/mod.ts";
+import {
+	assertSpyCall,
+	assertSpyCalls,
+	spy,
+	stub,
+} from "https://deno.land/std@0.181.0/testing/mock.ts";
 
 Deno.test("AuthCode: getRedirectURL", () => {
 	const expectedURL =
@@ -159,4 +168,120 @@ Deno.test("AuthCode: refresh", async () => {
 	);
 
 	mockFetch.uninstall();
+});
+
+describe("AuthCode: AuthProvider", () => {
+	const mockConfig: AuthProviderConfig = {
+		client_id: crypto.randomUUID(),
+		client_secret: crypto.randomUUID(),
+		access_token: "test_access_token",
+		refresh_token: "test_refresh_token",
+	};
+
+	const mockResponse: ScopedAccessResponse = {
+		access_token: "new_test_access_token",
+		token_type: "Bearer",
+		scope: "user-read-private",
+		expires_in: 3600,
+	};
+
+	Deno.test("constructor", () => {
+		const authProvider = new AuthProvider(mockConfig);
+		assertEquals(authProvider.getToken(), mockConfig.access_token);
+	});
+
+	Deno.test("constructor without access token", () => {
+		const { access_token: _, ...config } = mockConfig;
+		const authProvider = new AuthProvider(config);
+		assertEquals(authProvider.getToken(), "");
+	});
+
+	Deno.test("refreshToken", async () => {
+		const refreshStub = stub(
+			{ refresh },
+			"refresh", // deno-lint-ignore require-await
+			async () => (mockResponse),
+		);
+
+		const authProvider = new AuthProvider(mockConfig);
+		const token = await authProvider.refreshToken();
+
+		assertEquals(token, mockResponse.access_token);
+		assertEquals(authProvider.getToken(), mockResponse.access_token);
+
+		refreshStub.restore();
+	});
+
+	Deno.test("refreshToken with error", async () => {
+		const errorMessage = "Some error occurred";
+		const refreshStub = stub(
+			{ refresh },
+			"refresh",
+			// deno-lint-ignore require-await
+			async () => {
+				throw new SpotifyAuthError(errorMessage, 500);
+			},
+		);
+
+		const authProvider = new AuthProvider(mockConfig);
+		await assertRejects(
+			async () => {
+				await authProvider.refreshToken();
+			},
+			SpotifyAuthError,
+			errorMessage,
+		);
+
+		refreshStub.restore();
+	});
+
+	Deno.test("onRefresh", async () => {
+		const onRefreshSpy = spy();
+		const authProvider = new AuthProvider(mockConfig, {
+			onRefresh: onRefreshSpy,
+		});
+
+		const refreshStub = stub(
+			{ refresh },
+			"refresh", // deno-lint-ignore require-await
+			async () => (mockResponse),
+		);
+
+		const token = await authProvider.refreshToken();
+
+		assertSpyCall(onRefreshSpy, 0, { args: [mockResponse] });
+		assertSpyCalls(onRefreshSpy, 1);
+		assert(token === mockResponse.access_token);
+
+		onRefreshSpy.restore();
+		refreshStub.restore();
+	});
+
+	Deno.test("onRefreshFailure", async () => {
+		const onRefreshFailureSpy = spy();
+		const authProvider = new AuthProvider(mockConfig, {
+			onRefresh: onRefreshFailureSpy,
+		});
+
+		const refreshError = new SpotifyAuthError("error", 500);
+
+		const refreshStub = stub(
+			{ refresh },
+			"refresh", // deno-lint-ignore require-await
+			async () => {
+				throw refreshError;
+			},
+		);
+
+		await assertRejects(
+			() => authProvider.refreshToken(),
+			SpotifyAuthError,
+		);
+
+		assertSpyCall(onRefreshFailureSpy, 0, { args: [refreshError] });
+		assertSpyCalls(onRefreshFailureSpy, 1);
+
+		onRefreshFailureSpy.restore();
+		refreshStub.restore();
+	});
 });
