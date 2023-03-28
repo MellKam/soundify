@@ -170,7 +170,7 @@ Deno.test("AuthCode: refresh", async () => {
 	mockFetch.uninstall();
 });
 
-describe("AuthCode: AuthProvider", () => {
+describe("AuthProvider", () => {
 	const mockConfig: AuthProviderConfig = {
 		client_id: crypto.randomUUID(),
 		client_secret: crypto.randomUUID(),
@@ -185,22 +185,22 @@ describe("AuthCode: AuthProvider", () => {
 		expires_in: 3600,
 	};
 
-	Deno.test("constructor", () => {
+	Deno.test("AuthCode: constructor", () => {
 		const authProvider = new AuthProvider(mockConfig);
 		assertEquals(authProvider.getToken(), mockConfig.access_token);
 	});
 
-	Deno.test("constructor without access token", () => {
+	Deno.test("AuthCode: constructor without access token", () => {
 		const { access_token: _, ...config } = mockConfig;
 		const authProvider = new AuthProvider(config);
 		assertEquals(authProvider.getToken(), "");
 	});
 
-	Deno.test("refreshToken", async () => {
-		const refreshStub = stub(
-			{ refresh },
-			"refresh", // deno-lint-ignore require-await
-			async () => (mockResponse),
+	Deno.test("AuthCode: refreshToken", async () => {
+		mockFetch.install();
+		mockFetch.mock(
+			"POST@/api/token",
+			() => (new Response(JSON.stringify(mockResponse))),
 		);
 
 		const authProvider = new AuthProvider(mockConfig);
@@ -209,18 +209,15 @@ describe("AuthCode: AuthProvider", () => {
 		assertEquals(token, mockResponse.access_token);
 		assertEquals(authProvider.getToken(), mockResponse.access_token);
 
-		refreshStub.restore();
+		mockFetch.uninstall();
 	});
 
-	Deno.test("refreshToken with error", async () => {
+	Deno.test("AuthCode: refreshToken with error", async () => {
 		const errorMessage = "Some error occurred";
-		const refreshStub = stub(
-			{ refresh },
-			"refresh",
-			// deno-lint-ignore require-await
-			async () => {
-				throw new SpotifyAuthError(errorMessage, 500);
-			},
+		mockFetch.install();
+		mockFetch.mock(
+			"POST@/api/token",
+			() => (new Response(errorMessage, { status: 500 })),
 		);
 
 		const authProvider = new AuthProvider(mockConfig);
@@ -232,19 +229,19 @@ describe("AuthCode: AuthProvider", () => {
 			errorMessage,
 		);
 
-		refreshStub.restore();
+		mockFetch.uninstall();
 	});
 
-	Deno.test("onRefresh", async () => {
+	Deno.test("AuthCode: onRefresh", async () => {
 		const onRefreshSpy = spy();
 		const authProvider = new AuthProvider(mockConfig, {
 			onRefresh: onRefreshSpy,
 		});
 
-		const refreshStub = stub(
-			{ refresh },
-			"refresh", // deno-lint-ignore require-await
-			async () => (mockResponse),
+		mockFetch.install();
+		mockFetch.mock(
+			"POST@/api/token",
+			() => (new Response(JSON.stringify(mockResponse))),
 		);
 
 		const token = await authProvider.refreshToken();
@@ -253,35 +250,31 @@ describe("AuthCode: AuthProvider", () => {
 		assertSpyCalls(onRefreshSpy, 1);
 		assert(token === mockResponse.access_token);
 
-		onRefreshSpy.restore();
-		refreshStub.restore();
+		mockFetch.uninstall();
 	});
 
-	Deno.test("onRefreshFailure", async () => {
+	Deno.test("AuthCode: onRefreshFailure", async () => {
 		const onRefreshFailureSpy = spy();
 		const authProvider = new AuthProvider(mockConfig, {
-			onRefresh: onRefreshFailureSpy,
+			onRefreshFailure: onRefreshFailureSpy,
 		});
 
-		const refreshError = new SpotifyAuthError("error", 500);
-
-		const refreshStub = stub(
-			{ refresh },
-			"refresh", // deno-lint-ignore require-await
-			async () => {
-				throw refreshError;
-			},
+		mockFetch.install();
+		mockFetch.mock(
+			"POST@/api/token",
+			() => (new Response("error", { status: 500 })),
 		);
+
+		const error = new SpotifyAuthError("error", 500);
 
 		await assertRejects(
 			() => authProvider.refreshToken(),
 			SpotifyAuthError,
 		);
 
-		assertSpyCall(onRefreshFailureSpy, 0, { args: [refreshError] });
+		assertSpyCall(onRefreshFailureSpy, 0, { args: [error] });
 		assertSpyCalls(onRefreshFailureSpy, 1);
 
-		onRefreshFailureSpy.restore();
-		refreshStub.restore();
+		mockFetch.uninstall();
 	});
 });
