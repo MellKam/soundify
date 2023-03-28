@@ -149,7 +149,7 @@ export const refresh = async (opts: {
 	return (await res.json()) as ScopedAccessResponse;
 };
 
-export type AuthProviderConfig = {
+export type AuthProviderCreds = {
 	client_id: string;
 	client_secret: string;
 	refresh_token: string;
@@ -157,31 +157,50 @@ export type AuthProviderConfig = {
 };
 
 export type AuthProviderOpts = {
-	onRefresh?: (data: ScopedAccessResponse) => void | Promise<void>;
-	onRefreshFailure?: (error: Error) => void | Promise<void>;
+	/**
+	 * A callback event that is triggered after a successful refresh
+	 */
+	onRefresh?: (
+		/**
+		 * New authorization data that is returned after the update
+		 */
+		data: ScopedAccessResponse,
+	) => void | Promise<void>;
+	/**
+	 * The callback event that is triggered after a failed token refresh
+	 */
+	onRefreshFailure?: (
+		/**
+		 * Error that occurred during the refresh
+		 */
+		error: SpotifyAuthError,
+	) => void | Promise<void>;
 };
 
 export class AuthProvider implements IAuthProvider {
-	private readonly config: Required<AuthProviderConfig>;
+	private readonly creds: Required<AuthProviderCreds>;
 
 	constructor(
-		config: AuthProviderConfig,
+		credentials: AuthProviderCreds,
 		private readonly opts: AuthProviderOpts = {},
 	) {
-		this.config = { ...config, access_token: config.access_token ?? "" };
+		this.creds = {
+			...credentials,
+			access_token: credentials.access_token ?? "",
+		};
 	}
 
 	getToken() {
-		return this.config.access_token;
+		return this.creds.access_token;
 	}
 
 	async refreshToken() {
 		try {
-			const data = await refresh(this.config);
+			const data = await refresh(this.creds);
 
-			this.config.access_token = data.access_token;
+			this.creds.access_token = data.access_token;
 			if (this.opts.onRefresh) await this.opts.onRefresh(data);
-			return this.config.access_token;
+			return this.creds.access_token;
 		} catch (error) {
 			if (this.opts.onRefreshFailure) {
 				await this.opts.onRefreshFailure(error);

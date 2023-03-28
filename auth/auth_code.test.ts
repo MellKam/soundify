@@ -6,7 +6,7 @@ import {
 import { describe } from "https://deno.land/std@0.181.0/testing/bdd.ts";
 import {
 	AuthProvider,
-	AuthProviderConfig,
+	AuthProviderCreds,
 	getGrantData,
 	GetGrantDataOpts,
 	getRedirectURL,
@@ -25,7 +25,6 @@ import {
 	assertSpyCall,
 	assertSpyCalls,
 	spy,
-	stub,
 } from "https://deno.land/std@0.181.0/testing/mock.ts";
 
 Deno.test("AuthCode: getRedirectURL", () => {
@@ -171,7 +170,7 @@ Deno.test("AuthCode: refresh", async () => {
 });
 
 describe("AuthProvider", () => {
-	const mockConfig: AuthProviderConfig = {
+	const mockConfig: AuthProviderCreds = {
 		client_id: crypto.randomUUID(),
 		client_secret: crypto.randomUUID(),
 		access_token: "test_access_token",

@@ -170,7 +170,7 @@ export const refresh = async (opts: {
 	return (await res.json()) as KeypairResponse;
 };
 
-export type AuthProviderConfig = {
+export type AuthProviderCreds = {
 	client_id: string;
 	refresh_token: string;
 	access_token?: string;
@@ -182,28 +182,31 @@ export type AuthProviderOpts = {
 };
 
 export class AuthProvider implements IAuthProvider {
-	private readonly config: Required<AuthProviderConfig>;
+	private readonly creds: Required<AuthProviderCreds>;
 
 	constructor(
-		config: AuthProviderConfig,
+		credentials: AuthProviderCreds,
 		private readonly opts: AuthProviderOpts = {},
 	) {
-		this.config = { ...config, access_token: config.access_token ?? "" };
+		this.creds = {
+			...credentials,
+			access_token: credentials.access_token ?? "",
+		};
 	}
 
 	getToken() {
-		return this.config.access_token;
+		return this.creds.access_token;
 	}
 
 	async refreshToken() {
 		try {
-			const data = await refresh(this.config);
+			const data = await refresh(this.creds);
 
-			this.config.refresh_token = data.refresh_token;
-			this.config.access_token = data.access_token;
+			this.creds.refresh_token = data.refresh_token;
+			this.creds.access_token = data.access_token;
 
 			if (this.opts.onRefresh) await this.opts.onRefresh(data);
-			return this.config.access_token;
+			return this.creds.access_token;
 		} catch (error) {
 			if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
 			throw error;

@@ -32,7 +32,7 @@ export const getAccessToken = async (opts: {
 	return (await res.json()) as AccessResponse;
 };
 
-export type AuthProviderConfig = {
+export type AuthProviderCreds = {
 	client_id: string;
 	client_secret: string;
 	access_token?: string;
@@ -44,26 +44,29 @@ export type AuthProviderOpts = {
 };
 
 export class AuthProvider implements IAuthProvider {
-	private readonly config: Required<AuthProviderConfig>;
+	private readonly creds: Required<AuthProviderCreds>;
 
 	constructor(
-		config: AuthProviderConfig,
+		credentials: AuthProviderCreds,
 		private readonly opts: AuthProviderOpts = {},
 	) {
-		this.config = { ...config, access_token: config.access_token ?? "" };
+		this.creds = {
+			...credentials,
+			access_token: credentials.access_token ?? "",
+		};
 	}
 
 	getToken(): string {
-		return this.config.access_token;
+		return this.creds.access_token;
 	}
 
 	async refreshToken() {
 		try {
-			const data = await getAccessToken(this.config);
+			const data = await getAccessToken(this.creds);
 
-			this.config.access_token = data.access_token;
+			this.creds.access_token = data.access_token;
 			if (this.opts.onRefresh) await this.opts.onRefresh(data);
-			return this.config.access_token;
+			return this.creds.access_token;
 		} catch (error) {
 			if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
 			throw error;
