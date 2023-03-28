@@ -83,7 +83,7 @@ export interface ScopedAccessResponse extends AccessResponse {
 	 * A space-separated list of scopes which have been granted
 	 * for this `access_token`
 	 */
-	scope: string;
+	scope?: string;
 }
 
 /**

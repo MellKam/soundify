@@ -74,6 +74,7 @@ router
 		});
 
 		console.log(grantData);
+		ctx.response.body = "Success! Check server logs";
 	});
 
 app.use(router.routes());

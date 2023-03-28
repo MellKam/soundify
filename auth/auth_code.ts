@@ -49,6 +49,10 @@ export type GetRedirectURLOpts = {
 	show_dialog?: boolean;
 };
 
+/**
+ * Creates a URL to redirect users to the Spotify authorization page,
+ * where they can grant or deny permission to your app.
+ */
 export const getRedirectURL = (
 	{ scopes, ...opts }: GetRedirectURLOpts,
 ) => {
@@ -87,6 +91,10 @@ export type GetGrantDataOpts = {
 	redirect_uri: string;
 };
 
+/**
+ * Retrieves an access and refresh token from the Spotify API
+ * using an authorization code and client credentials.
+ */
 export const getGrantData = async (
 	opts: GetGrantDataOpts,
 ) => {
@@ -113,7 +121,7 @@ export const getGrantData = async (
 };
 
 /**
- * Requests a new access token using your refresh token and client data
+ * Requests a new access token using your refresh token and client credentials
  */
 export const refresh = async (opts: {
 	client_id: string;
