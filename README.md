@@ -4,19 +4,19 @@
   </p>
   <p align="center">
     <a href="https://www.npmjs.com/package/@soundify/api">
-      <img alt="npm" src="https://img.shields.io/npm/v/@soundify/api?color=1DB954">
+      <img alt="npm" src="https://img.shields.io/npm/v/@soundify/api?color=509BF5">
     </a>
     <a href="https://deno.land/x/soundify">
-      <img alt="deno.land" src="https://img.shields.io/github/v/tag/MellKam/soundify?color=1DB954&label=deno.land%2Fx&logo=deno">
+      <img alt="deno.land" src="https://img.shields.io/github/v/tag/MellKam/soundify?color=509BF5&label=deno.land%2Fx&logo=deno">
     </a>
     <a href="https://github.com/MellKam/soundify/blob/main/LICENSE">
-      <img alt="license" src="https://img.shields.io/github/license/MellKam/soundify?color=1DB954">
+      <img alt="license" src="https://img.shields.io/github/license/MellKam/soundify?color=509BF5">
     </a>
     <a href="https://github.com/MellKam/soundify/commits/main">
-      <img src="https://img.shields.io/github/last-commit/MellKam/soundify?color=1DB954" alt="Last commit" />
+      <img src="https://img.shields.io/github/last-commit/MellKam/soundify?color=509BF5" alt="Last commit" />
     </a>
     <a href="https://github.com/MellKam/soundify/actions">
-      <img src="https://img.shields.io/github/actions/workflow/status/MellKam/soundify/ci.yaml?color=1DB954&label=CI&logo=github" alt="GitHub CI Status" />
+      <img src="https://img.shields.io/github/actions/workflow/status/MellKam/soundify/ci.yaml?color=509BF5&label=CI&logo=github" alt="GitHub CI Status" />
     </a>
   </p>
 </div>
@@ -80,13 +80,13 @@ This is minified bundle size of each package without treeshaking
 
 <p>
   <a href="https://bundlejs.com/?q=%40soundify%2Fapi">
-    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fapi&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fapi@latest" alt="@soundify/api">
+    <img src="https://img.shields.io/badge/dynamic/json?color=509BF5&label=%40soundify%2Fapi&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fapi@latest" alt="@soundify/api">
   </a>
   <a href="https://bundlejs.com/?q=%40soundify%2Fnode-auth">
-    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fnode-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fnode-auth@latest" alt="soundify/node-auth">
+    <img src="https://img.shields.io/badge/dynamic/json?color=509BF5&label=%40soundify%2Fnode-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fnode-auth@latest" alt="soundify/node-auth">
   </a>
   <a href="https://bundlejs.com/?q=%40soundify%2Fweb-auth">
-    <img src="https://img.shields.io/badge/dynamic/json?color=1DB954&label=%40soundify%2Fweb-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth@latest" alt="soundify/web-auth">
+    <img src="https://img.shields.io/badge/dynamic/json?color=509BF5&label=%40soundify%2Fweb-auth&query=$.size.uncompressedSize&url=https://deno.bundlejs.com/?q=%40soundify%2Fweb-auth@latest" alt="soundify/web-auth">
   </a>
 </p>
 
