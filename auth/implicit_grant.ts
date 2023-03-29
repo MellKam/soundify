@@ -23,32 +23,10 @@ export type GetRedirectURLOpts = {
 	 */
 	show_dialog?: boolean;
 	/**
-	 * The Client ID generated after registering your Spotify application.
-	 */
-	client_id: string;
-	/**
-	 * The URI to redirect to after the user grants or denies permission.
-	 * This URI needs to have been entered in the _Redirect URI Allowlist_
-	 * that you specified when you registered your application.
-	 */
-	redirect_uri: string;
-	/**
 	 * This provides protection against attacks such as
 	 * cross-site request forgery.
 	 */
 	state?: string;
-};
-
-export const getRedirectURL = ({ scopes, ...opts }: GetRedirectURLOpts) => {
-	const url = new URL(SPOTIFY_AUTH + "authorize");
-
-	url.search = toQueryString<AuthorizeReqParams>({
-		response_type: "token",
-		scope: scopes?.join(" "),
-		...opts,
-	});
-
-	return url;
 };
 
 export interface CallbackErrorData extends Record<string, string | undefined> {
@@ -81,17 +59,46 @@ export interface CallbackSuccessData
 
 export type CallbackData = CallbackSuccessData | CallbackErrorData;
 
-export const parseCallbackData = (hash: string) => {
-	const params = Object.fromEntries(
-		new URLSearchParams(hash.substring(1)),
-	) as CallbackData;
+export class ImplicitGrant {
+	constructor(
+		private readonly creds: {
+			/**
+			 * The Client ID generated after registering your Spotify application.
+			 */
+			client_id: string;
+			/**
+			 * The URI to redirect to after the user grants or denies permission.
+			 */
+			redirect_uri: string;
+		},
+	) {}
 
-	if ("error" in params) return params;
-	if (
-		"access_token" in params && "expires_in" in params && "token_type" in params
-	) {
-		return params;
+	getRedirectURL({ scopes, ...opts }: GetRedirectURLOpts) {
+		const url = new URL(SPOTIFY_AUTH + "authorize");
+
+		url.search = toQueryString<AuthorizeReqParams>({
+			response_type: "token",
+			scope: scopes?.join(" "),
+			...this.creds,
+			...opts,
+		});
+
+		return url;
 	}
 
-	throw new Error("Invalid params");
-};
+	static parseCallbackData(hash: string) {
+		const params = Object.fromEntries(
+			new URLSearchParams(hash.substring(1)),
+		) as CallbackData;
+
+		if ("error" in params) return params;
+		if (
+			"access_token" in params && "expires_in" in params &&
+			"token_type" in params
+		) {
+			return params;
+		}
+
+		throw new Error("Invalid params");
+	}
+}

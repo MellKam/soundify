@@ -292,14 +292,21 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 		);
 	});
 
-	const authProvider = new AuthCode.AuthProvider({
-		client_id: "",
-		client_secret: "",
-		refresh_token: "",
-		access_token: "",
-	});
+	class MockProvider implements IAuthProvider {
+		constructor(public access_token: string) {}
 
-	const client = new SpotifyClient(authProvider, {
+		getToken(): string {
+			return this.access_token;
+		}
+
+		refreshToken(): Promise<string> {
+			return new Promise((resolve) => {
+				resolve(this.access_token);
+			});
+		}
+	}
+
+	const client = new SpotifyClient(new MockProvider("TOKEN"), {
 		retryDelayOn5xx: 200,
 		retryTimesOn5xx: expectedRequestsCount - 1,
 	});

@@ -1,4 +1,4 @@
-import { ImplicitGrant } from "@soundify/web-auth";
+import { ImplicitGrant } from "@soundify/web-auth/implicit-grant";
 
 export const Page = () => {
 	try {

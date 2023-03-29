@@ -1,6 +1,6 @@
 <div align="center">
   <p align="center">
-    <img align="center" width="500px" src="https://user-images.githubusercontent.com/51422045/224954318-f4f1290b-7185-4f26-b52b-472fb4f69f45.png">
+     <img align="center" width="500px" src="https://svgshare.com/i/rbL.svg">
   </p>
   <p align="center">
     <a href="https://www.npmjs.com/package/@soundify/api">
@@ -51,8 +51,7 @@ Soundify is split into subpackages:
 
 - `/auth` - Handles Spotify authorization
 - `/api` - Provides client, endpoints and entity types
-- `/shared` - General functions and types (used under the hood in `/auth` and
-  `/api`)
+- `/shared` - General functions and types (used under the hood in other packages)
 
 > This separation is designed to enable the use of specific package on specific
 > platforms. For example, `@soundify/web-auth` is suitable for browser, while
@@ -151,10 +150,6 @@ If you have no experience with Spotify Auth you can read more about it in the
 
 ## Auth Flows
 
-Authorization flows are organized into separate namespaces, with each namespace
-containing all the necessary functions and classes to implement a specific
-authorization flow. This allows for easy importing of a specific flow.
-
 For instance, the following code imports all authorization flow namespaces:
 
 ```ts
@@ -192,15 +187,12 @@ with it yourself. Somehow get a new Access Token and set it on the client.
 import { SpotifyClient } from "@soundify/api";
 import { AuthCode } from "@soundify/node-auth";
 
+const authFlow = new AuthCode({ ... });
 const client = new SpotifyClient("ACCESS_TOKEN");
 // ...
 // Oops, token expires :(
 
-const { access_token } = await AuthCode.refresh({ 
-  client_id: "YOUR_CLIENT_ID", 
-  client_secret: "YOUR_CLIENT_SECRET", 
-  refresh_token: "YOUR_REFRESH_TOKEN" 
-});
+const { access_token } = await authFlow.refresh("REFRESH_TOKEN");
 // set new token to your client
 client.setAuthProvider(access_token);
 ```

@@ -2,7 +2,7 @@ import { getCookie } from "cookies-next";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useCallback, useEffect } from "react";
 import { getCurrentUser, SpotifyClient, type UserPrivate } from "@soundify/api";
-import { ACCESS_TOKEN } from "../consts";
+import { ACCESS_TOKEN } from "../spotify";
 
 const client = new SpotifyClient("PLACEHOLDER");
 

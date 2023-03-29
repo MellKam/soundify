@@ -7,69 +7,99 @@ import {
 } from "auth/general.ts";
 import { IAuthProvider } from "shared/mod.ts";
 
-export const getAccessToken = async (opts: {
-	client_id: string;
-	client_secret: string;
-}) => {
-	const res = await fetch(SPOTIFY_AUTH + "api/token", {
-		method: "POST",
-		headers: {
-			"Authorization": getBasicAuthHeader(
-				opts.client_id,
-				opts.client_secret,
-			),
-			"Content-Type": URL_ENCODED,
-		},
-		body: new URLSearchParams({
-			grant_type: "client_credentials",
-		}),
-	});
+export type OnRefresh = (
+	/**
+	 * New authorization data that is returned after the update
+	 */
+	data: AccessResponse,
+) => void | Promise<void>;
 
-	if (!res.ok) {
-		throw new SpotifyAuthError(await res.text(), res.status);
-	}
-
-	return (await res.json()) as AccessResponse;
-};
-
-export type AuthProviderCreds = {
-	client_id: string;
-	client_secret: string;
-	access_token?: string;
-};
+export type OnRefreshFailure = (
+	/**
+	 * Error that occurred during the refresh
+	 */
+	error: SpotifyAuthError,
+) => void | Promise<void>;
 
 export type AuthProviderOpts = {
-	onRefresh?: (data: AccessResponse) => void | Promise<void>;
-	onRefreshFailure?: (error: Error) => void | Promise<void>;
+	access_token?: string;
+	/**
+	 * A callback event that is triggered after a successful refresh
+	 */
+	onRefresh?: OnRefresh;
+	/**
+	 * The callback event that is triggered after a failed token refresh
+	 */
+	onRefreshFailure?: OnRefreshFailure;
 };
 
 export class AuthProvider implements IAuthProvider {
-	private readonly creds: Required<AuthProviderCreds>;
+	private access_token: string;
+	private readonly onRefresh?: OnRefresh;
+	private readonly onRefreshFailure?: OnRefreshFailure;
 
 	constructor(
-		credentials: AuthProviderCreds,
-		private readonly opts: AuthProviderOpts = {},
+		private readonly authFlow: ClientCredentials,
+		opts: AuthProviderOpts = {},
 	) {
-		this.creds = {
-			...credentials,
-			access_token: credentials.access_token ?? "",
-		};
+		this.access_token = opts.access_token ?? "";
+		this.onRefresh = opts.onRefresh;
+		this.onRefreshFailure = opts.onRefreshFailure;
 	}
 
 	getToken(): string {
-		return this.creds.access_token;
+		return this.access_token;
 	}
 
 	async refreshToken() {
 		try {
-			const data = await getAccessToken(this.creds);
+			const data = await this.authFlow.getAccessToken();
 
-			this.creds.access_token = data.access_token;
-			if (this.opts.onRefresh) await this.opts.onRefresh(data);
-			return this.creds.access_token;
+			this.access_token = data.access_token;
+			if (this.onRefresh) await this.onRefresh(data);
+			return this.access_token;
 		} catch (error) {
-			if (this.opts.onRefreshFailure) await this.opts.onRefreshFailure(error);
+			if (this.onRefreshFailure) await this.onRefreshFailure(error);
 			throw error;
 		}
+	}
+}
+
+export class ClientCredentials {
+	private readonly basicAuthHeader: string;
+
+	constructor(
+		private readonly creds: {
+			client_id: string;
+			client_secret: string;
+		},
+	) {
+		this.basicAuthHeader = getBasicAuthHeader(
+			creds.client_id,
+			creds.client_secret,
+		);
+	}
+
+	async getAccessToken() {
+		const res = await fetch(SPOTIFY_AUTH + "api/token", {
+			method: "POST",
+			headers: {
+				"Authorization": this.basicAuthHeader,
+				"Content-Type": URL_ENCODED,
+			},
+			body: new URLSearchParams({
+				grant_type: "client_credentials",
+			}),
+		});
+
+		if (!res.ok) {
+			throw new SpotifyAuthError(await res.text(), res.status);
+		}
+
+		return (await res.json()) as AccessResponse;
+	}
+
+	createAuthProvider(opts?: AuthProviderOpts) {
+		return new AuthProvider(this, opts);
 	}
 }

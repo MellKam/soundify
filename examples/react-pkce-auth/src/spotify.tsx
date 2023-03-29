@@ -1,16 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, ReactNode, useContext, useMemo } from "react";
 import { AuthScope, PKCEAuthCode } from "@soundify/web-auth";
+import { AuthProvider } from "@soundify/web-auth/pkce-auth-code";
 import { SpotifyClient } from "@soundify/api";
 
 export const SPOTIFY_REFRESH_TOKEN = "SPOTIFY_REFRESH_TOKEN";
 export const SPOTIFY_ACCESS_TOKNE = "SPOTIFY_ACCESS_TOKEN";
 export const CODE_VERIFIER = "CODE_VERIFIER";
-
-export const config = {
-	client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-	redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
-};
 
 const SpotifyContext = createContext<
 	{
@@ -24,12 +20,17 @@ export type SpotifyConfig = {
 	scopes: AuthScope[];
 };
 
+const authFlow = new PKCEAuthCode({
+	client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
+	redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
+});
+
 const authorize = async (config: SpotifyConfig) => {
 	const { code_challenge, code_verifier } = await PKCEAuthCode.generateCodes();
 	localStorage.setItem(CODE_VERIFIER, code_verifier);
 
 	location.replace(
-		PKCEAuthCode.getRedirectURL({
+		authFlow.getRedirectURL({
 			code_challenge,
 			...config,
 		}),
@@ -56,19 +57,13 @@ export const SpotifyProvider = ({
 		const refresh_token = localStorage.getItem(SPOTIFY_REFRESH_TOKEN);
 		if (!refresh_token) return null;
 
-		const authProvider = new PKCEAuthCode.AuthProvider(
-			{
-				client_id: config.client_id,
-				refresh_token,
-				access_token: access_token ?? "",
+		const authProvider = new AuthProvider(authFlow, refresh_token, {
+			access_token: access_token ?? "",
+			onRefresh: ({ access_token, refresh_token }) => {
+				localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
+				localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);
 			},
-			{
-				onRefresh: ({ access_token, refresh_token }) => {
-					localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
-					localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);
-				},
-			},
-		);
+		});
 
 		return new SpotifyClient(authProvider);
 	}, []);
@@ -106,11 +101,9 @@ export const handleCallback = (code: string, code_verifier: string) =>
 		queryKey: [],
 		cacheTime: 0,
 		queryFn: () => {
-			return PKCEAuthCode.getGrantData({
+			return authFlow.getGrantData({
 				code: code!,
 				code_verifier: code_verifier!,
-				client_id: config.client_id,
-				redirect_uri: config.redirect_uri,
 			});
 		},
 		onSuccess: ({ access_token, refresh_token }) => {

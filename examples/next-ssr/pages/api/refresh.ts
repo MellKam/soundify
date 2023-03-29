@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCookie, setCookie } from "cookies-next";
-import { AuthCode } from "@soundify/node-auth";
-import { ACCESS_TOKEN, env, REFRESH_TOKEN } from "../../consts";
+import { ACCESS_TOKEN, authFlow, REFRESH_TOKEN } from "../../spotify";
 
 export default async function (
 	req: NextApiRequest,
@@ -18,11 +17,7 @@ export default async function (
 	}
 
 	try {
-		const { access_token, expires_in } = await AuthCode.refresh({
-			client_id: env.client_id,
-			client_secret: env.client_secret,
-			refresh_token,
-		});
+		const { access_token, expires_in } = await authFlow.refresh(refresh_token);
 
 		setCookie(ACCESS_TOKEN, access_token, {
 			maxAge: expires_in,
