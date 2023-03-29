@@ -22,10 +22,6 @@
 </div>
 
 <div align="center">
-  <i>⚠️ Not ready for production</i>
-  <strong>
-    <h1 align="center">Soundify</h1>
-  </strong>
   <p align="center">
     Soundify is a lightweight and flexible library for seamless communication with Spotify API, designed to work smoothly with TypeScript, Deno, Node.js, and client-side JavaScript. It's open source and provides an easy-to-use interface for accessing Spotify's data.
   </p>
@@ -33,8 +29,8 @@
 
 # Features ✨
 
-- 💻 Multiruntime: supports Node, Deno and Browser environment.
-- 🚀 Modern: It leverages modern web APIs like native `fetch`, `crypto`,
+- 💻 Multiruntime: Works seamlessly with Node.js, Deno, and the Browser environment.
+- 🚀 Modern: Leverages native web APIs like `fetch`, `crypto`,
   `URLSearchParams`, etc.
 - 🔑 Comprehensive auth support: It can handle all Spotify Auth flows and
   automatically refreshes access token.
