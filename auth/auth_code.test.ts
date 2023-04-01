@@ -2,8 +2,8 @@ import {
 	assert,
 	assertEquals,
 	assertRejects,
-} from "https://deno.land/std@0.181.0/testing/asserts.ts";
-import { describe } from "https://deno.land/std@0.181.0/testing/bdd.ts";
+} from "https://deno.land/std@0.182.0/testing/asserts.ts";
+import { describe } from "https://deno.land/std@0.182.0/testing/bdd.ts";
 import { AuthCode, AuthCodeCredentials, AuthProvider } from "auth/auth_code.ts";
 import {
 	ApiTokenReqParams,
@@ -17,13 +17,14 @@ import {
 	assertSpyCall,
 	assertSpyCalls,
 	spy,
-} from "https://deno.land/std@0.181.0/testing/mock.ts";
+} from "https://deno.land/std@0.182.0/testing/mock.ts";
 
 const creds: AuthCodeCredentials = {
 	client_id: crypto.randomUUID(),
 	client_secret: crypto.randomUUID(),
-	redirect_uri: "http://localhost:3000/callback",
 };
+
+const redirect_uri = "http://localhost:3000/callback";
 
 const authFlow = new AuthCode(creds);
 
@@ -31,32 +32,38 @@ Deno.test("AuthCode: constructro", () => {
 	assertEquals(authFlow["creds"], creds);
 });
 
-Deno.test("AuthCode: getRedirectURL", () => {
+Deno.test("AuthCode: getAuthURL", () => {
 	const expectedURL =
 		`https://accounts.spotify.com/authorize?response_type=code&client_id=${
 			encodeURIComponent(creds.client_id)
-		}&redirect_uri=${encodeURIComponent(creds.redirect_uri)}`;
+		}&redirect_uri=${encodeURIComponent(redirect_uri)}`;
 
-	const url = authFlow.getRedirectURL();
+	const url = authFlow.getAuthURL({
+		redirect_uri,
+	});
 
 	assert(url.toString() === expectedURL);
 });
 
-Deno.test("AuthCode: getRedirectURL with additional options", () => {
+Deno.test("AuthCode: getAuthURL with additional options", () => {
 	const expectedURL =
 		`https://accounts.spotify.com/authorize?response_type=code&scope=playlist-read-private+user-library-modify+streaming&client_id=${
 			encodeURIComponent(creds.client_id)
-		}&redirect_uri=${
-			encodeURIComponent(creds.redirect_uri)
-		}&show_dialog=false&state=123`;
+		}&show_dialog=false&state=123&redirect_uri=${
+			encodeURIComponent(redirect_uri)
+		}`;
 
-	const url = authFlow.getRedirectURL({
+	const url = authFlow.getAuthURL({
 		scopes: ["playlist-read-private", "user-library-modify", "streaming"],
 		show_dialog: false,
 		state: "123",
+		redirect_uri,
 	});
 
-	assert(url.toString() === expectedURL);
+	assertEquals(
+		Object.fromEntries(url.searchParams),
+		Object.fromEntries(new URL(expectedURL).searchParams),
+	);
 });
 
 Deno.test("AuthCode: getGrantData", async () => {
@@ -84,7 +91,7 @@ Deno.test("AuthCode: getGrantData", async () => {
 
 		if (
 			params["code"] !== mockCode ||
-			params["redirect_uri"] !== creds.redirect_uri ||
+			params["redirect_uri"] !== redirect_uri ||
 			params["grant_type"] !== "authorization_code"
 		) {
 			return new Response("Bad request", { status: 400 });
@@ -94,7 +101,7 @@ Deno.test("AuthCode: getGrantData", async () => {
 	});
 
 	// Test success case
-	const keypair = await authFlow.getGrantData(mockCode);
+	const keypair = await authFlow.getGrantData(redirect_uri, mockCode);
 	assertEquals(keypair, mockResponse);
 
 	// Test error case
@@ -103,7 +110,7 @@ Deno.test("AuthCode: getGrantData", async () => {
 		() => new Response("Error", { status: 500 }),
 	);
 	await assertRejects(
-		async () => await authFlow.getGrantData(mockCode),
+		async () => await authFlow.getGrantData(redirect_uri, mockCode),
 		SpotifyAuthError,
 		"Error",
 	);

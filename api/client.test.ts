@@ -5,14 +5,13 @@ import {
 	assert,
 	assertEquals,
 	assertInstanceOf,
-} from "https://deno.land/std@0.181.0/testing/asserts.ts";
+} from "https://deno.land/std@0.182.0/testing/asserts.ts";
 import { privateUserStub } from "api/user/user.stubs.ts";
 import {
 	assertSpyCall,
 	assertSpyCalls,
 	spy,
-} from "https://deno.land/std@0.181.0/testing/mock.ts";
-import { AuthCode } from "auth/mod.ts";
+} from "https://deno.land/std@0.182.0/testing/mock.ts";
 import { JSONObject } from "./mod.ts";
 import { IAuthProvider, toQueryString } from "../shared/mod.ts";
 

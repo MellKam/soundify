@@ -1,7 +1,11 @@
 import { toQueryString } from "shared/mod.ts";
 import { AuthorizeReqParams, AuthScope, SPOTIFY_AUTH } from "auth/general.ts";
 
-export type GetRedirectURLOpts = {
+export type GetAuthURLOpts = {
+	/**
+	 * The URI to redirect to after the user grants or denies permission.
+	 */
+	redirect_uri: string;
 	/**
 	 * List of scopes.
 	 *
@@ -61,25 +65,16 @@ export type CallbackData = CallbackSuccessData | CallbackErrorData;
 
 export class ImplicitGrant {
 	constructor(
-		private readonly creds: {
-			/**
-			 * The Client ID generated after registering your Spotify application.
-			 */
-			client_id: string;
-			/**
-			 * The URI to redirect to after the user grants or denies permission.
-			 */
-			redirect_uri: string;
-		},
+		private readonly client_id: string,
 	) {}
 
-	getRedirectURL({ scopes, ...opts }: GetRedirectURLOpts) {
+	getAuthURL({ scopes, ...opts }: GetAuthURLOpts) {
 		const url = new URL(SPOTIFY_AUTH + "authorize");
 
 		url.search = toQueryString<AuthorizeReqParams>({
 			response_type: "token",
 			scope: scopes?.join(" "),
-			...this.creds,
+			client_id: this.client_id,
 			...opts,
 		});
 

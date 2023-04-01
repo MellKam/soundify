@@ -2,8 +2,11 @@ import { IAuthProvider, toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
+	AuthProviderOpts,
 	AuthScope,
 	KeypairResponse,
+	OnRefresh,
+	OnRefreshFailure,
 	parseCallbackData,
 	SPOTIFY_AUTH,
 	SpotifyAuthError,
@@ -14,7 +17,11 @@ import {
 	getRandomBytes,
 } from "auth/platform/platform.deno.ts";
 
-export type GetRedirectURLOpts = {
+export type GetAuthURLOpts = {
+	/**
+	 * The URI to redirect to after the user grants or denies permission.
+	 */
+	redirect_uri: string;
 	/**
 	 * PKCE code that you generated from `code_verifier`.
 	 * You can get it with the `getCodeChallenge` function.
@@ -37,6 +44,10 @@ export type GetRedirectURLOpts = {
 
 export type GetGrantDataOpts = {
 	/**
+	 * The URI to redirect to after the user grants or denies permission.
+	 */
+	redirect_uri: string;
+	/**
 	 * The random code you generated before redirecting the user to spotify auth
 	 */
 	code_verifier: string;
@@ -47,42 +58,16 @@ export type GetGrantDataOpts = {
 	code: string;
 };
 
-export type OnRefresh = (
-	/**
-	 * New authorization data that is returned after the update
-	 */
-	data: KeypairResponse,
-) => void | Promise<void>;
-
-export type OnRefreshFailure = (
-	/**
-	 * Error that occurred during the refresh
-	 */
-	error: SpotifyAuthError,
-) => void | Promise<void>;
-
-export type AuthProviderOpts = {
-	access_token?: string;
-	/**
-	 * A callback event that is triggered after a successful refresh
-	 */
-	onRefresh?: OnRefresh;
-	/**
-	 * The callback event that is triggered after a failed token refresh
-	 */
-	onRefreshFailure?: OnRefreshFailure;
-};
-
 export class AuthProvider implements IAuthProvider {
 	private refresh_token: string;
 	private access_token: string;
-	private readonly onRefresh?: OnRefresh;
+	private readonly onRefresh?: OnRefresh<KeypairResponse>;
 	private readonly onRefreshFailure?: OnRefreshFailure;
 
 	constructor(
 		private readonly authFlow: PKCEAuthCode,
 		refresh_token: string,
-		opts: AuthProviderOpts = {},
+		opts: AuthProviderOpts<KeypairResponse> = {},
 	) {
 		this.refresh_token = refresh_token;
 		this.access_token = opts.access_token ?? "";
@@ -115,14 +100,11 @@ export class PKCEAuthCode {
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
 
 	constructor(
-		private readonly creds: {
-			client_id: string;
-			redirect_uri: string;
-		},
+		private readonly client_id: string,
 	) {}
 
-	getRedirectURL(
-		{ scopes, ...opts }: GetRedirectURLOpts,
+	getAuthURL(
+		{ scopes, ...opts }: GetAuthURLOpts,
 	) {
 		const url = new URL(SPOTIFY_AUTH + "authorize");
 
@@ -130,8 +112,7 @@ export class PKCEAuthCode {
 			response_type: "code",
 			scope: scopes?.join(" "),
 			code_challenge_method: "S256",
-			client_id: this.creds.client_id,
-			redirect_uri: this.creds.redirect_uri,
+			client_id: this.client_id,
 			...opts,
 		});
 
@@ -179,8 +160,7 @@ export class PKCEAuthCode {
 		const url = new URL(SPOTIFY_AUTH + "api/token");
 		url.search = toQueryString<ApiTokenReqParams>({
 			grant_type: "authorization_code",
-			client_id: this.creds.client_id,
-			redirect_uri: this.creds.redirect_uri,
+			client_id: this.client_id,
 			...opts,
 		});
 
@@ -205,7 +185,7 @@ export class PKCEAuthCode {
 		const url = new URL(SPOTIFY_AUTH + "api/token");
 		url.search = toQueryString<ApiTokenReqParams>({
 			grant_type: "refresh_token",
-			client_id: this.creds.client_id,
+			client_id: this.client_id,
 			refresh_token,
 		});
 
@@ -221,5 +201,12 @@ export class PKCEAuthCode {
 		}
 
 		return (await res.json()) as KeypairResponse;
+	}
+
+	createAuthProvider(
+		refresh_token: string,
+		opts?: AuthProviderOpts<KeypairResponse>,
+	) {
+		return new AuthProvider(this, refresh_token, opts);
 	}
 }

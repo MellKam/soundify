@@ -1,6 +1,6 @@
 <div align="center">
   <p align="center">
-     <img align="center" width="500px" src="https://svgshare.com/i/r_7.svg">
+     <img align="center" width="500px" src="https://svgshare.com/i/reB.svg">
   </p>
   <p align="center">
     <a href="https://www.npmjs.com/package/@soundify/api">
@@ -43,34 +43,16 @@
 
 # Installation
 
-Soundify is split into subpackages:
-
-- `/auth` - Handles Spotify authorization
-- `/api` - Provides client, endpoints and entity types
-- `/shared` - General functions and types (used under the hood in other packages)
-
-> This separation is designed to enable the use of specific package on specific
-> platforms. For example, `@soundify/web-auth` is suitable for browser, while
-> `@soundify/node-auth` is appropriate for nodejs. The only difference in these
-> packages is that under the hood they use different platform api to perform the
-> same tasks.
-
 ## [NPM](https://www.npmjs.com/org/soundify)
 
-```bash
-npm i @soundify/api
-```
+Packages:
 
-```ts
-// "/api" - Can be used both in the browser and in nodejs
-import { ... } from "@soudnfiy/api"
+- [@soundify/api](https://www.npmjs.com/package/@soundify/api) - Provides client, endpoints and entity types. Can be used both in the browser and in nodejs 
+- [@soundify/web-auth](https://www.npmjs.com/package/@soundify/web-auth) - Spotify authorization for browser
+- [@soundify/node-auth](https://www.npmjs.com/package/@soundify/node-auth) - Spotify authorization for nodejs
 
-// "/web-auth" - Authorization for browser
-import { ... } from "@soundify/web-auth"
-
-// "/node-auth" - Authorization for nodejs
-import { ... } from "@soundify/node-auth"
-```
+> The only difference in `web-auth` and `node-auth` packages is that under the hood they use different platform api to perform the
+> same tasks. The use of the library api remains the same.
 
 This is minified bundle size of each package without treeshaking
 
@@ -88,13 +70,14 @@ This is minified bundle size of each package without treeshaking
 
 ## [Deno](https://deno.land/x/soundify)
 
+Deno is straightforward, you can just import the package from deno.land and use all the functionality.
 ```ts
 import { ... } from "https://deno.land/x/soundify/mod.ts"
 ```
 
 # Gettings started
 
-To get started, you need to create a SpotifyClient, the purpose of which is to create an http request to spotify. It takes an access token as the first parameter. We'll tell you how to get your token later.
+To get started, you need to create a SpotifyClient, the purpose of which is to create an http request to spotify. As the first parameter it takes access token or [AuthProvider](#auth-provider-and-automatic-tokens-refreshing).
 
 ```ts
 import { SpotifyClient } from "@soundify/api";
@@ -127,12 +110,12 @@ If your Access Token is valid it will output something like this
 
 This may be inconvenient for some users, but it was done primarily to provide a way to treeshake so that clients don't send a lot of unused code.
 
-If you are writing a backend or don't care about the size of the library you can use the `createSpotifyAPI()` function which will bind all the endpoint functions to your client. That way you can use this object throughout your application and not have to worry about imports.
+If you are writing a backend or don't care about the size of the library you can use the `createSpotifyAPI()` function which will bind all the endpoint functions to the client. That way you can use this object throughout your application and not have to worry about imports.
 
 ```ts
 import { SpotifyClient, createSpotifyAPI } from "@soundify/api";
 
-const api = createSpotifyAPI(new SpotifyClient("ACCESS_TOKEN"));
+const api = createSpotifyAPI("ACCESS_TOKEN");
 const user = await api.getCurrentUser();
 
 console.log(user);
@@ -140,13 +123,10 @@ console.log(user);
 
 # Authorization
 
-
 If you have no experience with Spotify Auth you can read more about it in the
-[Spotify Authorization Guide](https://developer.spotify.com/documentation/general/guides/authorization/).
+[Spotify Authorization Guide](https://developer.spotify.com/documentation/web-api/concepts/authorization).
 
-## Auth Flows
-
-For instance, the following code imports all authorization flow namespaces:
+## Authorization Code flow
 
 ```ts
 import {

@@ -103,7 +103,16 @@ export interface SpotifyClientOpts {
 	 *
 	 * @default false
 	 */
-	retryOnRateLimit?: boolean;
+	waitForRateLimit?: boolean;
+	/**
+	 * Event callback function that will be called when response status is 401 and authorization method provided to SpotifyClient is raw string access token.
+	 *
+	 * _Will not be called with AuthProvider as authrization method_
+	 *
+	 * @param error Spotify error with 401 status code
+	 * @returns A new access token
+	 */
+	onUnauthorized?: () => Promise<string>;
 }
 
 /**
@@ -122,7 +131,7 @@ export class SpotifyClient implements HTTPClient {
 	constructor(
 		private authProvider: IAuthProvider | string,
 		private readonly opts: SpotifyClientOpts = {
-			retryOnRateLimit: false,
+			waitForRateLimit: false,
 			retryDelayOn5xx: 0,
 			retryTimesOn5xx: 0,
 		},
@@ -185,16 +194,21 @@ export class SpotifyClient implements HTTPClient {
 
 			if (res.ok) return res;
 
-			if (
-				res.status === 401 && typeof this.authProvider === "object" &&
-				!isTriedRefreshToken
-			) {
-				accessToken = await this.authProvider.refreshToken();
+			if (res.status === 401 && !isTriedRefreshToken) {
+				if (typeof this.authProvider === "object") {
+					accessToken = await this.authProvider.refreshToken();
+				}
+				if (
+					typeof this.authProvider === "string" &&
+					this.opts.onUnauthorized
+				) {
+					accessToken = await this.opts.onUnauthorized();
+				}
 				isTriedRefreshToken = true;
 				return call();
 			}
 
-			if (res.status === 429 && this.opts.retryOnRateLimit) {
+			if (res.status === 429 && this.opts.waitForRateLimit) {
 				// time in seconds
 				const retryAfter = Number(res.headers.get("Retry-After"));
 

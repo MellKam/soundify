@@ -1,46 +1,23 @@
 import {
 	AccessResponse,
+	AuthProviderOpts,
 	getBasicAuthHeader,
+	OnRefresh,
+	OnRefreshFailure,
 	SPOTIFY_AUTH,
 	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
 import { IAuthProvider } from "shared/mod.ts";
 
-export type OnRefresh = (
-	/**
-	 * New authorization data that is returned after the update
-	 */
-	data: AccessResponse,
-) => void | Promise<void>;
-
-export type OnRefreshFailure = (
-	/**
-	 * Error that occurred during the refresh
-	 */
-	error: SpotifyAuthError,
-) => void | Promise<void>;
-
-export type AuthProviderOpts = {
-	access_token?: string;
-	/**
-	 * A callback event that is triggered after a successful refresh
-	 */
-	onRefresh?: OnRefresh;
-	/**
-	 * The callback event that is triggered after a failed token refresh
-	 */
-	onRefreshFailure?: OnRefreshFailure;
-};
-
 export class AuthProvider implements IAuthProvider {
 	private access_token: string;
-	private readonly onRefresh?: OnRefresh;
+	private readonly onRefresh?: OnRefresh<AccessResponse>;
 	private readonly onRefreshFailure?: OnRefreshFailure;
 
 	constructor(
 		private readonly authFlow: ClientCredentials,
-		opts: AuthProviderOpts = {},
+		opts: AuthProviderOpts<AccessResponse> = {},
 	) {
 		this.access_token = opts.access_token ?? "";
 		this.onRefresh = opts.onRefresh;
@@ -99,7 +76,7 @@ export class ClientCredentials {
 		return (await res.json()) as AccessResponse;
 	}
 
-	createAuthProvider(opts?: AuthProviderOpts) {
+	createAuthProvider(opts?: AuthProviderOpts<AccessResponse>) {
 		return new AuthProvider(this, opts);
 	}
 }

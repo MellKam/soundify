@@ -2,9 +2,12 @@ import { IAuthProvider, toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
+	AuthProviderOpts,
 	AuthScope,
 	getBasicAuthHeader,
 	KeypairResponse,
+	OnRefresh,
+	OnRefreshFailure,
 	parseCallbackData,
 	ScopedAccessResponse,
 	SPOTIFY_AUTH,
@@ -12,7 +15,11 @@ import {
 	URL_ENCODED,
 } from "auth/general.ts";
 
-export type GetRedirectURLOpts = {
+export type GetAuthURLOpts = {
+	/**
+	 * The URI to redirect to after the user grants or denies permission.
+	 */
+	redirect_uri: string;
 	/**
 	 * This provides protection against attacks such as
 	 * cross-site request forgery.
@@ -40,44 +47,16 @@ export type GetRedirectURLOpts = {
 	show_dialog?: boolean;
 };
 
-export type OnRefresh = (
-	/**
-	 * New authorization data that is returned after the update
-	 */
-	data: ScopedAccessResponse,
-) => void | Promise<void>;
-
-export type OnRefreshFailure = (
-	/**
-	 * Error that occurred during the refresh
-	 */
-	error: SpotifyAuthError,
-) => void | Promise<void>;
-
-export type AuthProviderOpts = {
-	access_token?: string;
-	/**
-	 * A callback event that is triggered after a successful refresh
-	 */
-	onRefresh?: OnRefresh;
-	/**
-	 * The callback event that is triggered after a failed token refresh
-	 */
-	onRefreshFailure?: OnRefreshFailure;
-};
-
 export class AuthProvider implements IAuthProvider {
-	private refresh_token: string;
 	private access_token: string;
-	private readonly onRefresh?: OnRefresh;
+	private readonly onRefresh?: OnRefresh<ScopedAccessResponse>;
 	private readonly onRefreshFailure?: OnRefreshFailure;
 
 	constructor(
 		private readonly authFlow: AuthCode,
-		refresh_token: string,
-		opts: AuthProviderOpts = {},
+		private readonly refresh_token: string,
+		opts: AuthProviderOpts<ScopedAccessResponse> = {},
 	) {
-		this.refresh_token = refresh_token;
 		this.access_token = opts.access_token ?? "";
 		this.onRefresh = opts.onRefresh;
 		this.onRefreshFailure = opts.onRefreshFailure;
@@ -106,10 +85,6 @@ export type AuthCodeCredentials = {
 	 * The Client ID generated after registering your Spotify application.
 	 */
 	client_id: string;
-	/**
-	 * The URI to redirect to after the user grants or denies permission.
-	 */
-	redirect_uri: string;
 	client_secret: string;
 };
 
@@ -129,8 +104,8 @@ export class AuthCode {
 	 * Creates a URL to redirect users to the Spotify authorization page,
 	 * where they can grant or deny permission to your app.
 	 */
-	getRedirectURL(
-		{ scopes, ...opts }: GetRedirectURLOpts = {},
+	getAuthURL(
+		{ scopes, ...opts }: GetAuthURLOpts,
 	) {
 		const url = new URL(SPOTIFY_AUTH + "authorize");
 
@@ -138,7 +113,6 @@ export class AuthCode {
 			response_type: "code",
 			scope: scopes?.join(" "),
 			client_id: this.creds.client_id,
-			redirect_uri: this.creds.redirect_uri,
 			...opts,
 		});
 
@@ -149,13 +123,14 @@ export class AuthCode {
 	 * Retrieves an access and refresh token from the Spotify API
 	 * using an authorization code and client credentials.
 	 *
+	 * @param redirect_uri TODO
 	 * @param code An authorization code that can be exchanged for an Access Token.
 	 */
-	async getGrantData(code: string) {
+	async getGrantData(redirect_uri: string, code: string) {
 		const url = new URL(SPOTIFY_AUTH + "api/token");
 		url.search = toQueryString<ApiTokenReqParams>({
 			code,
-			redirect_uri: this.creds.redirect_uri,
+			redirect_uri,
 			grant_type: "authorization_code",
 		});
 
@@ -201,7 +176,10 @@ export class AuthCode {
 
 	static parseCallbackData = parseCallbackData;
 
-	createAuthProvider(refresh_token: string, opts?: AuthProviderOpts) {
+	createAuthProvider(
+		refresh_token: string,
+		opts?: AuthProviderOpts<ScopedAccessResponse>,
+	) {
 		return new AuthProvider(this, refresh_token, opts);
 	}
 }

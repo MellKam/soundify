@@ -1,5 +1,5 @@
 import { client } from "api/test_env.ts";
-import { assert } from "https://deno.land/std@0.181.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.182.0/testing/asserts.ts";
 import {
 	checkSavedTrack,
 	getRecommendations,

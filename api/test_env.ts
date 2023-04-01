@@ -48,13 +48,13 @@ const env = getTestEnv();
 const authFlow = new AuthCode({
 	client_id: env.SPOTIFY_CLIENT_ID,
 	client_secret: env.SPOTIFY_CLIENT_SECRET,
-	redirect_uri: "",
 });
 
 const { access_token } = await authFlow.refresh(env.SPOTIFY_REFRESH_TOKEN);
 
-export const client = new SpotifyClient(
-	authFlow.createAuthProvider(env.SPOTIFY_REFRESH_TOKEN, {
-		access_token,
-	}),
+export const authProvider = authFlow.createAuthProvider(
+	env.SPOTIFY_REFRESH_TOKEN,
+	{ access_token },
 );
+
+export const client = new SpotifyClient(authProvider);
