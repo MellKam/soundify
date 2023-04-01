@@ -4,10 +4,12 @@ import { ImplicitGrant } from "@soundify/web-auth/implicit-grant";
 
 export const SpotifyContext = createContext<SpotifyClient | null>(null);
 
-const authFlow = new ImplicitGrant({
+const env = {
 	client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
 	redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
-});
+};
+
+const authFlow = new ImplicitGrant(env.client_id);
 
 export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
 	if (location.pathname === "/callback") {
@@ -28,9 +30,10 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
 	localStorage.setItem("state", state);
 
 	location.replace(
-		authFlow.getRedirectURL({
+		authFlow.getAuthURL({
 			scopes: ["user-read-email"],
 			state,
+			redirect_uri: env.redirect_uri,
 		}),
 	);
 

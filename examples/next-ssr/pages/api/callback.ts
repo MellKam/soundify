@@ -1,7 +1,13 @@
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { AuthCode } from "@soundify/node-auth";
-import { ACCESS_TOKEN, authFlow, REFRESH_TOKEN, STATE } from "../../spotify";
+import {
+	ACCESS_TOKEN,
+	authFlow,
+	env,
+	REFRESH_TOKEN,
+	STATE,
+} from "../../spotify";
 
 export default async function (
 	req: NextApiRequest,
@@ -33,7 +39,7 @@ export default async function (
 
 	try {
 		const { refresh_token, access_token, expires_in } = await authFlow
-			.getGrantData(data.code);
+			.getGrantData(env.redirect_uri, data.code);
 
 		setCookie(REFRESH_TOKEN, refresh_token, {
 			httpOnly: true,

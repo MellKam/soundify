@@ -1,7 +1,7 @@
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import { cleanEnv } from "https://deno.land/x/envalid@0.1.2/envalid.ts";
 import { str } from "https://deno.land/x/envalid@0.1.2/validators.ts";
-import { ClientCredentials, createSpotifyAPI, SpotifyClient } from "soundify";
+import { ClientCredentials, createSpotifyAPI } from "soundify";
 
 // get env variables from `.env` file
 const env = cleanEnv(config(), {
@@ -14,7 +14,7 @@ const authProvider = new ClientCredentials({
 	client_secret: env.SPOTIFY_CLIENT_SECRET,
 }).createAuthProvider();
 
-const spotifyAPI = createSpotifyAPI(new SpotifyClient(authProvider));
+const spotifyAPI = createSpotifyAPI(authProvider);
 
 const linkinPark = await spotifyAPI.getArtist("6XyY86QOPPrYVGvF9ch6wz");
 console.log(linkinPark);

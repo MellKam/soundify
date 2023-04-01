@@ -20,17 +20,19 @@ export type SpotifyConfig = {
 	scopes: AuthScope[];
 };
 
-const authFlow = new PKCEAuthCode({
+const env = {
 	client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
 	redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
-});
+};
+
+const authFlow = new PKCEAuthCode(env.client_id);
 
 const authorize = async (config: SpotifyConfig) => {
 	const { code_challenge, code_verifier } = await PKCEAuthCode.generateCodes();
 	localStorage.setItem(CODE_VERIFIER, code_verifier);
 
 	location.replace(
-		authFlow.getRedirectURL({
+		authFlow.getAuthURL({
 			code_challenge,
 			...config,
 		}),
@@ -102,8 +104,9 @@ export const handleCallback = (code: string, code_verifier: string) =>
 		cacheTime: 0,
 		queryFn: () => {
 			return authFlow.getGrantData({
-				code: code!,
-				code_verifier: code_verifier!,
+				code,
+				code_verifier,
+				redirect_uri: env.redirect_uri,
 			});
 		},
 		onSuccess: ({ access_token, refresh_token }) => {

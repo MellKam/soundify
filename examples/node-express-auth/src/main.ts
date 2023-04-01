@@ -6,10 +6,15 @@ import cookieParser from "cookie-parser";
 const app = express();
 app.use(cookieParser("secret"));
 
-const authFlow = new AuthCode({
+const env = {
 	client_id: process.env.SPOTIFY_CLIENT_ID!,
 	client_secret: process.env.SPOTIFY_CLIENT_SECRET!,
 	redirect_uri: process.env.SPOTIFY_REDIRECT_URI!,
+};
+
+const authFlow = new AuthCode({
+	client_id: env.client_id,
+	client_secret: env.client_secret,
 });
 
 app.get("/login", (_, res) => {
@@ -19,9 +24,10 @@ app.get("/login", (_, res) => {
 		httpOnly: true,
 	});
 	res.redirect(
-		authFlow.getRedirectURL({
+		authFlow.getAuthURL({
 			scopes: ["user-read-email"],
 			state,
+			redirect_uri: env.redirect_uri,
 		}).toString(),
 	);
 });
@@ -42,7 +48,7 @@ app.get("/callback", async (req, res) => {
 	}
 
 	try {
-		const grantData = await authFlow.getGrantData(code);
+		const grantData = await authFlow.getGrantData(env.redirect_uri, code);
 
 		res.status(200).json(grantData);
 	} catch (error) {
