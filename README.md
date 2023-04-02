@@ -129,7 +129,8 @@ If you have no experience with Spotify Authorization you can read more about it 
 
 There are four authorization flows that can be used in Spotify, and all of them are supported in this library 🔥. The criteria for choosing the right flow for you are described in the Spotify docs linked above.
 
-## Authorization Code flow
+<details>
+<summary><h2>Authorization Code flow</h2></summary>
 
 With this flow user grants permission only once, after which you can use refresh token to create a new access token. The flow is used on the server because it requires SPOTIFY_CLIENT_SECRET, which is not desirable to show to others.
 
@@ -186,7 +187,10 @@ Real code examples with AuthCode flow:
 - [examples/next-ssr](https://github.com/MellKam/soundify/tree/main/examples/next-ssr),
 - [examples/deno-oak-auth](https://github.com/MellKam/soundify/tree/main/examples/deno-oak-auth)
 
-## Authorization Code flow with PKCE
+</details>
+
+<details>
+<summary><h2>Authorization Code flow with PKCE</h2></summary>
 
 This thread is similar to AuthCode, but it is handled on the client and therefore does not require SPOTIFY_CLIENT_SECRET.
 
@@ -246,7 +250,10 @@ Real code examples with PKCEAuthCode flow:
 
 - [examples/react-pkce-auth](https://github.com/MellKam/soundify/tree/main/examples/react-pkce-auth)
 
-## Client Credentials flow
+</details>
+
+<details>
+<summary><h2>Client Credentials flow</h2></summary>
 
 This flow is used in server-to-server authentication. Since this flow does not include authorization, only endpoints that do not access user information can be accessed.
 
@@ -265,7 +272,10 @@ Real code examples with ClientCredentials flow:
 
 - [examples/deno-client-credentials](https://github.com/MellKam/soundify/tree/main/examples/deno-client-credentials)
 
-## Implicit Grant Flow
+</details>
+
+<details>
+<summary><h2>Implicit Grant flow</h2></summary>
 
 The implicit grant flow is carried out on the client side and it does not involve secret keys. Access tokens issued are short-lived with no refresh token to extend them when they expire.
 
@@ -309,6 +319,8 @@ const handleCallback = () => {
 Real code examples with ImplicitGrant flow:
 
 - [examples/react-implicit-grant](https://github.com/MellKam/soundify/tree/main/examples/react-implicit-grant)
+
+</details>
 
 ## Auth provider and automatic tokens refreshing
 
