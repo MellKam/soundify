@@ -26,7 +26,7 @@ const authorize = async () => {
 		authFlow.getAuthURL({
 			code_challenge,
 			scopes: ["user-read-private", "user-top-read"],
-			...env,
+			redirect_uri: env.redirect_uri,
 		}),
 	);
 };

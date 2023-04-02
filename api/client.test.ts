@@ -13,8 +13,8 @@ import {
 	assertSpyCalls,
 	spy,
 } from "https://deno.land/std@0.182.0/testing/mock.ts";
-import { JSONObject } from "./mod.ts";
-import { IAuthProvider, toQueryString } from "../shared/mod.ts";
+import { JSONObject } from "api/general.types.ts";
+import { IAuthProvider, toQueryString } from "shared/mod.ts";
 
 mockFetch.install();
 

@@ -9,7 +9,6 @@ export const Page = () => {
 
 		const storedState = localStorage.getItem("state");
 		if (!storedState || !params.state || storedState !== params.state) {
-			console.log(storedState, params.state);
 			throw new Error("Invalid state");
 		}
 

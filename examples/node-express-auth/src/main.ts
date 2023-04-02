@@ -1,4 +1,4 @@
-import { AuthCode } from "@soundify/node-auth/auth-code";
+import { AuthCode } from "@soundify/node-auth";
 import { randomUUID } from "node:crypto";
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -33,22 +33,20 @@ app.get("/login", (_, res) => {
 });
 
 app.get("/callback", async (req, res) => {
-	const state = req.cookies["state"];
-	if (!state) {
-		res.status(400).send("Can't find state");
-		return;
-	}
-
-	const searchParams =
-		new URL(req.url, `http://${req.headers.host}`).searchParams;
-	const code = searchParams.get("code");
-	if (!code) {
-		res.status(400).send("Can't find code");
-		return;
-	}
-
 	try {
-		const grantData = await authFlow.getGrantData(env.redirect_uri, code);
+		const searchParams =
+			new URL(req.url, `http://${req.headers.host}`).searchParams;
+		const data = AuthCode.parseCallbackData(searchParams);
+		if ("error" in data) {
+			throw new Error(data.error);
+		}
+
+		const storedState = req.cookies["state"];
+		if (!storedState || !data.state || storedState !== data.state) {
+			throw new Error("Unable to verify request with state.");
+		}
+
+		const grantData = await authFlow.getGrantData(env.redirect_uri, data.code);
 
 		res.status(200).json(grantData);
 	} catch (error) {

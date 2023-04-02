@@ -47,7 +47,7 @@
 
 Packages:
 
-- [@soundify/api](https://www.npmjs.com/package/@soundify/api) - Provides client, endpoints and entity types. Can be used both in the browser and in nodejs 
+- [@soundify/api](https://www.npmjs.com/package/@soundify/api) - Provides client, endpoints and entity types. Can be used both in the browser and in nodejs
 - [@soundify/web-auth](https://www.npmjs.com/package/@soundify/web-auth) - Spotify authorization for browser
 - [@soundify/node-auth](https://www.npmjs.com/package/@soundify/node-auth) - Spotify authorization for nodejs
 
@@ -71,13 +71,14 @@ This is minified bundle size of each package without treeshaking
 ## [Deno](https://deno.land/x/soundify)
 
 Deno is straightforward, you can just import the package from deno.land and use all the functionality.
+
 ```ts
 import { ... } from "https://deno.land/x/soundify/mod.ts"
 ```
 
 # Gettings started
 
-To make your first request with Soundify, you need to create a `SpotifyClient`, the purpose of which is to create an http requests to spotify. As the first parameter it takes access token or [AuthProvider](#auth-provider-and-automatic-tokens-refreshing).
+To make your first request with Soundify you need to create a `SpotifyClient`. As the first parameter it takes access token or [AuthProvider](#auth-provider-and-automatic-tokens-refreshing).
 
 ```ts
 import { SpotifyClient } from "@soundify/api";
@@ -85,15 +86,15 @@ import { SpotifyClient } from "@soundify/api";
 const client = new SpotifyClient("ACCESS_TOKEN");
 ```
 
-If you've used other api libraries, you can expect something like a bunch of methods on a single class, but in our case the default recommendation is to use endpoint functions that take the client as the first argument:
+If you've used other api libraries, you can expect something like a bunch of methods on a single class, but in our case the default recommendation is to use endpoint functions that take the client as the first argument. In practice, it looks like this:
 
 ```ts
-import { SpotifyClient, getCurrentUser } from "@soundify/api"
+import { SpotifyClient, getCurrentUser } from "@soundify/api";
 
 const client = new SpotifyClient("ACCESS_TOKEN");
 const user = await getCurrentUser(client);
 
-console.log(user)
+console.log(user);
 ```
 
 If your Access Token is valid it will output something like this
@@ -108,9 +109,9 @@ If your Access Token is valid it will output something like this
 }
 ```
 
-This may be inconvenient for some users, but it was done primarily to provide a way to treeshake so that clients don't send a lot of unused code.
+This may be inconvenient for some users, but it was done primarily to allow tree sharding so that clients don't send a lot of unused code.
 
-If you are writing a backend or don't care about the size of the library you can use the `createSpotifyAPI()` function which will bind all the endpoint functions to the client. That way you can use this object throughout your application and not have to worry about imports.
+But, if you are writing a backend or don't care about the size of the library you can use the `createSpotifyAPI()` function which will bind all the endpoint functions to the client. That way you can use this object throughout your application and not have to worry about imports.
 
 ```ts
 import { SpotifyClient, createSpotifyAPI } from "@soundify/api";
@@ -123,35 +124,191 @@ console.log(user);
 
 # Authorization
 
-If you have no experience with Spotify Auth you can read more about it in the
+If you have no experience with Spotify Authorization you can read more about it in the
 [Spotify Authorization Guide](https://developer.spotify.com/documentation/web-api/concepts/authorization).
+
+There are four authorization flows that can be used in Spotify, and all of them are supported in this library 🔥. The criteria for choosing the right flow for you are described in the Spotify docs linked above.
 
 ## Authorization Code flow
 
+With this flow user grants permission only once, after which you can use refresh token to create a new access token. The flow is used on the server because it requires SPOTIFY_CLIENT_SECRET, which is not desirable to show to others.
+
+_Pseudo http-server code just for example_
+
 ```ts
-import {
-  // Authorization Code flow
-  AuthCode,
-  // Client Credentials flow
-  ClientCredentials,
-  // Implicit Grant flow
-  ImplicitGrant,
-  // Authorization Code flow with PKCE
-  PKCEAuthCode,
-} from "@soundify/node-auth";
+import { AuthCode } from "@soundify/node-auth";
+
+const authFlow = new AuthCode({
+  client_id: "YOUR_CLIENT_ID",
+  client_secret: "YOUR_CLIENT_SECRET",
+});
+
+const loginHandler = async (req, res) => {
+  const authURL = authFlow.getAuthURL({
+    redirect_uri: "YOUR_REDIRECT_URI",
+    scopes: ["user-read-email"],
+  });
+  res.redirect(302, authURL.toString());
+};
+
+const codeHandler = async (req, res) => {
+  try {
+    const code = new URL(req.url).searchParams.get("code");
+    if (!code) throw new Error("Unable to find 'code'");
+
+    const { access_token, refresh_token } = await authFlow.getGrantData(
+      "YOUR_REDIRECT_URI",
+      code
+    );
+    res.cookie("refresh_token", refresh_token);
+    res.status(200).json({ access_token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const refreshHandler = async (req, res) => {
+  try {
+    const { refresh_token } = req.cookies;
+    const { access_token } = await authFlow.refresh(refresh_token);
+    res.status(200).json({ access_token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 ```
 
-You can take a look at the examples to see how to use each authorization flow.
+> It is also recommended to use `state`, which provides protection against attacks such as cross-site request forgery, but in the examples below we will not use it for simplicity.
 
-- Authorization Code flow -
-  [examples/node-express-auth](https://github.com/MellKam/soundify/tree/main/examples/node-express-auth),
-  [examples/next-ssr](https://github.com/MellKam/soundify/tree/main/examples/next-ssr),
-  [examples/deno-oak-auth](https://github.com/MellKam/soundify/tree/main/examples/deno-oak-auth)
-- Authorization Code flow with PKCE -
-  [examples/react-pkce-auth](https://github.com/MellKam/soundify/tree/main/examples/react-pkce-auth)
-- Client Credentials flow - [examples/deno-client-credentials](https://github.com/MellKam/soundify/tree/main/examples/deno-client-credentials)
-- Implicit Grant flow -
-  [examples/react-implicit-grant](https://github.com/MellKam/soundify/tree/main/examples/react-implicit-grant)
+Real code examples with AuthCode flow:
+
+- [examples/node-express-auth](https://github.com/MellKam/soundify/tree/main/examples/node-express-auth),
+- [examples/next-ssr](https://github.com/MellKam/soundify/tree/main/examples/next-ssr),
+- [examples/deno-oak-auth](https://github.com/MellKam/soundify/tree/main/examples/deno-oak-auth)
+
+## Authorization Code flow with PKCE
+
+This thread is similar to AuthCode, but it is handled on the client and therefore does not require SPOTIFY_CLIENT_SECRET.
+
+```ts
+import { PKCEAuthCode } from "@soundify/web-auth";
+
+const authFlow = new PKCEAuthCode("YOUR_CLIENT_ID");
+
+const authorize = async () => {
+  const { code_challenge, code_verifier } = await PKCEAuthCode.generateCodes();
+  localStorage.setItem("code_verifier", code_verifier);
+
+  location.replace(
+    authFlow.getAuthURL({
+      code_challenge,
+      scopes: ["user-read-email"],
+      redirect_uri: "YOUR_REDIRECT_URI",
+    })
+  );
+};
+
+const codeHandler = async () => {
+  const data = PKCEAuthCode.parseCallbackData(
+    new URLSearchParams(location.search)
+  );
+
+  if ("error" in data) {
+    throw new Error(data.error);
+  }
+
+  const code_verifier = localStorage.getItem("code_verifier");
+  if (!code_verifier) {
+    throw new Error("Cannot find code_verifier");
+  }
+
+  const { refresh_token, access_token } = authFlow.getGrantData({
+    code: data.code,
+    code_verifier,
+    redirect_uri: "YOUR_REDIRECT_URI",
+  });
+
+  localStorage.removeItem("code_verifier");
+  localStorage.setItem("refresh_token", refresh_token);
+  localStorage.setItem("access_token", access_token);
+};
+
+const refreshHandler = () => {
+  const refreshToken = localStorage.getItem("refresh_token");
+  const { access_token, refresh_token } = authFlow.refresh(refreshToken);
+
+  localStorage.setItem("refresh_token", refresh_token);
+  localStorage.setItem("access_token", access_token);
+};
+```
+
+Real code examples with PKCEAuthCode flow:
+
+- [examples/react-pkce-auth](https://github.com/MellKam/soundify/tree/main/examples/react-pkce-auth)
+
+## Client Credentials flow
+
+This flow is used in server-to-server authentication. Since this flow does not include authorization, only endpoints that do not access user information can be accessed.
+
+```ts
+import { ClientCredentials } from "@soundify/node-auth";
+
+const authFlow = new ClientCredentials({
+	client_id: "YOUR_CLIENT_ID",
+	client_secret: "YOUR_CLIENT_SECRET",
+});
+
+const { access_token } = await authFlow.getAccessToken();
+```
+
+Real code examples with ClientCredentials flow:
+
+- [examples/deno-client-credentials](https://github.com/MellKam/soundify/tree/main/examples/deno-client-credentials)
+
+## Implicit Grant Flow
+
+The implicit grant flow is carried out on the client side and it does not involve secret keys. Access tokens issued are short-lived with no refresh token to extend them when they expire.
+
+> As from Spotify docs:
+> "The implicit grant flow has some important security flaws, thus **we don't recommend using this flow**. If you need to implement authorization where storing your client secret is not possible, use Authorization code with PKCE instead."
+
+```ts
+import { ImplicitGrant } from "@soundify/web-auth";
+
+const authFlow = new ImplicitGrant("YOUR_CLIENT_ID");
+
+const authorize = () => {
+  const state = crypto.randomUUID();
+  localStorage.setItem("state", state);
+
+  location.replace(
+    authFlow.getAuthURL({
+      scopes: ["user-read-email"],
+      state,
+      redirect_uri: "YOUR_REDIRECT_URI",
+    }),
+  );
+}
+
+const handleCallback = () => {
+  const data = ImplicitGrant.parseCallbackData(location.hash);
+  if ("error" in data) {
+    throw new Error(data.error);
+  }
+
+  const storedState = localStorage.getItem("state");
+  if (!storedState || !params.state || storedState !== params.state) {
+    throw new Error("Invalid state");
+  }
+
+  localStorage.removeItem("state");
+  localStorage.setItem("access_token", data.access_token);
+}
+```
+
+Real code examples with ImplicitGrant flow:
+
+- [examples/react-implicit-grant](https://github.com/MellKam/soundify/tree/main/examples/react-implicit-grant)
 
 ## Auth provider and automatic tokens refreshing
 
@@ -180,45 +337,53 @@ But if you don't want to deal with all that, you can just create an
 import { SpotifyClient } from "@soundify/api";
 import { AuthCode } from "@soundify/node-auth";
 
-const authProvider = new AuthCode.AuthProvider({
-  client_id: "YOUR_CLIENT_ID",
-  client_secret: "YOUR_CLIENT_SECRET",
-  refresh_token: "YOUR_REFRESH_TOKEN",
-});
+const authFlow = new AuthCode({ ... });
+const authProvider = authFlow.createAuthProvider("YOUR_REFRESH_TOKEN");
 
 const client = new SpotifyClient(authProvider);
 ```
 
 You can create an `AuthProvider` from `AuthCode`, `PKCEAuthCode`,
-`ClientCredentials` flows. Implicit grant does not allow you to implement such a
-thing.
+`ClientCredentials` flows. Implicit grant does not allow to implement such
+because you have to refresh the page to get a new token.
+
+Also you can create your own AuthProvider from `AuthProvider` class.
+
+```ts
+import { AuthProvider } from "@soundify/api";
+
+const authProvider = new AuthProvider({
+  refresher: async () => {
+    // somehow refresh and get new `access_token`
+    return { access_token };
+  }
+});
+
+const client = new SpotifyClient(authProvider);
+```
 
 ### Refresh Events
 
 AuthProvider provides an additional option for callback events that may be usefull in some cases.
 
 ```ts
-import { PKCEAuthCode } from "@soundify/web-auth";
+import { AuthProvider } from "@soundify/api";
 
-const authProvider = new PKCEAuthCode.AuthProvider(
-  {
-    client_id: "YOUR_CLIENT_ID",
-    refresh_token: "YOUR_REFRESH_TOKEN",
-    access_token: "YOUR_ACCESS_TOKEN",
+const authProvider = new AuthProvider({
+  refresher: async () => {
+    // ...
   },
-  {
-    onRefresh: (data) => {
-      // do something with new token
-      // for example, store it in localStorage
-      localStorage.setItem("access_token", data.access_token);
-    },
-    onRefreshFailure: (error) => {
-      // do something with error
-      // for example, ask user to login again
-      location.replace(PKCEAuthCode.getAuthURL({ ... }));
-    }
-  }
-);
+  onRefreshSuccess: ({ access_token }) => {
+    // do something with new token
+    // for example, store it in localStorage
+    localStorage.setItem("access_token", access_token);
+  },
+  onRefreshFailure: (error) => {
+    // do something with error
+    // for example, ask user to login again
+    location.replace(PKCEAuthCode.getAuthURL({ ... }));
+  },
+});
 ```
 
 ## Auth Scopes
