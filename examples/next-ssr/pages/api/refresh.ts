@@ -26,7 +26,7 @@ export default async function (
 			sameSite: "strict",
 		});
 
-		res.status(200).send("OK");
+		res.status(204).end();
 	} catch (error) {
 		res.status(500).send({ error: String(error) });
 	}

@@ -1,18 +1,32 @@
-import { getCallbackData, handleCallback } from "../spotify";
+import { PKCEAuthCode } from "@soundify/web-auth";
+import { CODE_VERIFIER, handleCallback } from "../spotify";
 
 export const Page = () => {
-	const { code, code_verifier } = getCallbackData();
-	if (!code || !code_verifier) {
-		return <h1>Cannot get data for authorization (code, code_verifier)</h1>;
-	}
+	try {
+		const data = PKCEAuthCode.parseCallbackData(
+			new URLSearchParams(location.search),
+		);
 
-	const { status, error } = handleCallback(code, code_verifier);
-	if (status === "loading") {
-		return <h1>Loading...</h1>;
-	}
-	if (status === "error") {
+		if ("error" in data) {
+			throw new Error(data.error);
+		}
+
+		const code_verifier = localStorage.getItem(CODE_VERIFIER);
+		if (!code_verifier) {
+			throw new Error("Cannot find code_verifier");
+		}
+
+		const { status, error } = handleCallback(data.code, code_verifier);
+
+		if (status === "loading") {
+			return <h1>Loading...</h1>;
+		}
+		if (status === "error") {
+			throw new Error(String(error));
+		}
+
+		return <h1>Authorized</h1>;
+	} catch (error) {
 		return <h1>{String(error)}</h1>;
 	}
-
-	return <h1>Authorized</h1>;
 };

@@ -1,6 +1,6 @@
 <div align="center">
   <p align="center">
-     <img align="center" width="500px" src="https://svgshare.com/i/reB.svg">
+     <img align="center" width="500px" src="https://svgshare.com/i/rf9.svg">
   </p>
   <p align="center">
     <a href="https://www.npmjs.com/package/@soundify/api">
@@ -77,7 +77,7 @@ import { ... } from "https://deno.land/x/soundify/mod.ts"
 
 # Gettings started
 
-To get started, you need to create a SpotifyClient, the purpose of which is to create an http request to spotify. As the first parameter it takes access token or [AuthProvider](#auth-provider-and-automatic-tokens-refreshing).
+To make your first request with Soundify, you need to create a `SpotifyClient`, the purpose of which is to create an http requests to spotify. As the first parameter it takes access token or [AuthProvider](#auth-provider-and-automatic-tokens-refreshing).
 
 ```ts
 import { SpotifyClient } from "@soundify/api";

@@ -18,8 +18,8 @@ type Endpoint = (client: HTTPClient, ...args: unknown[]) => Promise<unknown>;
  *
  * Assings endpoint functions to client and binds client to each of them
  */
-export const createSpotifyAPI = (
-	authProvider: IAuthProvider | string,
+export const createSpotifyAPI = <T extends IAuthProvider | string>(
+	authProvider: T,
 	opts?: SpotifyClientOpts,
 ) => {
 	const client = new SpotifyClient(authProvider, opts);
@@ -33,5 +33,5 @@ export const createSpotifyAPI = (
 			);
 	}
 
-	return client as ISpoitfyAPI & SpotifyClient;
+	return client as ISpoitfyAPI & SpotifyClient<T>;
 };

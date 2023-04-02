@@ -5,6 +5,7 @@ import {
 	assert,
 	assertEquals,
 	assertInstanceOf,
+	assertRejects,
 } from "https://deno.land/std@0.182.0/testing/asserts.ts";
 import { privateUserStub } from "api/user/user.stubs.ts";
 import {
@@ -149,40 +150,28 @@ Deno.test("SpotifyClient: AuthProvider", async () => {
 		return new Response(JSON.stringify(privateUserStub));
 	});
 
-	class MockProvider implements IAuthProvider {
-		constructor(public access_token: string) {}
-
-		getToken(): string {
-			return this.access_token;
-		}
-
-		refreshToken(): Promise<string> {
+	const authProvider: IAuthProvider = {
+		get token() {
+			return STALE_TOKEN;
+		},
+		refreshToken() {
 			return new Promise((resolve) => {
-				this.access_token = VALID_TOKEN;
-				resolve(this.access_token);
+				resolve(VALID_TOKEN);
 			});
-		}
-	}
+		},
+	};
 
-	const authProvider = new MockProvider(STALE_TOKEN);
-
-	const getAccessTokenSpyier = spy(authProvider, "getToken");
 	const refreshTokenSpyier = spy(authProvider, "refreshToken");
 
 	const client = new SpotifyClient(authProvider);
 	await client.fetch<UserPrivate>("/me", "json");
 
-	// when the first request is made
-	assertSpyCall(getAccessTokenSpyier, 0);
 	// on receiving a 401 and trying to refresh
 	assertSpyCall(refreshTokenSpyier, 0);
 
-	// should not try to get and update the token more than once
-	assertSpyCalls(getAccessTokenSpyier, 1);
+	// should not try to update the token more than once
 	assertSpyCalls(refreshTokenSpyier, 1);
 
-	getAccessTokenSpyier.restore();
-	refreshTokenSpyier.restore();
 	mockFetch.reset();
 });
 
@@ -196,49 +185,34 @@ Deno.test("SpotifyClient: AuthProvider and double 401 error", async () => {
 		);
 	});
 
-	class MockProvider implements IAuthProvider {
-		constructor(public access_token: string) {}
+	const refreshTokenSpyier = spy();
 
-		getToken(): string {
-			return this.access_token;
-		}
-
-		refreshToken(): Promise<string> {
+	const authProvider: IAuthProvider = {
+		get token() {
+			return "TOKEN";
+		},
+		refreshToken() {
+			refreshTokenSpyier();
 			return new Promise((resolve) => {
-				resolve(this.access_token);
+				resolve(this.token as string);
 			});
-		}
-	}
-
-	const authProvider = new MockProvider("TOKEN");
-
-	const getAccessTokenSpyier = spy(authProvider, "getToken");
-	const refreshTokenSpyier = spy(authProvider, "refreshToken");
+		},
+	};
 
 	const client = new SpotifyClient(authProvider);
 
-	try {
-		// it must throw an error
-		await client.fetch<UserPrivate>("/me", "json");
+	await assertRejects(
+		() => client.fetch<UserPrivate>("/me", "json"),
+		SpotifyError,
+		"Not authorized",
+	);
 
-		assert(false, "client.fetch should throw an error");
-	} catch (error) {
-		assertInstanceOf(error, SpotifyError);
-		assert(error.status === 401);
-		assert(error.message === "Not authorized");
-	}
-
-	// when the first request is made
-	assertSpyCall(getAccessTokenSpyier, 0);
 	// on receiving a 401 and trying to refresh
 	assertSpyCall(refreshTokenSpyier, 0);
 
-	// should not try to get and update the token more than once
-	assertSpyCalls(getAccessTokenSpyier, 1);
+	// should not try to update the token more than once
 	assertSpyCalls(refreshTokenSpyier, 1);
 
-	getAccessTokenSpyier.restore();
-	refreshTokenSpyier.restore();
 	mockFetch.reset();
 });
 
@@ -261,7 +235,7 @@ Deno.test("SpotifyClient with retry on 429", async () => {
 	});
 
 	const client = new SpotifyClient("TOKEN", {
-		retryOnRateLimit: true,
+		waitForRateLimit: true,
 	});
 
 	await client.fetch("/me", "void");
@@ -294,7 +268,7 @@ Deno.test("SpotifyClient with retries on 5xx", async () => {
 	class MockProvider implements IAuthProvider {
 		constructor(public access_token: string) {}
 
-		getToken(): string {
+		get token(): string {
 			return this.access_token;
 		}
 
@@ -323,7 +297,7 @@ Deno.test("SpotifyClient: setAuthProvider method", () => {
 	const SECOND_TOKEN = crypto.randomUUID();
 	const PROVIDER = {} as IAuthProvider;
 
-	const client = new SpotifyClient(FIRST_TOKEN);
+	const client = new SpotifyClient<IAuthProvider | string>(FIRST_TOKEN);
 	assert(client["authProvider"] === FIRST_TOKEN);
 
 	client.setAuthProvider(SECOND_TOKEN);

@@ -104,32 +104,25 @@ export interface SpotifyClientOpts {
 	 * @default false
 	 */
 	waitForRateLimit?: boolean;
-	/**
-	 * Event callback function that will be called when response status is 401 and authorization method provided to SpotifyClient is raw string access token.
-	 *
-	 * _Will not be called with AuthProvider as authrization method_
-	 *
-	 * @param error Spotify error with 401 status code
-	 * @returns A new access token
-	 */
-	onUnauthorized?: () => Promise<string>;
 }
 
 /**
  * A client for making requests to the Spotify API.
  */
-export class SpotifyClient implements HTTPClient {
-	private BASE_HEADERS: HeadersInit = {
+export class SpotifyClient<
+	T extends IAuthProvider | string = IAuthProvider | string,
+> implements HTTPClient {
+	private static BASE_HEADERS: HeadersInit = {
 		"Content-Type": "application/json",
 		"Accept": "application/json",
 	};
 
 	/**
-	 * @param authProvider It is recommended to pass a class that implements `IAuthProvider` to automatically update tokens. If you do not need this behavior,you can simply pass an access token.
+	 * @param authProvider It is recommended to pass a class instance or object that implements `IAuthProvider` to automatically update tokens. If you do not need this behavior,you can simply pass an access token.
 	 * @param opts Additional options for fetch execution, such as the ability to retry on error
 	 */
 	constructor(
-		private authProvider: IAuthProvider | string,
+		private authProvider: T,
 		private readonly opts: SpotifyClientOpts = {
 			waitForRateLimit: false,
 			retryDelayOn5xx: 0,
@@ -140,7 +133,7 @@ export class SpotifyClient implements HTTPClient {
 	/**
 	 * Method that changes the existing authProvider to the specified one
 	 */
-	setAuthProvider(authProvider: IAuthProvider | string) {
+	setAuthProvider(authProvider: T) {
 		this.authProvider = authProvider;
 	}
 
@@ -169,7 +162,7 @@ export class SpotifyClient implements HTTPClient {
 		}
 
 		const _body = body ? body : json ? JSON.stringify(json) : undefined;
-		const _headers = new Headers(this.BASE_HEADERS);
+		const _headers = new Headers(SpotifyClient.BASE_HEADERS);
 		if (headers) {
 			Object.entries(headers).forEach(([name, value]) =>
 				_headers.append(name, value)
@@ -179,9 +172,18 @@ export class SpotifyClient implements HTTPClient {
 		let isTriedRefreshToken = false;
 		let retryTimesOn5xx = this.opts.retryTimesOn5xx;
 
-		let accessToken = typeof this.authProvider === "object"
-			? this.authProvider.getToken()
-			: this.authProvider;
+		let accessToken: string;
+
+		if (typeof this.authProvider === "object") {
+			if (this.authProvider.token) {
+				accessToken = this.authProvider.token;
+			} else {
+				accessToken = await this.authProvider.refreshToken();
+				isTriedRefreshToken = true;
+			}
+		} else {
+			accessToken = this.authProvider;
+		}
 
 		const call = async (): Promise<Response> => {
 			_headers.set("Authorization", "Bearer " + accessToken);
@@ -194,16 +196,11 @@ export class SpotifyClient implements HTTPClient {
 
 			if (res.ok) return res;
 
-			if (res.status === 401 && !isTriedRefreshToken) {
-				if (typeof this.authProvider === "object") {
-					accessToken = await this.authProvider.refreshToken();
-				}
-				if (
-					typeof this.authProvider === "string" &&
-					this.opts.onUnauthorized
-				) {
-					accessToken = await this.opts.onUnauthorized();
-				}
+			if (
+				res.status === 401 && typeof this.authProvider === "object" &&
+				!isTriedRefreshToken
+			) {
+				accessToken = await this.authProvider.refreshToken();
 				isTriedRefreshToken = true;
 				return call();
 			}

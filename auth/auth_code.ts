@@ -1,19 +1,17 @@
-import { IAuthProvider, toQueryString } from "shared/mod.ts";
+import { toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
-	AuthProviderOpts,
 	AuthScope,
 	getBasicAuthHeader,
 	KeypairResponse,
-	OnRefresh,
-	OnRefreshFailure,
 	parseCallbackData,
 	ScopedAccessResponse,
 	SPOTIFY_AUTH,
 	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
+import { AuthProvider, AuthProviderOpts } from "shared/auth_provider.ts";
 
 export type GetAuthURLOpts = {
 	/**
@@ -46,39 +44,6 @@ export type GetAuthURLOpts = {
 	 */
 	show_dialog?: boolean;
 };
-
-export class AuthProvider implements IAuthProvider {
-	private access_token: string;
-	private readonly onRefresh?: OnRefresh<ScopedAccessResponse>;
-	private readonly onRefreshFailure?: OnRefreshFailure;
-
-	constructor(
-		private readonly authFlow: AuthCode,
-		private readonly refresh_token: string,
-		opts: AuthProviderOpts<ScopedAccessResponse> = {},
-	) {
-		this.access_token = opts.access_token ?? "";
-		this.onRefresh = opts.onRefresh;
-		this.onRefreshFailure = opts.onRefreshFailure;
-	}
-
-	getToken() {
-		return this.access_token;
-	}
-
-	async refreshToken() {
-		try {
-			const data = await this.authFlow.refresh(this.refresh_token);
-			this.access_token = data.access_token;
-			if (this.onRefresh) await this.onRefresh(data);
-
-			return this.access_token;
-		} catch (error) {
-			if (this.onRefreshFailure) await this.onRefreshFailure(error);
-			throw error;
-		}
-	}
-}
 
 export type AuthCodeCredentials = {
 	/**
@@ -123,7 +88,7 @@ export class AuthCode {
 	 * Retrieves an access and refresh token from the Spotify API
 	 * using an authorization code and client credentials.
 	 *
-	 * @param redirect_uri TODO
+	 * @param redirect_uri uri to which the user will be redirected after the decision to deny or approve access to the account
 	 * @param code An authorization code that can be exchanged for an Access Token.
 	 */
 	async getGrantData(redirect_uri: string, code: string) {
@@ -178,8 +143,11 @@ export class AuthCode {
 
 	createAuthProvider(
 		refresh_token: string,
-		opts?: AuthProviderOpts<ScopedAccessResponse>,
+		opts?: Omit<AuthProviderOpts<ScopedAccessResponse>, "refresher">,
 	) {
-		return new AuthProvider(this, refresh_token, opts);
+		return new AuthProvider({
+			refresher: (() => this.refresh(refresh_token)).bind(this),
+			...opts,
+		});
 	}
 }

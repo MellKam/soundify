@@ -1,12 +1,9 @@
-import { IAuthProvider, toQueryString } from "shared/mod.ts";
+import { toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
-	AuthProviderOpts,
 	AuthScope,
 	KeypairResponse,
-	OnRefresh,
-	OnRefreshFailure,
 	parseCallbackData,
 	SPOTIFY_AUTH,
 	SpotifyAuthError,
@@ -16,6 +13,7 @@ import {
 	getPKCECodeChallenge,
 	getRandomBytes,
 } from "auth/platform/platform.deno.ts";
+import { AuthProvider, AuthProviderOpts } from "shared/mod.ts";
 
 export type GetAuthURLOpts = {
 	/**
@@ -57,43 +55,6 @@ export type GetGrantDataOpts = {
 	 */
 	code: string;
 };
-
-export class AuthProvider implements IAuthProvider {
-	private refresh_token: string;
-	private access_token: string;
-	private readonly onRefresh?: OnRefresh<KeypairResponse>;
-	private readonly onRefreshFailure?: OnRefreshFailure;
-
-	constructor(
-		private readonly authFlow: PKCEAuthCode,
-		refresh_token: string,
-		opts: AuthProviderOpts<KeypairResponse> = {},
-	) {
-		this.refresh_token = refresh_token;
-		this.access_token = opts.access_token ?? "";
-		this.onRefresh = opts.onRefresh;
-		this.onRefreshFailure = opts.onRefreshFailure;
-	}
-
-	getToken() {
-		return this.access_token;
-	}
-
-	async refreshToken() {
-		try {
-			const data = await this.authFlow.refresh(this.refresh_token);
-
-			this.refresh_token = data.refresh_token;
-			this.access_token = data.access_token;
-
-			if (this.onRefresh) await this.onRefresh(data);
-			return this.access_token;
-		} catch (error) {
-			if (this.onRefreshFailure) await this.onRefreshFailure(error);
-			throw error;
-		}
-	}
-}
 
 export class PKCEAuthCode {
 	static VERIFIER_CHARS =
@@ -205,8 +166,15 @@ export class PKCEAuthCode {
 
 	createAuthProvider(
 		refresh_token: string,
-		opts?: AuthProviderOpts<KeypairResponse>,
+		opts?: Omit<AuthProviderOpts<KeypairResponse>, "refresher">,
 	) {
-		return new AuthProvider(this, refresh_token, opts);
+		return new AuthProvider({
+			refresher: (async () => {
+				const data = await this.refresh(refresh_token);
+				refresh_token = data.refresh_token;
+				return data;
+			}).bind(this),
+			...opts,
+		});
 	}
 }

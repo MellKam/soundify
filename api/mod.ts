@@ -12,3 +12,5 @@ export * from "api/search/search.types.ts";
 export * from "api/endpoints.ts";
 export * from "api/api.ts";
 export * from "api/client.ts";
+
+export * from "shared/mod.ts";

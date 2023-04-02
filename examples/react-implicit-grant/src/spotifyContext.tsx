@@ -1,6 +1,6 @@
 import { SpotifyClient } from "@soundify/api";
 import { createContext, ReactNode, useContext } from "react";
-import { ImplicitGrant } from "@soundify/web-auth/implicit-grant";
+import { ImplicitGrant } from "@soundify/web-auth";
 
 export const SpotifyContext = createContext<SpotifyClient | null>(null);
 
@@ -17,27 +17,27 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
 	}
 
 	const accessToken = localStorage.getItem("SPOTIFY_ACCESS_TOKEN");
-	if (accessToken) {
-		const client = new SpotifyClient(accessToken);
-		return (
-			<SpotifyContext.Provider value={client}>
-				{children}
-			</SpotifyContext.Provider>
+	if (!accessToken) {
+		const state = crypto.randomUUID();
+		localStorage.setItem("state", state);
+
+		location.replace(
+			authFlow.getAuthURL({
+				scopes: ["user-read-email"],
+				state,
+				redirect_uri: env.redirect_uri,
+			}),
 		);
+		return <h1>Redirecting</h1>;
 	}
 
-	const state = crypto.randomUUID();
-	localStorage.setItem("state", state);
+	const client = new SpotifyClient(accessToken);
 
-	location.replace(
-		authFlow.getAuthURL({
-			scopes: ["user-read-email"],
-			state,
-			redirect_uri: env.redirect_uri,
-		}),
+	return (
+		<SpotifyContext.Provider value={client}>
+			{children}
+		</SpotifyContext.Provider>
 	);
-
-	return <h1>Redirecing to authorization...</h1>;
 };
 
 export const useSpotifyClinet = () => {

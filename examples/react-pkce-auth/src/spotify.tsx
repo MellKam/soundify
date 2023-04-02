@@ -1,24 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, ReactNode, useContext, useMemo } from "react";
-import { AuthScope, PKCEAuthCode } from "@soundify/web-auth";
-import { AuthProvider } from "@soundify/web-auth/pkce-auth-code";
-import { SpotifyClient } from "@soundify/api";
+import { PKCEAuthCode } from "@soundify/web-auth";
+import { IAuthProvider, SpotifyClient } from "@soundify/api";
 
 export const SPOTIFY_REFRESH_TOKEN = "SPOTIFY_REFRESH_TOKEN";
 export const SPOTIFY_ACCESS_TOKNE = "SPOTIFY_ACCESS_TOKEN";
 export const CODE_VERIFIER = "CODE_VERIFIER";
 
 const SpotifyContext = createContext<
-	{
-		client: SpotifyClient;
-	} | null
+	{ client: SpotifyClient<IAuthProvider> } | null
 >(null);
-
-export type SpotifyConfig = {
-	client_id: string;
-	redirect_uri: string;
-	scopes: AuthScope[];
-};
 
 const env = {
 	client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
@@ -27,30 +18,23 @@ const env = {
 
 const authFlow = new PKCEAuthCode(env.client_id);
 
-const authorize = async (config: SpotifyConfig) => {
+const authorize = async () => {
 	const { code_challenge, code_verifier } = await PKCEAuthCode.generateCodes();
 	localStorage.setItem(CODE_VERIFIER, code_verifier);
 
 	location.replace(
 		authFlow.getAuthURL({
 			code_challenge,
-			...config,
+			scopes: ["user-read-private", "user-top-read"],
+			...env,
 		}),
 	);
 };
 
-export const SpotifyProvider = ({
-	children,
-	config,
-}: {
+export const SpotifyProvider = ({ children }: {
 	children: ReactNode;
-	config: SpotifyConfig;
 }) => {
-	const callbackPathname = useMemo(
-		() => new URL(config.redirect_uri).pathname,
-		[config.redirect_uri],
-	);
-	if (location.pathname === callbackPathname) {
+	if (location.pathname === "/callback") {
 		return <>{children}</>;
 	}
 
@@ -59,19 +43,19 @@ export const SpotifyProvider = ({
 		const refresh_token = localStorage.getItem(SPOTIFY_REFRESH_TOKEN);
 		if (!refresh_token) return null;
 
-		const authProvider = new AuthProvider(authFlow, refresh_token, {
-			access_token: access_token ?? "",
-			onRefresh: ({ access_token, refresh_token }) => {
-				localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
-				localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);
-			},
-		});
-
-		return new SpotifyClient(authProvider);
+		return new SpotifyClient(
+			authFlow.createAuthProvider(refresh_token, {
+				access_token: access_token ?? undefined,
+				onRefreshSuccess: ({ access_token, refresh_token }) => {
+					localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
+					localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);
+				},
+			}),
+		);
 	}, []);
 
 	if (client === null) {
-		authorize(config);
+		authorize();
 		return <h1>Redirecting...</h1>;
 	}
 
@@ -91,13 +75,6 @@ export const useSpotify = () => {
 	return spotifyContext;
 };
 
-export const getCallbackData = () => {
-	const code = new URLSearchParams(location.search).get("code");
-	const code_verifier = localStorage.getItem(CODE_VERIFIER);
-
-	return { code, code_verifier };
-};
-
 export const handleCallback = (code: string, code_verifier: string) =>
 	useQuery({
 		queryKey: [],
@@ -110,6 +87,7 @@ export const handleCallback = (code: string, code_verifier: string) =>
 			});
 		},
 		onSuccess: ({ access_token, refresh_token }) => {
+			localStorage.removeItem(CODE_VERIFIER);
 			localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);
 			localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
 			location.replace("/");

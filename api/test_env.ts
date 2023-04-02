@@ -50,11 +50,8 @@ const authFlow = new AuthCode({
 	client_secret: env.SPOTIFY_CLIENT_SECRET,
 });
 
-const { access_token } = await authFlow.refresh(env.SPOTIFY_REFRESH_TOKEN);
-
 export const authProvider = authFlow.createAuthProvider(
 	env.SPOTIFY_REFRESH_TOKEN,
-	{ access_token },
 );
 
 export const client = new SpotifyClient(authProvider);
