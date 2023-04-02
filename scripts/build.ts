@@ -66,7 +66,7 @@ const buildPackage = async (opts: {
 			license: "MIT",
 			devDependencies: opts.devDependencies,
 			dependencies: opts.dependencies,
-			packageManager: "pnpm@7.30.0",
+			packageManager: "pnpm@8.1.0",
 			typesVersions: opts.typesVersions,
 			repository: {
 				type: "git",
