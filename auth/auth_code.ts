@@ -1,25 +1,21 @@
-import { IAuthProvider, toQueryString } from "shared/mod.ts";
+import { toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
 	AuthScope,
 	getBasicAuthHeader,
 	KeypairResponse,
+	parseCallbackData,
 	ScopedAccessResponse,
 	SPOTIFY_AUTH,
 	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
+import { AuthProvider, AuthProviderOpts } from "shared/auth_provider.ts";
 
-export type GetRedirectURLOpts = {
-	/**
-	 * The Client ID generated after registering your Spotify application.
-	 */
-	client_id: string;
+export type GetAuthURLOpts = {
 	/**
 	 * The URI to redirect to after the user grants or denies permission.
-	 * This URI needs to have been entered in the _Redirect URI Allowlist_
-	 * that you specified when you registered your application.
 	 */
 	redirect_uri: string;
 	/**
@@ -49,163 +45,109 @@ export type GetRedirectURLOpts = {
 	show_dialog?: boolean;
 };
 
-/**
- * Creates a URL to redirect users to the Spotify authorization page,
- * where they can grant or deny permission to your app.
- */
-export const getRedirectURL = (
-	{ scopes, ...opts }: GetRedirectURLOpts,
-) => {
-	const url = new URL(SPOTIFY_AUTH + "authorize");
-
-	url.search = toQueryString<AuthorizeReqParams>({
-		response_type: "code",
-		scope: scopes?.join(" "),
-		...opts,
-	});
-
-	return url;
-};
-
-export { parseCallbackData } from "auth/general.ts";
-
-export type GetGrantDataOpts = {
-	/**
-	 * An authorization code that can be exchanged for an Access Token.
-	 * The code that Spotify produces after redirecting to `redirect_uri`.
-	 */
-	code: string;
+export type AuthCodeCredentials = {
 	/**
 	 * The Client ID generated after registering your Spotify application.
 	 */
 	client_id: string;
-	/**
-	 * The Client Secret generated after registering your Spotify application.
-	 */
 	client_secret: string;
-	/**
-	 * The URI to redirect to after the user grants or denies permission.
-	 * This URI needs to have been entered in the _Redirect URI Allowlist_
-	 * that you specified when you registered your application.
-	 */
-	redirect_uri: string;
 };
 
-/**
- * Retrieves an access and refresh token from the Spotify API
- * using an authorization code and client credentials.
- */
-export const getGrantData = async (
-	opts: GetGrantDataOpts,
-) => {
-	const url = new URL(SPOTIFY_AUTH + "api/token");
-	url.search = toQueryString<ApiTokenReqParams>({
-		code: opts.code,
-		redirect_uri: opts.redirect_uri,
-		grant_type: "authorization_code",
-	});
-
-	const res = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
-			"Content-Type": URL_ENCODED,
-		},
-	});
-
-	if (!res.ok) {
-		throw new SpotifyAuthError(await res.text(), res.status);
-	}
-
-	return (await res.json()) as KeypairResponse;
-};
-
-/**
- * Requests a new access token using your refresh token and client credentials
- */
-export const refresh = async (opts: {
-	client_id: string;
-	client_secret: string;
-	refresh_token: string;
-}) => {
-	const url = new URL(SPOTIFY_AUTH + "api/token");
-	url.search = toQueryString<ApiTokenReqParams>({
-		refresh_token: opts.refresh_token,
-		grant_type: "refresh_token",
-	});
-
-	const res = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Authorization": getBasicAuthHeader(opts.client_id, opts.client_secret),
-			"Content-Type": URL_ENCODED,
-		},
-	});
-
-	if (!res.ok) {
-		throw new SpotifyAuthError(await res.text(), res.status);
-	}
-
-	return (await res.json()) as ScopedAccessResponse;
-};
-
-export type AuthProviderCreds = {
-	client_id: string;
-	client_secret: string;
-	refresh_token: string;
-	access_token?: string;
-};
-
-export type AuthProviderOpts = {
-	/**
-	 * A callback event that is triggered after a successful refresh
-	 */
-	onRefresh?: (
-		/**
-		 * New authorization data that is returned after the update
-		 */
-		data: ScopedAccessResponse,
-	) => void | Promise<void>;
-	/**
-	 * The callback event that is triggered after a failed token refresh
-	 */
-	onRefreshFailure?: (
-		/**
-		 * Error that occurred during the refresh
-		 */
-		error: SpotifyAuthError,
-	) => void | Promise<void>;
-};
-
-export class AuthProvider implements IAuthProvider {
-	private readonly creds: Required<AuthProviderCreds>;
+export class AuthCode {
+	private readonly basicAuthHeader: string;
 
 	constructor(
-		credentials: AuthProviderCreds,
-		private readonly opts: AuthProviderOpts = {},
+		private readonly creds: AuthCodeCredentials,
 	) {
-		this.creds = {
-			...credentials,
-			access_token: credentials.access_token ?? "",
-		};
+		this.basicAuthHeader = getBasicAuthHeader(
+			creds.client_id,
+			creds.client_secret,
+		);
 	}
 
-	getToken() {
-		return this.creds.access_token;
+	/**
+	 * Creates a URL to redirect users to the Spotify authorization page,
+	 * where they can grant or deny permission to your app.
+	 */
+	getAuthURL(
+		{ scopes, ...opts }: GetAuthURLOpts,
+	) {
+		const url = new URL(SPOTIFY_AUTH + "authorize");
+
+		url.search = toQueryString<AuthorizeReqParams>({
+			response_type: "code",
+			scope: scopes?.join(" "),
+			client_id: this.creds.client_id,
+			...opts,
+		});
+
+		return url;
 	}
 
-	async refreshToken() {
-		try {
-			const data = await refresh(this.creds);
+	/**
+	 * Retrieves an access and refresh token from the Spotify API
+	 * using an authorization code and client credentials.
+	 *
+	 * @param redirect_uri uri to which the user will be redirected after the decision to deny or approve access to the account
+	 * @param code An authorization code that can be exchanged for an Access Token.
+	 */
+	async getGrantData(redirect_uri: string, code: string) {
+		const url = new URL(SPOTIFY_AUTH + "api/token");
+		url.search = toQueryString<ApiTokenReqParams>({
+			code,
+			redirect_uri,
+			grant_type: "authorization_code",
+		});
 
-			this.creds.access_token = data.access_token;
-			if (this.opts.onRefresh) await this.opts.onRefresh(data);
-			return this.creds.access_token;
-		} catch (error) {
-			if (this.opts.onRefreshFailure) {
-				await this.opts.onRefreshFailure(error);
-			}
-			throw error;
+		const res = await fetch(url, {
+			method: "POST",
+			headers: {
+				"Authorization": this.basicAuthHeader,
+				"Content-Type": URL_ENCODED,
+			},
+		});
+
+		if (!res.ok) {
+			throw new SpotifyAuthError(await res.text(), res.status);
 		}
+
+		return (await res.json()) as KeypairResponse;
+	}
+
+	/**
+	 * Requests a new access token using your refresh token and client credentials
+	 */
+	async refresh(refresh_token: string) {
+		const url = new URL(SPOTIFY_AUTH + "api/token");
+		url.search = toQueryString<ApiTokenReqParams>({
+			refresh_token,
+			grant_type: "refresh_token",
+		});
+
+		const res = await fetch(url, {
+			method: "POST",
+			headers: {
+				"Authorization": this.basicAuthHeader,
+				"Content-Type": URL_ENCODED,
+			},
+		});
+
+		if (!res.ok) {
+			throw new SpotifyAuthError(await res.text(), res.status);
+		}
+
+		return (await res.json()) as ScopedAccessResponse;
+	}
+
+	static parseCallbackData = parseCallbackData;
+
+	createAuthProvider(
+		refresh_token: string,
+		opts?: Omit<AuthProviderOpts<ScopedAccessResponse>, "refresher">,
+	) {
+		return new AuthProvider({
+			refresher: (() => this.refresh(refresh_token)).bind(this),
+			...opts,
+		});
 	}
 }

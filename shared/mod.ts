@@ -1,3 +1,5 @@
+export * from "shared/auth_provider.ts";
+
 export type SearchParam = string | number | boolean | SearchParamArray;
 export type SearchParamArray = SearchParam[];
 export type SearchParams = { [k: string]: SearchParam | undefined };
@@ -16,11 +18,3 @@ export const toQueryString = <T extends SearchParams>(
 
 	return params.toString();
 };
-
-/**
- * The interface used to provide access token with the ability to refresh it
- */
-export interface IAuthProvider {
-	refreshToken(): Promise<string>;
-	getToken(): string;
-}

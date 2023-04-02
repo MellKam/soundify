@@ -38,6 +38,11 @@ app.use(async (ctx, next) => {
 
 const router = new Router();
 
+const authFlow = new AuthCode({
+	client_id: env.SPOTIFY_CLIENT_ID,
+	client_secret: env.SPOTIFY_CLIENT_SECRET,
+});
+
 router
 	.get("/login", (ctx) => {
 		const state = crypto.randomUUID();
@@ -45,10 +50,9 @@ router
 			httpOnly: true,
 		});
 
-		ctx.response.redirect(AuthCode.getRedirectURL({
+		ctx.response.redirect(authFlow.getAuthURL({
 			scopes: ["user-read-email"],
 			state,
-			client_id: env.SPOTIFY_CLIENT_ID,
 			redirect_uri: env.SPOTIFY_REDIRECT_URI,
 		}));
 	})
@@ -66,12 +70,10 @@ router
 
 		ctx.cookies.delete("state");
 
-		const grantData = await AuthCode.getGrantData({
-			client_id: env.SPOTIFY_CLIENT_ID,
-			client_secret: env.SPOTIFY_CLIENT_SECRET,
-			redirect_uri: env.SPOTIFY_REDIRECT_URI,
-			code: params.code,
-		});
+		const grantData = await authFlow.getGrantData(
+			env.SPOTIFY_REDIRECT_URI,
+			params.code,
+		);
 
 		console.log(grantData);
 		ctx.response.body = "Success! Check server logs";

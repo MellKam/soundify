@@ -1,57 +1,48 @@
 import { getCookie } from "cookies-next";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { useCallback, useEffect } from "react";
-import { getCurrentUser, SpotifyClient, type UserPrivate } from "@soundify/api";
-import { ACCESS_TOKEN } from "../consts";
+import { useCallback, useMemo } from "react";
+import { AuthProvider, getCurrentUser, SpotifyClient } from "@soundify/api";
+import { ACCESS_TOKEN } from "../spotify";
+import { useQuery } from "@tanstack/react-query";
 
-const client = new SpotifyClient("PLACEHOLDER");
-
-export const getServerSideProps: GetServerSideProps<{
-	user?: UserPrivate;
-}> = async ({ req, res }) => {
-	const accessToken = getCookie(ACCESS_TOKEN, { req, res });
-	if (typeof accessToken !== "string") {
-		return { props: {} };
-	}
-	client.setAuthProvider(accessToken);
-
-	try {
-		const user = await getCurrentUser(client);
-		return { props: { user } };
-	} catch (error) {
-		console.log(error);
-		return { props: {} };
-	}
-};
-
-export default function ({
-	user,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function () {
 	const loginToSpotify = useCallback(() => location.replace("/api/auth"), []);
 
-	useEffect(() => {
-		if (user) return;
-		if (typeof getCookie(ACCESS_TOKEN) === "string") return;
+	const client = useMemo(() => {
+		const accessToken = getCookie(ACCESS_TOKEN);
 
-		(async () => {
-			try {
-				const res = await fetch("/api/refresh");
-				if (!res.ok) {
-					throw new Error(await res.text());
-				}
+		const authProvider = new AuthProvider(
+			{
+				access_token: typeof accessToken === "string" ? accessToken : undefined,
+				refresher: async () => {
+					const res = await fetch("/api/refresh");
+					if (!res.ok) loginToSpotify();
 
-				location.reload();
-			} catch (error) {
-				console.error(error);
-			}
-		})();
+					const access_token = getCookie(ACCESS_TOKEN);
+					if (typeof access_token !== "string") {
+						throw new Error("Cannot refresh access token");
+					}
+
+					return { access_token };
+				},
+			},
+		);
+
+		return new SpotifyClient(authProvider);
 	}, []);
 
-	return (
-		<>
-			{user
-				? <h1>Welcome {user.display_name}!</h1>
-				: <button onClick={loginToSpotify}>Login to spotify</button>}
-		</>
-	);
+	const { data: user, status, error } = useQuery({
+		queryKey: ["user-profile"],
+		queryFn: () => getCurrentUser(client),
+		retry: false,
+	});
+
+	if (status === "error") {
+		return <h1>{String(error)}</h1>;
+	}
+
+	if (status === "loading") {
+		return <h1>Loading...</h1>;
+	}
+
+	return <h1>Welcome {user.display_name}!</h1>;
 }

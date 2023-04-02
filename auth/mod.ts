@@ -4,13 +4,14 @@ export {
 	type AuthCodeCallbackError,
 	type AuthCodeCallbackSuccess,
 	type AuthScope,
+	getBasicAuthHeader,
 	type KeypairResponse,
 	type ScopedAccessResponse,
 	SCOPES,
 	SpotifyAuthError,
 } from "auth/general.ts";
 
-export * as AuthCode from "auth/auth_code.ts";
-export * as PKCEAuthCode from "auth/pkce_auth_code.ts";
-export * as ClientCredentials from "auth/client_credentials.ts";
-export * as ImplicitGrant from "auth/implicit_grant.ts";
+export { AuthCode } from "auth/auth_code.ts";
+export { PKCEAuthCode } from "auth/pkce_auth_code.ts";
+export { ClientCredentials } from "auth/client_credentials.ts";
+export { ImplicitGrant } from "auth/implicit_grant.ts";

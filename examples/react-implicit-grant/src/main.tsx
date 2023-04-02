@@ -20,11 +20,11 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<SpotifyProvider>
-				<RouterProvider router={router} />
-			</SpotifyProvider>
-		</QueryClientProvider>
-	</React.StrictMode>,
+	// <React.StrictMode> TODO FIX THIS
+	<QueryClientProvider client={queryClient}>
+		<SpotifyProvider>
+			<RouterProvider router={router} />
+		</SpotifyProvider>
+	</QueryClientProvider>,
+	// </React.StrictMode>,
 );

@@ -1,5 +1,9 @@
-import { SpecifierMappings } from "https://deno.land/x/dnt@0.33.0/transform.ts";
-import { build, emptyDir } from "https://deno.land/x/dnt@0.33.1/mod.ts";
+import { SpecifierMappings } from "https://deno.land/x/dnt@0.33.1/transform.ts";
+import {
+	build,
+	emptyDir,
+	EntryPoint,
+} from "https://deno.land/x/dnt@0.33.1/mod.ts";
 
 type Package = "api" | `${"web" | "node"}-auth` | "shared";
 type BuildType = "all" | Package;
@@ -25,19 +29,21 @@ const { buildType, version } = getArgs();
 
 const buildPackage = async (opts: {
 	packageName: string;
-	entryPoint: string;
+	entryPoints: (string | EntryPoint)[];
 	outDir: string;
 	mappings?: SpecifierMappings;
 	dependencies?: Record<string, string>;
 	devDependencies?: Record<string, string>;
 	description: string;
+	// deno-lint-ignore no-explicit-any
+	typesVersions?: Record<string, any>;
 	postBuild?: () => Promise<void> | void;
 }) => {
 	await emptyDir(opts.outDir);
 
 	await build({
 		importMap: "./import_map.json",
-		entryPoints: [opts.entryPoint],
+		entryPoints: opts.entryPoints,
 		outDir: opts.outDir,
 		test: false,
 		shims: {},
@@ -61,6 +67,7 @@ const buildPackage = async (opts: {
 			devDependencies: opts.devDependencies,
 			dependencies: opts.dependencies,
 			packageManager: "pnpm@7.30.0",
+			typesVersions: opts.typesVersions,
 			repository: {
 				type: "git",
 				url: "https://github.com/MellKam/soundify",
@@ -90,7 +97,7 @@ const buildShared = async () => {
 	console.log("\nBuild `@soudnfiy/shared` ...\n");
 
 	await buildPackage({
-		entryPoint: "./shared/mod.ts",
+		entryPoints: ["./shared/mod.ts"],
 		outDir: "./dist/shared/",
 		packageName: "@soundify/shared",
 		description: "⚙️ Shared types and functions for soundify packages",
@@ -104,7 +111,7 @@ const buildApi = async () => {
 	console.log("\nBuild `@soudnfiy/api` ...\n");
 
 	await buildPackage({
-		entryPoint: "./api/mod.ts",
+		entryPoints: ["./api/mod.ts"],
 		outDir: "./dist/api/",
 		packageName: "@soundify/api",
 		mappings: {
@@ -123,11 +130,42 @@ const buildApi = async () => {
 	});
 };
 
+const authEntries = [
+	"./auth/mod.ts",
+	{
+		name: "./auth-code",
+		path: "./auth/auth_code.ts",
+	},
+	{
+		name: "./pkce-auth-code",
+		path: "./auth/pkce_auth_code.ts",
+	},
+	{
+		name: "./client-credentials",
+		path: "./auth/client_credentials.ts",
+	},
+	{
+		name: "./implicit-grant",
+		path: "./auth/implicit_grant.ts",
+	},
+];
+
+const authTypes = {
+	"*": {
+		"index": ["./types/mod.d.ts"],
+		"auth-code": ["./types/auth_code.d.ts"],
+		"pkce-auth-code": ["./types/pkce_auth_code.d.ts"],
+		"client-credentials": ["./types/client_credentials.d.ts"],
+		"implicit-grant": ["./types/implicit_grant.d.ts"],
+	},
+};
+
 const buildWeb = async () => {
 	console.log("\nBuild `@soudnfiy/web-auth` ...\n");
 
 	await buildPackage({
-		entryPoint: "./auth/mod.ts",
+		entryPoints: authEntries,
+		typesVersions: authTypes,
 		outDir: "./dist/web-auth/",
 		packageName: "@soundify/web-auth",
 		mappings: {
@@ -151,12 +189,13 @@ const buildNode = async () => {
 	console.log("\nBuild `@soudnfiy/node-auth` ...\n");
 
 	await buildPackage({
-		entryPoint: "./auth/mod.ts",
+		entryPoints: authEntries,
 		outDir: "./dist/node-auth/",
 		packageName: "@soundify/node-auth",
 		devDependencies: {
 			"@types/node": "latest",
 		},
+		typesVersions: authTypes,
 		mappings: {
 			"auth/platform/platform.deno.ts": "./auth/platform/platform.node.ts",
 			"node:buffer": "buffer",

@@ -1,5 +1,6 @@
 import * as endpoints from "api/endpoints.ts";
-import { HTTPClient } from "api/client.ts";
+import { HTTPClient, SpotifyClient, SpotifyClientOpts } from "api/client.ts";
+import { IAuthProvider } from "../mod.ts";
 
 type OmitFirst<T extends unknown[]> = T extends [unknown, ...infer R] ? R
 	: never;
@@ -17,9 +18,14 @@ type Endpoint = (client: HTTPClient, ...args: unknown[]) => Promise<unknown>;
  *
  * Assings endpoint functions to client and binds client to each of them
  */
-export const createSpotifyAPI = <Client extends HTTPClient>(
-	client: Client,
+export const createSpotifyAPI = <
+	T extends IAuthProvider | string = IAuthProvider | string,
+>(
+	authProvider: T,
+	opts?: SpotifyClientOpts,
 ) => {
+	const client = new SpotifyClient(authProvider, opts);
+
 	for (const [name, fn] of Object.entries(endpoints)) {
 		// deno-lint-ignore no-explicit-any
 		(client as any)[name] = (fn as Endpoint)
@@ -29,5 +35,5 @@ export const createSpotifyAPI = <Client extends HTTPClient>(
 			);
 	}
 
-	return client as ISpoitfyAPI & Client;
+	return client as ISpoitfyAPI & SpotifyClient<T>;
 };

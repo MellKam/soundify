@@ -3,7 +3,7 @@ import {
 	getBrowseCategories,
 	getBrowseCategory,
 } from "api/category/category.endpoints.ts";
-import { assert } from "https://deno.land/std@0.181.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.182.0/testing/asserts.ts";
 
 Deno.test("Get browse categories", async () => {
 	const categories = await getBrowseCategories(client, {

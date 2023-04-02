@@ -1,5 +1,5 @@
-import { encode as encodeBase64 } from "https://deno.land/std@0.181.0/encoding/base64.ts";
-import { encode as encodeBase64URL } from "https://deno.land/std@0.181.0/encoding/base64url.ts";
+import { encode as encodeBase64 } from "https://deno.land/std@0.182.0/encoding/base64.ts";
+import { encode as encodeBase64URL } from "https://deno.land/std@0.182.0/encoding/base64url.ts";
 
 export const encodeToBase64 = (data: string): string => encodeBase64(data);
 
