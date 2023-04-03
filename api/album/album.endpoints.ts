@@ -38,7 +38,7 @@ export const getAlbums = async (
 	})).albums;
 };
 
-interface GetAlbumTrackOpts extends PagingOptions {
+export interface GetAlbumTrackOpts extends PagingOptions {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 * If a country code is specified, only content that is available in that market will be returned.
@@ -68,7 +68,7 @@ export const getAlbumTracks = async (
 	);
 };
 
-interface GetSavedAlbumsOpts extends PagingOptions {
+export interface GetSavedAlbumsOpts extends PagingOptions {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 * If a country code is specified, only content that is available in that market will be returned.
@@ -189,7 +189,7 @@ export const checkSavedAlbum = async (
 	return (await checkSavedAlbums(client, [album_id]))[0];
 };
 
-interface GetNewReleasesOpts extends PagingOptions {
+export interface GetNewReleasesOpts extends PagingOptions {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 * Provide this parameter if you want the list of returned items to be relevant to a particular country.

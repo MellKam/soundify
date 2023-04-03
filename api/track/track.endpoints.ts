@@ -47,7 +47,7 @@ export const getTracks = async (
 	})).tracks;
 };
 
-interface GetSavedTracksOpts extends PagingOptions {
+export interface GetSavedTracksOpts extends PagingOptions {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 */

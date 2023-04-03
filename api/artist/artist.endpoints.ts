@@ -33,7 +33,7 @@ export const getArtists = async (
 	})).artists;
 };
 
-interface GetArtistAlbumsOpts extends PagingOptions, SearchParams {
+export interface GetArtistAlbumsOpts extends PagingOptions, SearchParams {
 	/**
 	 * List of keywords that will be used to filter the response.
 	 * If not supplied, all album types will be returned.

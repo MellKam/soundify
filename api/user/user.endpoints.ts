@@ -151,7 +151,7 @@ export const unfollowPlaylist = async (
 	);
 };
 
-interface GetFollowedArtistsOpts
+export interface GetFollowedArtistsOpts
 	extends SearchParams, Pick<PagingOptions, "limit"> {
 	/**
 	 * The last artist ID retrieved from the previous request.

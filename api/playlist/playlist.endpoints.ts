@@ -10,7 +10,7 @@ import {
 import { HTTPClient } from "api/client.ts";
 import { JSONObject, NonNullableJSON } from "api/general.types.ts";
 
-interface PlaylistFieldsOpts extends SearchParams {
+export interface PlaylistFieldsOpts extends SearchParams {
 	/**
 	 * List of item types that your client supports besides the default track type.
 	 */
@@ -22,7 +22,7 @@ interface PlaylistFieldsOpts extends SearchParams {
 	fields?: string;
 }
 
-interface GetPlaylistOpts extends SearchParams, PlaylistFieldsOpts {
+export interface GetPlaylistOpts extends SearchParams, PlaylistFieldsOpts {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 * If a country code is specified, only content that is available in that market will be returned.
@@ -47,7 +47,7 @@ export const getPlaylist = async (
 	});
 };
 
-interface ChangePlaylistDetailsBody extends JSONObject {
+export interface ChangePlaylistDetailsBody extends JSONObject {
 	/**
 	 * The new name for the playlist, for example "My New Playlist Title"
 	 */
@@ -86,7 +86,7 @@ export const changePlaylistDetails = async (
 	});
 };
 
-interface GetPlaylistTracksOpts
+export interface GetPlaylistTracksOpts
 	extends SearchParams, PlaylistFieldsOpts, PagingOptions {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
@@ -311,7 +311,7 @@ export const getUsersPlaylists = async (
 	);
 };
 
-interface CreatePlaylistBody extends JSONObject {
+export interface CreatePlaylistBody extends JSONObject {
 	/**
 	 * The name for the new playlist, for example "Your Coolest Playlist". This name does not need to be unique; a user may have several playlists with the same name.
 	 */
@@ -348,7 +348,7 @@ export const createPlaylist = async (
 	});
 };
 
-interface GetFeaturedPlaylistsOpts extends SearchParams, PagingOptions {
+export interface GetFeaturedPlaylistsOpts extends SearchParams, PagingOptions {
 	/**
 	 * A country: an ISO 3166-1 alpha-2 country code. Provide this parameter if you want the list of returned items to be relevant to a particular country. If omitted, the returned items will be relevant to all countries.
 	 */
@@ -386,7 +386,7 @@ export const getFeaturedPlaylists = async (
 	);
 };
 
-interface GetCategorysPlaylistsOpts extends SearchParams, PagingOptions {
+export interface GetCategorysPlaylistsOpts extends SearchParams, PagingOptions {
 	/**
 	 * A country: an ISO 3166-1 alpha-2 country code. Provide this parameter to ensure that the category exists for a particular country.
 	 * @example "SE"

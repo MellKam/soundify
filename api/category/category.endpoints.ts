@@ -4,7 +4,7 @@ import { Market } from "api/market/market.types.ts";
 import { Category } from "api/category/category.types.ts";
 import { HTTPClient } from "api/client.ts";
 
-interface GetBrowseCategoriesOpts extends SearchParams {
+export interface GetBrowseCategoriesOpts extends SearchParams {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 * If a country code is specified, only content that is available in that market will be returned.
@@ -52,7 +52,7 @@ export const getBrowseCategories = async (
 	)).categories;
 };
 
-interface GetBrowseCategoryOpts extends SearchParams {
+export interface GetBrowseCategoryOpts extends SearchParams {
 	/**
 	 * An ISO 3166-1 alpha-2 country code.
 	 * Provide this parameter to ensure that the category exists for a particular country.
