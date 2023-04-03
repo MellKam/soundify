@@ -1,6 +1,6 @@
 import * as endpoints from "api/endpoints.ts";
 import { HTTPClient, SpotifyClient, SpotifyClientOpts } from "api/client.ts";
-import { IAuthProvider } from "../mod.ts";
+import { IAuthProvider } from "shared/mod.ts";
 
 type OmitFirst<T extends unknown[]> = T extends [unknown, ...infer R] ? R
 	: never;

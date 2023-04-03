@@ -1,4 +1,4 @@
-import { toQueryString } from "shared/mod.ts";
+import { AuthProvider, AuthProviderOpts, toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
@@ -11,7 +11,6 @@ import {
 	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
-import { AuthProvider, AuthProviderOpts } from "shared/auth_provider.ts";
 
 export type GetAuthURLOpts = {
 	/**

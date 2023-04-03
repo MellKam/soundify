@@ -1,4 +1,4 @@
-import { toQueryString } from "shared/mod.ts";
+import { AuthProvider, AuthProviderOpts, toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
@@ -13,7 +13,6 @@ import {
 	getPKCECodeChallenge,
 	getRandomBytes,
 } from "auth/platform/platform.deno.ts";
-import { AuthProvider, AuthProviderOpts } from "shared/mod.ts";
 
 export type GetAuthURLOpts = {
 	/**
