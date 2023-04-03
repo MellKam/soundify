@@ -1,6 +1,6 @@
 import { getCookie } from "cookies-next";
 import { useCallback, useMemo } from "react";
-import { AuthProvider, getCurrentUser, SpotifyClient } from "@soundify/api";
+import { getCurrentUser, SpotifyClient } from "@soundify/api";
 import { ACCESS_TOKEN } from "../spotify";
 import { useQuery } from "@tanstack/react-query";
 
@@ -10,24 +10,20 @@ export default function () {
 	const client = useMemo(() => {
 		const accessToken = getCookie(ACCESS_TOKEN);
 
-		const authProvider = new AuthProvider(
-			{
-				access_token: typeof accessToken === "string" ? accessToken : undefined,
-				refresher: async () => {
-					const res = await fetch("/api/refresh");
-					if (!res.ok) loginToSpotify();
+		return new SpotifyClient({
+			token: typeof accessToken === "string" ? accessToken : undefined,
+			refresher: async () => {
+				const res = await fetch("/api/refresh");
+				if (!res.ok) loginToSpotify();
 
-					const access_token = getCookie(ACCESS_TOKEN);
-					if (typeof access_token !== "string") {
-						throw new Error("Cannot refresh access token");
-					}
+				const access_token = getCookie(ACCESS_TOKEN);
+				if (typeof access_token !== "string") {
+					throw new Error("Cannot refresh access token");
+				}
 
-					return { access_token };
-				},
+				return access_token;
 			},
-		);
-
-		return new SpotifyClient(authProvider);
+		});
 	}, []);
 
 	const { data: user, status, error } = useQuery({

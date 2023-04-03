@@ -1,21 +1,23 @@
 import * as endpoints from "api/endpoints.ts";
 import { HTTPClient, SpotifyClient, SpotifyClientOpts } from "api/client.ts";
 import { IAuthProvider } from "shared/mod.ts";
+import { SearchEndpoint } from "api/search/search.endpoints.ts";
 
 type OmitFirst<T extends unknown[]> = T extends [unknown, ...infer R] ? R
 	: never;
 
-export type ISpoitfyAPI = {
-	[K in keyof typeof endpoints]: (
-		...args: OmitFirst<Parameters<typeof endpoints[K]>>
-	) => ReturnType<typeof endpoints[K]>;
-};
+export type ISpoitfyAPI =
+	& SearchEndpoint
+	& {
+		[K in Exclude<keyof typeof endpoints, "search">]: (
+			...args: OmitFirst<Parameters<typeof endpoints[K]>>
+		) => ReturnType<typeof endpoints[K]>;
+	};
 
-type Endpoint = (client: HTTPClient, ...args: unknown[]) => Promise<unknown>;
+// deno-lint-ignore no-explicit-any
+type Endpoint = (client: HTTPClient, ...args: any[]) => Promise<any>;
 
 /**
- * ! Experimental
- *
  * Assings endpoint functions to client and binds client to each of them
  */
 export const createSpotifyAPI = <
@@ -24,16 +26,13 @@ export const createSpotifyAPI = <
 	authProvider: T,
 	opts?: SpotifyClientOpts,
 ) => {
-	const client = new SpotifyClient(authProvider, opts);
+	const client = new SpotifyClient(authProvider, opts) as
+		& SpotifyClient<T>
+		& ISpoitfyAPI;
 
-	for (const [name, fn] of Object.entries(endpoints)) {
-		// deno-lint-ignore no-explicit-any
-		(client as any)[name] = (fn as Endpoint)
-			.bind(
-				null,
-				client,
-			);
-	}
+	(Object.keys(endpoints) as (keyof typeof endpoints)[]).forEach((name) => {
+		client[name] = (endpoints[name] as Endpoint).bind(null, client);
+	});
 
 	return client as ISpoitfyAPI & SpotifyClient<T>;
 };

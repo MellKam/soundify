@@ -104,6 +104,7 @@ export interface SpotifyClientOpts {
 	 * @default false
 	 */
 	waitForRateLimit?: boolean;
+	onUnauthorized?: () => void;
 }
 
 /**
@@ -117,24 +118,33 @@ export class SpotifyClient<
 		"Accept": "application/json",
 	};
 
+	private authProvider!: T;
+	// Bearer access token
+	private token: (T extends string ? string | undefined : string) | undefined;
+
 	/**
-	 * @param authProvider It is recommended to pass a class instance or object that implements `IAuthProvider` to automatically update tokens. If you do not need this behavior,you can simply pass an access token.
+	 * @param authProvider It is recommended to pass an object that implements `IAuthProvider` to automatically update tokens. If you do not need this behavior,you can simply pass an access token.
 	 * @param opts Additional options for fetch execution, such as the ability to retry on error
 	 */
 	constructor(
-		private authProvider: T,
+		authProvider: T,
 		private readonly opts: SpotifyClientOpts = {
 			waitForRateLimit: false,
 			retryDelayOn5xx: 0,
 			retryTimesOn5xx: 0,
 		},
-	) {}
+	) {
+		this.setAuthProvider(authProvider);
+	}
 
 	/**
 	 * Method that changes the existing authProvider to the specified one
 	 */
 	setAuthProvider(authProvider: T) {
 		this.authProvider = authProvider;
+		this.token = typeof authProvider === "string"
+			? authProvider
+			: authProvider.token;
 	}
 
 	fetch(
@@ -157,9 +167,7 @@ export class SpotifyClient<
 		{ json, query, method, headers, body }: FetchOpts = {},
 	): Promise<R | void> {
 		const url = new URL("https://api.spotify.com/v1" + baseURL);
-		if (query) {
-			url.search = toQueryString(query);
-		}
+		if (query) url.search = toQueryString(query);
 
 		const _body = body ? body : json ? JSON.stringify(json) : undefined;
 		const _headers = new Headers(SpotifyClient.BASE_HEADERS);
@@ -172,21 +180,18 @@ export class SpotifyClient<
 		let isTriedRefreshToken = false;
 		let retryTimesOn5xx = this.opts.retryTimesOn5xx;
 
-		let accessToken: string;
-
-		if (typeof this.authProvider === "object") {
-			if (this.authProvider.token) {
-				accessToken = this.authProvider.token;
-			} else {
-				accessToken = await this.authProvider.refreshToken();
-				isTriedRefreshToken = true;
+		if (typeof this.authProvider === "object" && !this.token) {
+			try {
+				this.token = await this.authProvider.refresher();
+			} catch (error) {
+				if (this.opts.onUnauthorized) this.opts.onUnauthorized();
+				throw error;
 			}
-		} else {
-			accessToken = this.authProvider;
+			isTriedRefreshToken = true;
 		}
 
 		const call = async (): Promise<Response> => {
-			_headers.set("Authorization", "Bearer " + accessToken);
+			_headers.set("Authorization", "Bearer " + this.token);
 
 			const res = await fetch(url, {
 				method,
@@ -200,7 +205,14 @@ export class SpotifyClient<
 				res.status === 401 && typeof this.authProvider === "object" &&
 				!isTriedRefreshToken
 			) {
-				accessToken = await this.authProvider.refreshToken();
+				if (res.body) res.body.cancel();
+				try {
+					this.token = await this.authProvider.refresher();
+				} catch (error) {
+					if (this.opts.onUnauthorized) this.opts.onUnauthorized();
+					throw error;
+				}
+
 				isTriedRefreshToken = true;
 				return call();
 			}
@@ -210,12 +222,14 @@ export class SpotifyClient<
 				const retryAfter = Number(res.headers.get("Retry-After"));
 
 				if (retryAfter) {
+					if (res.body) res.body.cancel();
 					await new Promise((r) => setTimeout(r, retryAfter * 1000));
 					return call();
 				}
 			}
 
 			if (res.status.toString().startsWith("5") && retryTimesOn5xx) {
+				if (res.body) res.body.cancel();
 				if (this.opts.retryDelayOn5xx) {
 					await new Promise((r) => setTimeout(r, this.opts.retryDelayOn5xx));
 				}
@@ -224,23 +238,20 @@ export class SpotifyClient<
 				return call();
 			}
 
-			let message: string;
-
-			if (!res.body) {
-				message = "null";
-			} else {
-				const text = await res.text();
-				try {
-					message = (JSON.parse(text) as SpotifyRegularError).error.message;
-				} catch (_) {
-					message = text;
-				}
+			if (res.status === 401 && this.opts.onUnauthorized) {
+				this.opts.onUnauthorized();
 			}
 
-			throw new SpotifyError(
-				message,
-				res.status,
-			);
+			if (!res.body) throw new SpotifyError("null", res.status);
+
+			let message = await res.text();
+
+			try {
+				message = (JSON.parse(message) as SpotifyRegularError).error.message;
+				// deno-lint-ignore no-empty
+			} catch (_) {}
+
+			throw new SpotifyError(message, res.status);
 		};
 
 		const res = await call();
@@ -250,6 +261,6 @@ export class SpotifyClient<
 			return await res.json() as R;
 		}
 
-		if (res.body) await res.body.cancel();
+		if (res.body) res.body.cancel();
 	}
 }

@@ -1,14 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { getUserTopItems } from "@soundify/api";
-import { useSpotify } from "../spotify";
+import { useSpotifyClient } from "../spotify";
 
 export const Page = () => {
-	const { client } = useSpotify();
+	const client = useSpotifyClient();
+
 	const { status, data: topArtists, error } = useQuery({
 		queryKey: ["user-profile"],
-		queryFn: () => {
-			return getUserTopItems(client, "artists");
-		},
+		queryFn: () => getUserTopItems(client, "artists"),
 		retry: false,
 	});
 

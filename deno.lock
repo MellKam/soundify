@@ -86,6 +86,8 @@
     "https://deno.land/x/dnt@0.33.1/transform.ts": "1b127c5f22699c8ab2545b98aeca38c4e5c21405b0f5342ea17e9c46280ed277",
     "https://deno.land/x/dotenv@v3.2.0/mod.ts": "077b48773de9205266a0b44c3c3a3c3083449ed64bb0b6cc461b95720678d38e",
     "https://deno.land/x/dotenv@v3.2.0/util.ts": "693730877b13f8ead2b79b2aa31e2a0652862f7dc0c5f6d2f313f4d39c7b7670",
+    "https://deno.land/x/dotenv@v3.2.2/mod.ts": "077b48773de9205266a0b44c3c3a3c3083449ed64bb0b6cc461b95720678d38e",
+    "https://deno.land/x/dotenv@v3.2.2/util.ts": "693730877b13f8ead2b79b2aa31e2a0652862f7dc0c5f6d2f313f4d39c7b7670",
     "https://deno.land/x/envalid@0.1.2/core.ts": "9cb1b469919af72d3ad8576f952c8b695e9b5356878d84f15db9328b7afab2d5",
     "https://deno.land/x/envalid@0.1.2/envalid.ts": "76755815e2643aacbe604e3cd76415f0f4c8cc04d7cdbae0ab05a0ebc86ceb38",
     "https://deno.land/x/envalid@0.1.2/errors.ts": "8524f99ff929abe5c9fa07c250cafb15e564d5339ae8fdfabd6d56fab9ec7e00",

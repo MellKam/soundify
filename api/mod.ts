@@ -6,11 +6,11 @@ export * from "api/market/market.types.ts";
 export * from "api/playlist/playlist.types.ts";
 export * from "api/track/track.types.ts";
 export * from "api/user/user.types.ts";
-export * from "api/general.types.ts";
 export * from "api/search/search.types.ts";
 
 export * from "api/endpoints.ts";
+export * from "api/general.types.ts";
 export * from "api/api.ts";
 export * from "api/client.ts";
 
-export * from "shared/mod.ts";
+export { type IAuthProvider, type SearchParams } from "shared/mod.ts";

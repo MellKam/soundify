@@ -1,8 +1,10 @@
-import { AuthProvider, AuthProviderOpts, toQueryString } from "shared/mod.ts";
+import { toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
+	AuthProviderOpts,
 	AuthScope,
+	createAuthProvider,
 	getBasicAuthHeader,
 	KeypairResponse,
 	parseCallbackData,
@@ -92,6 +94,7 @@ export class AuthCode {
 	 */
 	async getGrantData(redirect_uri: string, code: string) {
 		const url = new URL(SPOTIFY_AUTH + "api/token");
+
 		url.search = toQueryString<ApiTokenReqParams>({
 			code,
 			redirect_uri,
@@ -144,7 +147,7 @@ export class AuthCode {
 		refresh_token: string,
 		opts?: Omit<AuthProviderOpts<ScopedAccessResponse>, "refresher">,
 	) {
-		return new AuthProvider({
+		return createAuthProvider({
 			refresher: (() => this.refresh(refresh_token)).bind(this),
 			...opts,
 		});

@@ -36,6 +36,15 @@ export interface SearchOpts extends SearchParams {
 	offset?: number;
 }
 
+// Specific type that is used to create spotify api object with correct signature for search function
+export interface SearchEndpoint {
+	search<T extends SearchType[] | SearchType>(
+		query: string | SearchFilters,
+		type: T,
+		opts?: SearchOpts,
+	): Promise<Pick<SearchResponse, SearchTypeLiteral<T>>>;
+}
+
 /**
  * Get Spotify catalog information about albums, artists, playlists, tracks, shows, episodes or audiobooks that match a keyword string.
  *

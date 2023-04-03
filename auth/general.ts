@@ -1,4 +1,5 @@
 import { encodeToBase64 } from "auth/platform/platform.deno.ts";
+import { IAuthProvider } from "shared/mod.ts";
 
 export const SPOTIFY_AUTH = "https://accounts.spotify.com/";
 export const URL_ENCODED = "application/x-www-form-urlencoded;";
@@ -218,4 +219,58 @@ export type ApiTokenReqParams = {
 	client_id?: string;
 	code_verifier?: string;
 	grant_type: "refresh_token" | "client_credentials" | "authorization_code";
+};
+
+interface ResponseWithAccess {
+	access_token: string;
+}
+
+export type OnRefresh<T extends ResponseWithAccess> = (
+	/**
+	 * New authorization data that is returned after the update
+	 */
+	data: T,
+) => void | Promise<void>;
+
+export type OnRefreshFailure = (
+	/**
+	 * Error that occurred during the refresh
+	 */
+	error: Error,
+) => void | Promise<void>;
+
+export type AuthProviderOpts<
+	T extends ResponseWithAccess = ResponseWithAccess,
+> = {
+	refresher: () => Promise<T>;
+	token?: string;
+	/**
+	 * A callback event that is triggered after a successful refresh
+	 */
+	onRefreshSuccess?: OnRefresh<T>;
+	/**
+	 * The callback event that is triggered after a failed token refresh
+	 */
+	onRefreshFailure?: OnRefreshFailure;
+};
+
+export const createAuthProvider = <
+	T extends ResponseWithAccess = ResponseWithAccess,
+>(
+	opts: AuthProviderOpts<T>,
+): IAuthProvider => {
+	return {
+		refresher: async () => {
+			try {
+				const data = await opts.refresher();
+
+				if (opts.onRefreshSuccess) opts.onRefreshSuccess(data);
+				return data.access_token;
+			} catch (error) {
+				if (opts.onRefreshFailure) opts.onRefreshFailure(error);
+				throw error;
+			}
+		},
+		token: opts.token,
+	};
 };

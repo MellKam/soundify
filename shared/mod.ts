@@ -1,4 +1,10 @@
-export * from "shared/auth_provider.ts";
+/**
+ * The interface used to provide access token with the ability to refresh it
+ */
+export interface IAuthProvider {
+	refresher(): Promise<string>;
+	token?: string;
+}
 
 export type SearchParam = string | number | boolean | SearchParamArray;
 export type SearchParamArray = SearchParam[];

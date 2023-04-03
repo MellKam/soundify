@@ -43,7 +43,7 @@ export interface SearchResponse
 	tracks: PagingObject<Track>;
 	artists: PagingObject<Artist>;
 	albums: PagingObject<AlbumSimplified>;
-	playlist: PagingObject<PlaylistSimplified>;
+	playlists: PagingObject<PlaylistSimplified>;
 }
 
 export interface SearchFilters extends SearchParams {

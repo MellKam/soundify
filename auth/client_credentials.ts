@@ -1,11 +1,12 @@
 import {
 	AccessResponse,
+	AuthProviderOpts,
+	createAuthProvider,
 	getBasicAuthHeader,
 	SPOTIFY_AUTH,
 	SpotifyAuthError,
 	URL_ENCODED,
 } from "auth/general.ts";
-import { AuthProvider, AuthProviderOpts } from "shared/mod.ts";
 
 export class ClientCredentials {
 	private readonly basicAuthHeader: string;
@@ -42,7 +43,7 @@ export class ClientCredentials {
 	}
 
 	createAuthProvider(opts?: AuthProviderOpts<AccessResponse>) {
-		return new AuthProvider({
+		return createAuthProvider({
 			refresher: (() => this.getAccessToken()).bind(this),
 			...opts,
 		});

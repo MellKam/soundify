@@ -43,7 +43,7 @@ const getTestEnv = () => {
 	);
 };
 
-const env = getTestEnv();
+export const env = getTestEnv();
 
 const authFlow = new AuthCode({
 	client_id: env.SPOTIFY_CLIENT_ID,

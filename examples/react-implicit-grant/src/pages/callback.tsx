@@ -1,23 +1,15 @@
-import { ImplicitGrant } from "@soundify/web-auth";
+import { useHandleCallback } from "../spotify";
 
 export const Page = () => {
-	try {
-		const params = ImplicitGrant.parseCallbackData(location.hash);
-		if ("error" in params) {
-			throw new Error(params.error);
-		}
+	const { status, error } = useHandleCallback();
 
-		const storedState = localStorage.getItem("state");
-		if (!storedState || !params.state || storedState !== params.state) {
-			throw new Error("Invalid state");
-		}
-
-		localStorage.removeItem("state");
-		localStorage.setItem("SPOTIFY_ACCESS_TOKEN", params.access_token);
-
-		location.replace("/");
-		return <h1>Redirecting...</h1>;
-	} catch (error) {
+	if (status === "loading") {
+		return <h1>Loading...</h1>;
+	}
+	if (status === "error") {
 		return <h1>{String(error)}</h1>;
 	}
+
+	location.replace("/");
+	return <h1>Successfully authorized</h1>;
 };

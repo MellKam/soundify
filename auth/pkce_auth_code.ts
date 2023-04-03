@@ -1,8 +1,10 @@
-import { AuthProvider, AuthProviderOpts, toQueryString } from "shared/mod.ts";
+import { toQueryString } from "shared/mod.ts";
 import {
 	ApiTokenReqParams,
 	AuthorizeReqParams,
+	AuthProviderOpts,
 	AuthScope,
+	createAuthProvider,
 	KeypairResponse,
 	parseCallbackData,
 	SPOTIFY_AUTH,
@@ -167,7 +169,7 @@ export class PKCEAuthCode {
 		refresh_token: string,
 		opts?: Omit<AuthProviderOpts<KeypairResponse>, "refresher">,
 	) {
-		return new AuthProvider({
+		return createAuthProvider({
 			refresher: (async () => {
 				const data = await this.refresh(refresh_token);
 				refresh_token = data.refresh_token;

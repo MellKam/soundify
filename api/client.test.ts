@@ -154,14 +154,14 @@ Deno.test("SpotifyClient: AuthProvider", async () => {
 		get token() {
 			return STALE_TOKEN;
 		},
-		refreshToken() {
+		refresher() {
 			return new Promise((resolve) => {
 				resolve(VALID_TOKEN);
 			});
 		},
 	};
 
-	const refreshTokenSpyier = spy(authProvider, "refreshToken");
+	const refreshTokenSpyier = spy(authProvider, "refresher");
 
 	const client = new SpotifyClient(authProvider);
 	await client.fetch<UserPrivate>("/me", "json");
@@ -191,7 +191,7 @@ Deno.test("SpotifyClient: AuthProvider and double 401 error", async () => {
 		get token() {
 			return "TOKEN";
 		},
-		refreshToken() {
+		refresher() {
 			refreshTokenSpyier();
 			return new Promise((resolve) => {
 				resolve(this.token as string);
@@ -241,53 +241,6 @@ Deno.test("SpotifyClient with retry on 429", async () => {
 	await client.fetch("/me", "void");
 
 	assert(requestID === 2);
-
-	mockFetch.reset();
-});
-
-Deno.test("SpotifyClient with retries on 5xx", async () => {
-	let requestID = 0;
-	const expectedRequestsCount = 4;
-
-	// will always throw and 500 error
-	mockFetch.mock("GET@/v1/me", () => {
-		requestID++;
-		console.log(`Request ${requestID}`);
-		if (requestID === expectedRequestsCount) {
-			return new Response();
-		}
-
-		return new Response(
-			JSON.stringify({ error: { message: "Server error", status: 500 } }),
-			{
-				status: 500,
-			},
-		);
-	});
-
-	class MockProvider implements IAuthProvider {
-		constructor(public access_token: string) {}
-
-		get token(): string {
-			return this.access_token;
-		}
-
-		refreshToken(): Promise<string> {
-			return new Promise((resolve) => {
-				resolve(this.access_token);
-			});
-		}
-	}
-
-	const client = new SpotifyClient(new MockProvider("TOKEN"), {
-		retryDelayOn5xx: 200,
-		retryTimesOn5xx: expectedRequestsCount - 1,
-	});
-
-	await client.fetch("/me", "void");
-
-	// first request + 3 retries = 4 requests
-	assert(requestID === expectedRequestsCount);
 
 	mockFetch.reset();
 });

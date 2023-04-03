@@ -16,5 +16,20 @@ const authProvider = new ClientCredentials({
 
 const spotifyAPI = createSpotifyAPI(authProvider);
 
-const linkinPark = await spotifyAPI.getArtist("6XyY86QOPPrYVGvF9ch6wz");
-console.log(linkinPark);
+const searchResult = await spotifyAPI.search(
+	"Linkin Park",
+	"artist",
+);
+
+const linkinPark = searchResult.artists.items[0];
+
+console.log(linkinPark.name);
+
+const topTracks = await spotifyAPI.getArtistTopTracks(
+	linkinPark.id,
+	"PL",
+);
+
+for (const track of topTracks) {
+	console.log(track.name);
+}

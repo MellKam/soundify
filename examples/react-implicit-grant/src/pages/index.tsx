@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "@soundify/api";
-import { useSpotifyClinet } from "../spotifyContext";
+import { useSpotifyClinet } from "../spotify";
 
 export const Page = () => {
 	const client = useSpotifyClinet();
