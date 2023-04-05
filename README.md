@@ -18,8 +18,12 @@
     <a href="https://github.com/MellKam/soundify/actions">
       <img src="https://img.shields.io/github/actions/workflow/status/MellKam/soundify/ci.yaml?color=509BF5&label=CI&logo=github" alt="GitHub CI Status" />
     </a>
+    <a href="https://codecov.io/gh/MellKam/soundify">
+      <img src="https://img.shields.io/codecov/c/gh/MellKam/soundify?color=509BF5&label=coverage" alt="Code test coverage" />
+    </a>
   </p>
 </div>
+
 
 <div align="center">
   <p align="center">
