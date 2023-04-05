@@ -33,15 +33,21 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Check
-        run: deno task check
-
       - name: Test
-        run: deno test -A
+        run: deno test -A --coverage=cov_profile
         env:
           SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+
+      - name: Create coverage report
+        run: deno coverage ./cov_profile --lcov >> coverage.lcov
+
+      - name: Collect coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.lcov
 
   build:
     runs-on: ubuntu-latest

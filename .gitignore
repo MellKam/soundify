@@ -3,3 +3,4 @@ dist
 *.local
 .env
 cov_profile
+coverage.lcov
