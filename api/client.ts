@@ -31,9 +31,9 @@ export interface FetchOpts {
 	 */
 	query?: SearchParams;
 	/**
-	 * Custom headers that will be passed to the request and overwrite existing ones
+	 * Custom headers that will be passed to the request and overwrite existing ones.
 	 */
-	headers?: HeadersInit;
+	headers?: Record<string, string>;
 	/**
 	 * Request body. Will overwrite `json` property if specified.
 	 */
@@ -120,7 +120,7 @@ export class SpotifyClient<
 
 	private authProvider!: T;
 	// Bearer access token
-	private token: (T extends string ? string | undefined : string) | undefined;
+	private token: string | undefined;
 
 	/**
 	 * @param authProvider It is recommended to pass an object that implements `IAuthProvider` to automatically update tokens. If you do not need this behavior,you can simply pass an access token.
@@ -172,13 +172,11 @@ export class SpotifyClient<
 		const _body = body ? body : json ? JSON.stringify(json) : undefined;
 		const _headers = new Headers(SpotifyClient.BASE_HEADERS);
 		if (headers) {
-			Object.entries(headers).forEach(([name, value]) =>
-				_headers.append(name, value)
-			);
+			Object.entries(headers).forEach((record) => _headers.append(...record));
 		}
 
-		let isTriedRefreshToken = false;
-		let retryTimesOn5xx = this.opts.retryTimesOn5xx;
+		let isRefreshed = false;
+		let retries5xx = this.opts.retryTimesOn5xx;
 
 		if (typeof this.authProvider === "object" && !this.token) {
 			try {
@@ -187,7 +185,7 @@ export class SpotifyClient<
 				if (this.opts.onUnauthorized) this.opts.onUnauthorized();
 				throw error;
 			}
-			isTriedRefreshToken = true;
+			isRefreshed = true;
 		}
 
 		const call = async (): Promise<Response> => {
@@ -203,7 +201,7 @@ export class SpotifyClient<
 
 			if (
 				res.status === 401 && typeof this.authProvider === "object" &&
-				!isTriedRefreshToken
+				!isRefreshed
 			) {
 				if (res.body) res.body.cancel();
 				try {
@@ -213,7 +211,7 @@ export class SpotifyClient<
 					throw error;
 				}
 
-				isTriedRefreshToken = true;
+				isRefreshed = true;
 				return call();
 			}
 
@@ -228,13 +226,13 @@ export class SpotifyClient<
 				}
 			}
 
-			if (res.status.toString().startsWith("5") && retryTimesOn5xx) {
+			if (res.status.toString().startsWith("5") && retries5xx) {
 				if (res.body) res.body.cancel();
 				if (this.opts.retryDelayOn5xx) {
 					await new Promise((r) => setTimeout(r, this.opts.retryDelayOn5xx));
 				}
 
-				retryTimesOn5xx--;
+				retries5xx--;
 				return call();
 			}
 

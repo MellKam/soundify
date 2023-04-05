@@ -1,3 +1,5 @@
+<img src="https://svgshare.com/i/roe.svg" width="380px" alt="@soundify/auth. Handles Spotify authorization">
+
 # Soundify Authorization
 
 <p>
@@ -9,10 +11,10 @@
   </a>
 </p>
 
-Handles Spotify authorization
+This is a subpackage of the Soundify project that handles Spotify authorization. Supports all authorization flows and works in any environment. 
 
 - [`@soundify/web-auth`](https://www.npmjs.com/package/@soundify/web-auth) - Authorization for nodejs (server-side)
 - [`@soudnify/node-auth`](https://www.npmjs.com/package/@soundify/node-auth) - Authorization for browser (client-side)
 
-[Soundify DOCS](https://github.com/MellKam/soundify#readme)
+[Soundify documentation](https://github.com/MellKam/soundify#readme)
 

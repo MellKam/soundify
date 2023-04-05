@@ -1,6 +1,6 @@
 <div align="center">
   <p align="center">
-     <img align="center" width="500px" src="https://svgshare.com/i/rf9.svg">
+     <img align="center" width="480px" src="https://svgshare.com/i/rf9.svg">
   </p>
   <p align="center">
     <a href="https://www.npmjs.com/package/@soundify/api">

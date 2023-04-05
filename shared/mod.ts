@@ -11,7 +11,7 @@ export type SearchParamArray = SearchParam[];
 export type SearchParams = { [k: string]: SearchParam | undefined };
 
 /**
- * Creates a query string from the object and skips `undefined`.
+ * Creates a query string from the object and skips `undefined` values.
  */
 export const toQueryString = <T extends SearchParams>(
 	obj: T,

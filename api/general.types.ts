@@ -144,19 +144,18 @@ export interface Copyright extends JSONObject {
 	type: "C" | "P";
 }
 
-export type NonNullableJSON<T extends JSONObject> = {
-	[K in keyof T]: NonNullable<T[K]>;
-};
-
 export type JSONValue =
 	| null
 	| string
 	| number
 	| boolean
-	| JSONObject
-	| JSONArray;
-
+	| JSONArray
+	| JSONObject;
 export type JSONArray = JSONValue[];
 export interface JSONObject {
 	[x: string]: JSONValue | undefined;
 }
+
+export type NonNullableJSON<T extends JSONObject> = {
+	[K in keyof T]: NonNullable<T[K]>;
+};
