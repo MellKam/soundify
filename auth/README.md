@@ -1,4 +1,4 @@
-<img src="https://svgshare.com/i/roe.svg" width="380px" alt="@soundify/auth. Handles Spotify authorization">
+<img src="https://svgshare.com/i/roe.svg" width="400px" alt="@soundify/auth. Handles Spotify authorization">
 
 # Soundify Authorization
 

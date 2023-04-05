@@ -1,4 +1,4 @@
-<img src="https://svgshare.com/i/rnU.svg" width="380px" alt="@soundify/api. Provides Spotify endpoints, client and entity types">
+<img src="https://svgshare.com/i/rnU.svg" width="400px" alt="@soundify/api. Provides Spotify endpoints, client and entity types">
 
 # Soundify API
 

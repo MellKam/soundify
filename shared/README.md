@@ -1,4 +1,4 @@
-<img src="https://svgshare.com/i/ro8.svg" width="380px" alt="@soundify/shared. General functions and types">
+<img src="https://svgshare.com/i/ro8.svg" width="400px" alt="@soundify/shared. General functions and types">
 
 # Soundify shared
 
