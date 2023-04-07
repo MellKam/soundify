@@ -148,16 +148,16 @@ export const parseCallbackData = (searchParams: URLSearchParams) => {
 		return params as AuthCodeCallbackData;
 	}
 
-	throw new Error("Invalid params.");
+	throw new Error("Invalid params");
 };
 
 export const getBasicAuthHeader = (
-	clientId: string,
-	clientSecret: string,
+	client_id: string,
+	client_secret: string,
 ) => {
 	return "Basic " +
 		encodeToBase64(
-			clientId + ":" + clientSecret,
+			client_id + ":" + client_secret,
 		);
 };
 
@@ -236,7 +236,7 @@ export type OnRefreshFailure = (
 	/**
 	 * Error that occurred during the refresh
 	 */
-	error: Error,
+	error: unknown,
 ) => void | Promise<void>;
 
 export type AuthProviderOpts<

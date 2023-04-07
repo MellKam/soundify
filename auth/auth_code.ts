@@ -51,6 +51,9 @@ export type AuthCodeCredentials = {
 	 * The Client ID generated after registering your Spotify application.
 	 */
 	client_id: string;
+	/**
+	 * The Client Secret generated after registering your Spotify application.
+	 */
 	client_secret: string;
 };
 

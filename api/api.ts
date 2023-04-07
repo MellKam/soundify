@@ -34,5 +34,5 @@ export const createSpotifyAPI = <
 		client[name] = (endpoints[name] as Endpoint).bind(null, client);
 	});
 
-	return client as ISpoitfyAPI & SpotifyClient<T>;
+	return client;
 };
