@@ -1,8 +1,0 @@
-{
-	"imports": {
-		"soundify": "./mod.ts",
-		"shared/": "./shared/",
-		"api/": "./api/",
-		"auth/": "./auth/"
-	}
-}

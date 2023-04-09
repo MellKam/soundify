@@ -16,8 +16,7 @@
 		"next": "13.2.4",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"@soundify/api": "workspace:*",
-		"@soundify/node-auth": "workspace:*",
+		"@soundify/web-api": "workspace:*",
 		"@tanstack/react-query": "4.28.0",
 		"typescript": "4.9.5"
 	}

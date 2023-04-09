@@ -5,22 +5,14 @@
 		"noImplicitReturns": true,
 		"noUnusedParameters": true,
 		"strict": true,
-		"declaration": true,
+		"emitDeclarationOnly": true,
+    "declaration": true,
+		"lib": ["DOM", "ESNext", "DOM.Iterable"],
 		"moduleResolution": "node",
 		"module": "ESNext",
-		"outDir": "./dist/",
-		"target": "ESNext"
+		"target": "ESNext",
+		"outDir": "types"
 	},
-	"include": [
-		"mod.ts",
-		"./shared/**/*.ts",
-		"./api/**/*.ts",
-		"./auth/**/*.ts"
-	],
-	"exclude": [
-		"auth/platform/**/*.web.ts",
-		"./examples/**",
-		"./scripts/**",
-		"./dist/**"
-	]
+	"include": ["./src/"],
+	"exclude": ["node_modules", "./src/**/**.test.ts"]
 }
