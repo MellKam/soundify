@@ -6,8 +6,8 @@
   "module": "dist/server.js",
   "types": "types/index.d.ts",
   "browser": {
-    "./dist/server.cjs": "./dist/browser-prod.cjs",
-    "./dist/server.js": "./dist/browser-prod.js"
+    "dist/server.cjs": "dist/browser-prod.cjs",
+    "dist/server.js": "dist/browser-prod.js"
   },
   "license": "MIT",
   "files": [

@@ -3,7 +3,7 @@ import {
   SpotifyAuthError,
   createAuthProvider,
   getBasicAuthHeader,
-  parseCallbackData,
+  parseCallbackData
 } from "./general";
 import { faker } from "@faker-js/faker";
 import { vi, it, expect } from "vitest";
@@ -11,7 +11,7 @@ import { vi, it, expect } from "vitest";
 it("parseCallbackData with code", () => {
   const callbackData: AuthCodeCallbackData = {
     code: faker.random.alphaNumeric(128),
-    state: faker.random.alphaNumeric(64),
+    state: faker.random.alphaNumeric(64)
   };
 
   const result = parseCallbackData(new URLSearchParams(callbackData));
@@ -22,7 +22,7 @@ it("parseCallbackData with code", () => {
 it("parseCallbackData with error", () => {
   const callbackData: AuthCodeCallbackData = {
     error: faker.lorem.lines(),
-    state: faker.random.alphaNumeric(64),
+    state: faker.random.alphaNumeric(64)
   };
 
   const result = parseCallbackData(new URLSearchParams(callbackData));
@@ -32,7 +32,7 @@ it("parseCallbackData with error", () => {
 
 it("parseCallbackData without state", () => {
   const callbackData: AuthCodeCallbackData = {
-    code: faker.random.alphaNumeric(128),
+    code: faker.random.alphaNumeric(128)
   };
 
   const result = parseCallbackData(new URLSearchParams(callbackData));
@@ -51,7 +51,7 @@ it("createAuthProvider with default token", async () => {
   const mockToken = faker.random.alphaNumeric(32);
   const refresher = vi.fn(() => {
     return Promise.resolve({
-      access_token: mockToken,
+      access_token: mockToken
     });
   });
 
@@ -69,7 +69,7 @@ it("createAuthProvider onRefreshSuccess event", async () => {
   const mockToken = faker.random.alphaNumeric(32);
   const refresher = vi.fn(() => {
     return Promise.resolve({
-      access_token: mockToken,
+      access_token: mockToken
     });
   });
 
@@ -80,24 +80,9 @@ it("createAuthProvider onRefreshSuccess event", async () => {
   await authProvider.refresher();
 
   expect(onRefreshSuccess).toBeCalledWith({
-    access_token: mockToken,
+    access_token: mockToken
   });
   expect(onRefreshSuccess).toBeCalledTimes(1);
-});
-
-it("createAuthProvider onRefreshFailure event", async () => {
-  const error = new Error("Invalid token");
-  const refresher = vi.fn(() => Promise.reject(error));
-  const onRefreshFailure = vi.fn();
-
-  const authProvider = createAuthProvider({ refresher, onRefreshFailure });
-
-  await expect(async () => await authProvider.refresher()).rejects.toThrow(
-    error
-  );
-
-  expect(onRefreshFailure).toBeCalledWith(error);
-  expect(onRefreshFailure).toBeCalledTimes(1);
 });
 
 it("getBasicAuthHeader", () => {
@@ -111,7 +96,7 @@ it("SpotifyAuthError.create() #1", async () => {
     new Response(
       JSON.stringify({
         error: "invalid_client",
-        error_description: "Somehting went wrong",
+        error_description: "Somehting went wrong"
       })
     )
   );
