@@ -96,10 +96,10 @@ export const SCOPES = {
   /**
    * Read access to user’s subscription details (type of user account).
    */
-  USER_READ_PRIVATE: "user-read-private",
+  USER_READ_PRIVATE: "user-read-private"
 } as const;
 
-export type AuthScope = typeof SCOPES[keyof typeof SCOPES];
+export type AuthScope = (typeof SCOPES)[keyof typeof SCOPES];
 
 export type SpotifyAuthErrorObject = {
   error: string;
@@ -129,7 +129,7 @@ export class SpotifyAuthError extends Error {
       message: typeof body === "string" ? body : body.error,
       description:
         typeof body === "object" ? body.error_description : undefined,
-      status: res.status,
+      status: res.status
     });
   }
 
@@ -255,14 +255,7 @@ export type OnRefresh<T extends ResponseWithAccess> = (
    * New authorization data that is returned after the update
    */
   data: T
-) => void;
-
-export type OnRefreshFailure = (
-  /**
-   * Error that occurred during the refresh
-   */
-  error: unknown
-) => void;
+) => void | Promise<void>;
 
 export type AuthProviderOpts<
   T extends ResponseWithAccess = ResponseWithAccess
@@ -273,10 +266,6 @@ export type AuthProviderOpts<
    * A callback event that is triggered after a successful refresh
    */
   onRefreshSuccess?: OnRefresh<T>;
-  /**
-   * The callback event that is triggered after a failed token refresh
-   */
-  onRefreshFailure?: OnRefreshFailure;
 };
 
 export const createAuthProvider = <
@@ -286,16 +275,11 @@ export const createAuthProvider = <
 ): IAuthProvider => {
   return {
     refresher: async () => {
-      try {
-        const data = await opts.refresher();
+      const data = await opts.refresher();
 
-        if (opts.onRefreshSuccess) opts.onRefreshSuccess(data);
-        return data.access_token;
-      } catch (error) {
-        if (opts.onRefreshFailure) opts.onRefreshFailure(error);
-        throw error;
-      }
+      if (opts.onRefreshSuccess) opts.onRefreshSuccess(data);
+      return data.access_token;
     },
-    token: opts.token,
+    token: opts.token
   };
 };

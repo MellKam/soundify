@@ -9,7 +9,7 @@ import {
   parseCallbackData,
   SPOTIFY_AUTH,
   SpotifyAuthError,
-  URL_ENCODED,
+  URL_ENCODED
 } from "./general";
 
 export type GetAuthURLOpts = {
@@ -67,7 +67,7 @@ export class PKCEAuthCode {
       scope: scopes?.join(" "),
       code_challenge_method: "S256",
       client_id: this.client_id,
-      ...opts,
+      ...opts
     });
 
     return url;
@@ -136,14 +136,14 @@ export class PKCEAuthCode {
     url.search = toQueryString<ApiTokenReqParams>({
       grant_type: "authorization_code",
       client_id: this.client_id,
-      ...opts,
+      ...opts
     });
 
     const res = await fetch(url, {
       headers: {
-        "Content-Type": URL_ENCODED,
+        "Content-Type": URL_ENCODED
       },
-      method: "POST",
+      method: "POST"
     });
 
     if (!res.ok) throw await SpotifyAuthError.create(res);
@@ -159,14 +159,14 @@ export class PKCEAuthCode {
     url.search = toQueryString<ApiTokenReqParams>({
       grant_type: "refresh_token",
       client_id: this.client_id,
-      refresh_token,
+      refresh_token
     });
 
     const res = await fetch(url, {
       headers: {
-        "Content-Type": URL_ENCODED,
+        "Content-Type": URL_ENCODED
       },
-      method: "POST",
+      method: "POST"
     });
 
     if (!res.ok) throw await SpotifyAuthError.create(res);
@@ -184,7 +184,7 @@ export class PKCEAuthCode {
         refresh_token = data.refresh_token;
         return data;
       }).bind(this),
-      ...opts,
+      ...opts
     });
   }
 }

@@ -165,7 +165,7 @@ export class AuthCode {
     opts?: Omit<AuthProviderOpts<ScopedAccessResponse>, "refresher">
   ) {
     return createAuthProvider({
-      refresher: (() => this.refresh(refresh_token)).bind(this),
+      refresher: this.refresh.bind(this, refresh_token),
       ...opts
     });
   }
