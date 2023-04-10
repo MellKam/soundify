@@ -5,18 +5,13 @@ import {
   getBasicAuthHeader,
   SPOTIFY_AUTH,
   SpotifyAuthError,
-  URL_ENCODED,
+  URL_ENCODED
 } from "./general";
 
 export class ClientCredentials {
   private readonly basicAuthHeader: string;
 
-  constructor(
-    private readonly creds: {
-      client_id: string;
-      client_secret: string;
-    }
-  ) {
+  constructor(creds: { client_id: string; client_secret: string }) {
     this.basicAuthHeader = getBasicAuthHeader(
       creds.client_id,
       creds.client_secret
@@ -28,11 +23,11 @@ export class ClientCredentials {
       method: "POST",
       headers: {
         Authorization: this.basicAuthHeader,
-        "Content-Type": URL_ENCODED,
+        "Content-Type": URL_ENCODED
       },
       body: new URLSearchParams({
-        grant_type: "client_credentials",
-      }),
+        grant_type: "client_credentials"
+      })
     });
 
     if (!res.ok) throw await SpotifyAuthError.create(res);
@@ -40,10 +35,12 @@ export class ClientCredentials {
     return (await res.json()) as AccessResponse;
   }
 
-  createAuthProvider(opts?: AuthProviderOpts<AccessResponse>) {
+  createAuthProvider(
+    opts?: Omit<AuthProviderOpts<AccessResponse>, "refresher">
+  ) {
     return createAuthProvider({
-      refresher: (() => this.getAccessToken()).bind(this),
-      ...opts,
+      refresher: this.getAccessToken.bind(this),
+      ...opts
     });
   }
 }

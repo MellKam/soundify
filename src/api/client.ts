@@ -3,9 +3,12 @@ import {
   JSONValue,
   parseResponse,
   SearchParams,
-  toQueryString,
+  toQueryString
 } from "../shared";
 
+/**
+ * @see https://developer.spotify.com/documentation/web-api/concepts/api-calls#regular-error-object
+ */
 type SpotifyRegularErrorObject = {
   error: {
     message: string;
@@ -13,14 +16,25 @@ type SpotifyRegularErrorObject = {
   };
 };
 
-export class SpotifyError extends Error {
+export class APIError extends Error {
   constructor(
     message: string,
     public readonly status: number,
     options?: ErrorOptions
   ) {
     super(message, options);
-    this.name = "SpotifyError";
+    this.name = "APIError";
+  }
+}
+
+export class RateLimitError extends APIError {
+  constructor(
+    message: string,
+    public retryAfter: number,
+    options?: ErrorOptions
+  ) {
+    super(message, 429, options);
+    this.name = "RateLimitError";
   }
 }
 
@@ -86,8 +100,8 @@ export interface SpotifyClientOpts {
    */
   retryDelayOn5xx?: number;
   /**
-   * If it is set to true, it would refetch the same request after a paticular time interval sent by the spotify api in the headers `Retry-After` so you cannot face any obstacles.
-   * Otherwise, it will throw an error.
+   * If it is set to true, it would refetch the same request after a paticular time interval sent by the spotify api in the `Retry-After` header, so you cannot face any obstacles.
+   * Otherwise, it will throw an `RateLimitError`.
    *
    * @default false
    */
@@ -102,9 +116,9 @@ export class SpotifyClient<
   T extends IAuthProvider | string = IAuthProvider | string
 > implements HTTPClient
 {
-  private static BASE_HEADERS: HeadersInit = {
+  private static readonly BASE_HEADERS: HeadersInit = {
     "Content-Type": "application/json",
-    Accept: "application/json",
+    Accept: "application/json"
   };
 
   private authProvider!: T;
@@ -120,7 +134,7 @@ export class SpotifyClient<
     private readonly opts: SpotifyClientOpts = {
       waitForRateLimit: false,
       retryDelayOn5xx: 0,
-      retryTimesOn5xx: 0,
+      retryTimesOn5xx: 0
     }
   ) {
     this.setAuthProvider(authProvider);
@@ -152,7 +166,7 @@ export class SpotifyClient<
     const _body = body ? body : json ? JSON.stringify(json) : undefined;
     const _headers = new Headers(SpotifyClient.BASE_HEADERS);
     if (headers) {
-      Object.entries(headers).forEach((record) => _headers.append(...record));
+      Object.entries(headers).forEach(record => _headers.append(...record));
     }
 
     let isRefreshed = false;
@@ -175,17 +189,21 @@ export class SpotifyClient<
       const res = await fetch(url, {
         method,
         headers: _headers,
-        body: _body,
+        body: _body
       });
 
       if (res.ok) return res;
+
+      const resBody = await parseResponse<SpotifyRegularErrorObject>(res);
+
+      const errorMessage =
+        typeof resBody === "string" ? resBody : resBody.error.message;
 
       if (
         res.status === 401 &&
         typeof this.authProvider === "object" &&
         !isRefreshed
       ) {
-        if (res.body) res.body.cancel();
         try {
           this.token = await this.authProvider.refresher();
         } catch (error) {
@@ -197,21 +215,21 @@ export class SpotifyClient<
         return call();
       }
 
-      if (res.status === 429 && this.opts.waitForRateLimit) {
+      if (res.status === 429) {
         // time in seconds
-        const retryAfter = Number(res.headers.get("Retry-After"));
+        const retryAfter = Number(res.headers.get("Retry-After")) || 0;
 
-        if (retryAfter) {
-          if (res.body) res.body.cancel();
-          await new Promise((r) => setTimeout(r, retryAfter * 1000));
+        if (this.opts.waitForRateLimit) {
+          await new Promise(r => setTimeout(r, retryAfter * 1000));
           return call();
         }
+
+        throw new RateLimitError(errorMessage, retryAfter);
       }
 
-      if (res.status.toString().startsWith("5") && retries5xx) {
-        if (res.body) res.body.cancel();
+      if (res.status >= 500 && retries5xx) {
         if (this.opts.retryDelayOn5xx) {
-          await new Promise((r) => setTimeout(r, this.opts.retryDelayOn5xx));
+          await new Promise(r => setTimeout(r, this.opts.retryDelayOn5xx));
         }
 
         retries5xx--;
@@ -222,16 +240,7 @@ export class SpotifyClient<
         this.opts.onUnauthorized();
       }
 
-      const resBody = await parseResponse<SpotifyRegularErrorObject>(res);
-
-      throw new SpotifyError(
-        resBody === null
-          ? "null"
-          : typeof resBody === "string"
-          ? resBody
-          : resBody.error.message,
-        res.status
-      );
+      throw new APIError(errorMessage, res.status);
     };
 
     const res = await call();
