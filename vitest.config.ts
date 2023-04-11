@@ -7,6 +7,7 @@ export default defineConfig({
         "html",
         ["lcov", { projectRoot: "./src", file: "coverage.lcov" }]
       ],
+      all: true,
       provider: "c8"
     }
   }
