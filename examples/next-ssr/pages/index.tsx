@@ -5,16 +5,18 @@ import { ACCESS_TOKEN } from "../spotify";
 import { useQuery } from "@tanstack/react-query";
 
 export default function () {
-  const loginToSpotify = useCallback(() => location.replace("/api/auth"), []);
+  const authorize = useCallback(() => location.replace("/api/auth"), []);
 
   const client = useMemo(() => {
     const accessToken = getCookie(ACCESS_TOKEN);
 
     return new SpotifyClient({
       token: typeof accessToken === "string" ? accessToken : undefined,
-      refresher: async () => {
+      refresh: async () => {
         const res = await fetch("/api/refresh");
-        if (!res.ok) loginToSpotify();
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
 
         const access_token = getCookie(ACCESS_TOKEN);
         if (typeof access_token !== "string") {
@@ -23,6 +25,8 @@ export default function () {
 
         return access_token;
       },
+    }, {
+      onUnauthorized: authorize,
     });
   }, []);
 

@@ -1,13 +1,13 @@
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { AuthCode, SpotifyAuthError } from "@soundify/web-api";
 import {
   ACCESS_TOKEN,
   authFlow,
   env,
   REFRESH_TOKEN,
-  STATE,
+  STATE
 } from "../../spotify";
+import { AuthCodeFlow } from "@soundify/web-api";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (!req.url) {
@@ -17,7 +17,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  const data = AuthCode.parseCallbackData(url.searchParams);
+  const data = AuthCodeFlow.parseCallbackData(url.searchParams);
 
   if ("error" in data) {
     res.status(400).send(data.error);
@@ -45,14 +45,14 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       sameSite: "strict",
       path: "/api/refresh",
       req,
-      res,
+      res
     });
 
     setCookie(ACCESS_TOKEN, access_token, {
       req,
       res,
       maxAge: expires_in,
-      sameSite: "strict",
+      sameSite: "strict"
     });
 
     res.redirect("/");
