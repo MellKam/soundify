@@ -1,4 +1,4 @@
-import { AuthCode } from "@soundify/web-api";
+import { AuthCodeFlow } from "@soundify/web-api";
 import { randomUUID } from "node:crypto";
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -9,26 +9,26 @@ app.use(cookieParser("secret"));
 const env = {
   client_id: process.env.SPOTIFY_CLIENT_ID!,
   client_secret: process.env.SPOTIFY_CLIENT_SECRET!,
-  redirect_uri: process.env.SPOTIFY_REDIRECT_URI!,
+  redirect_uri: process.env.SPOTIFY_REDIRECT_URI!
 };
 
-const authFlow = new AuthCode({
+const authFlow = new AuthCodeFlow({
   client_id: env.client_id,
-  client_secret: env.client_secret,
+  client_secret: env.client_secret
 });
 
 app.get("/login", (_, res) => {
   const state = randomUUID();
 
   res.cookie("state", state, {
-    httpOnly: true,
+    httpOnly: true
   });
   res.redirect(
     authFlow
       .getAuthURL({
         scopes: ["user-read-email"],
         state,
-        redirect_uri: env.redirect_uri,
+        redirect_uri: env.redirect_uri
       })
       .toString()
   );
@@ -38,7 +38,7 @@ app.get("/callback", async (req, res) => {
   try {
     const searchParams = new URL(req.url, `http://${req.headers.host}`)
       .searchParams;
-    const data = AuthCode.parseCallbackData(searchParams);
+    const data = AuthCodeFlow.parseCallbackData(searchParams);
     if ("error" in data) {
       throw new Error(data.error);
     }

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, ReactNode, useContext, useMemo } from "react";
-import { PKCEAuthCode, SpotifyClient } from "@soundify/web-api";
+import { PKCECodeFlow, SpotifyClient } from "@soundify/web-api";
 
 const appName = "react-pkce-auth";
 
@@ -15,10 +15,10 @@ const env = {
   redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
 };
 
-const authFlow = new PKCEAuthCode(env.client_id);
+const authFlow = new PKCECodeFlow(env.client_id);
 
 const authorize = async () => {
-  const { code_challenge, code_verifier } = await PKCEAuthCode.generateCodes();
+  const { code_challenge, code_verifier } = await PKCECodeFlow.generateCodes();
   localStorage.setItem(CODE_VERIFIER, code_verifier);
 
   location.replace(
@@ -38,14 +38,20 @@ export const SpotifyProvider = ({ children }: {
     const refresh_token = localStorage.getItem(SPOTIFY_REFRESH_TOKEN);
     if (!refresh_token) return null;
 
+    const refresher = authFlow.createRefresher(refresh_token);
+
     return new SpotifyClient(
-      authFlow.createAuthProvider(refresh_token, {
-        token: access_token ?? undefined,
-        onRefreshSuccess: ({ access_token, refresh_token }) => {
+      {
+        refresh: async () => {
+          const { access_token, refresh_token } = await refresher();
+
           localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
           localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);
+
+          return access_token;
         },
-      }),
+        token: access_token ?? undefined,
+      },
       { onUnauthorized: authorize },
     );
   }, []);
@@ -79,7 +85,7 @@ export const useHandleCallback = () => {
   return useQuery({
     queryKey: ["spotify-callback"],
     queryFn: async () => {
-      const data = PKCEAuthCode.parseCallbackData(
+      const data = PKCECodeFlow.parseCallbackData(
         new URLSearchParams(location.search),
       );
       if ("error" in data) {

@@ -2,7 +2,7 @@
  * The interface used to provide access token with the ability to refresh it
  */
 export interface IAuthProvider {
-  refresher(): Promise<string>;
+  refresh: () => Promise<string>;
   token?: string;
 }
 
@@ -39,12 +39,17 @@ export const toQueryString = <T extends SearchParams>(obj: T): string => {
   return params.toString();
 };
 
+/**
+ * Attempts to parse response body as json and return it, otherwise returns response as string.
+ * If the response body is null or empty, it returns an empty string.
+ */
 export const parseResponse = async <T extends JSONValue = JSONValue>(
   res: Response
 ): Promise<T | string> => {
-  if (!res.body) return "null";
-  const text = await res.text();
+  let text = "";
   try {
+    text = await res.text();
+    if (!text) return text;
     return JSON.parse(text) as T;
   } catch (_) {
     return text;

@@ -1,4 +1,4 @@
-import { ImplicitGrant, SpotifyClient } from "@soundify/web-api";
+import { ImplicitFlow, SpotifyClient } from "@soundify/web-api";
 import { createContext, ReactNode, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -9,7 +9,7 @@ const env = {
   redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
 };
 
-const authFlow = new ImplicitGrant(env.client_id);
+const authFlow = new ImplicitFlow(env.client_id);
 
 const authorize = () => {
   const state = crypto.randomUUID();
@@ -57,7 +57,7 @@ export const useHandleCallback = () => {
     staleTime: Infinity,
     retry: false,
     queryFn: () => {
-      const params = ImplicitGrant.parseCallbackData(location.hash);
+      const params = ImplicitFlow.parseCallbackData(location.hash);
       if ("error" in params) {
         throw new Error(params.error);
       }

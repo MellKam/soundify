@@ -13,27 +13,28 @@ type SpotifyRegularErrorObject = {
   error: {
     message: string;
     status: number;
+    reason?: string;
   };
 };
 
 export class APIError extends Error {
   constructor(
-    message: string,
+    public readonly raw: string | SpotifyRegularErrorObject,
     public readonly status: number,
     options?: ErrorOptions
   ) {
-    super(message, options);
+    super(typeof raw === "object" ? raw.error.message : raw, options);
     this.name = "APIError";
   }
 }
 
 export class RateLimitError extends APIError {
   constructor(
-    message: string,
-    public retryAfter: number,
+    raw: string | SpotifyRegularErrorObject,
+    public readonly retryAfter: number,
     options?: ErrorOptions
   ) {
-    super(message, 429, options);
+    super(raw, 429, options);
     this.name = "RateLimitError";
   }
 }
@@ -106,7 +107,7 @@ export interface SpotifyClientOpts {
    * @default false
    */
   waitForRateLimit?: boolean;
-  onUnauthorized?: () => void;
+  onUnauthorized?: (client: SpotifyClient) => void;
 }
 
 /**
@@ -174,9 +175,9 @@ export class SpotifyClient<
 
     if (typeof this.authProvider === "object" && !this.token) {
       try {
-        this.token = await this.authProvider.refresher();
+        this.token = await this.authProvider.refresh();
       } catch (error) {
-        if (this.opts.onUnauthorized) this.opts.onUnauthorized();
+        if (this.opts.onUnauthorized) this.opts.onUnauthorized(this);
         throw error;
       }
       isRefreshed = true;
@@ -194,10 +195,7 @@ export class SpotifyClient<
 
       if (res.ok) return res;
 
-      const resBody = await parseResponse<SpotifyRegularErrorObject>(res);
-
-      const errorMessage =
-        typeof resBody === "string" ? resBody : resBody.error.message;
+      const rawError = await parseResponse<SpotifyRegularErrorObject>(res);
 
       if (
         res.status === 401 &&
@@ -205,9 +203,9 @@ export class SpotifyClient<
         !isRefreshed
       ) {
         try {
-          this.token = await this.authProvider.refresher();
+          this.token = await this.authProvider.refresh();
         } catch (error) {
-          if (this.opts.onUnauthorized) this.opts.onUnauthorized();
+          if (this.opts.onUnauthorized) this.opts.onUnauthorized(this);
           throw error;
         }
 
@@ -224,7 +222,7 @@ export class SpotifyClient<
           return call();
         }
 
-        throw new RateLimitError(errorMessage, retryAfter);
+        throw new RateLimitError(rawError, retryAfter);
       }
 
       if (res.status >= 500 && retries5xx) {
@@ -237,10 +235,10 @@ export class SpotifyClient<
       }
 
       if (res.status === 401 && this.opts.onUnauthorized) {
-        this.opts.onUnauthorized();
+        this.opts.onUnauthorized(this);
       }
 
-      throw new APIError(errorMessage, res.status);
+      throw new APIError(rawError, res.status);
     };
 
     const res = await call();

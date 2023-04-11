@@ -1,14 +1,12 @@
-import { toQueryString } from "../shared";
+import { IAuthProvider, toQueryString } from "../shared";
 import {
   ApiTokenReqParams,
   AuthorizeReqParams,
-  AuthProviderOpts,
   AuthScope,
-  createAuthProvider,
   KeypairResponse,
   parseCallbackData,
   SPOTIFY_AUTH,
-  SpotifyAuthError,
+  AuthError,
   URL_ENCODED
 } from "./general";
 
@@ -53,8 +51,11 @@ export type GetGrantDataOpts = {
   code: string;
 };
 
-export class PKCEAuthCode {
-  static VERIFIER_CHARS =
+/**
+ * Authorization Code with PKCE Flow
+ */
+export class PKCECodeFlow {
+  private static VERIFIER_CHARS =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
 
   constructor(private readonly client_id: string) {}
@@ -89,8 +90,8 @@ export class PKCEAuthCode {
     let codeVerifier = "";
     for (let i = 0; i < length; i++) {
       codeVerifier +=
-        PKCEAuthCode.VERIFIER_CHARS[
-          randomBytes[i] % PKCEAuthCode.VERIFIER_CHARS.length
+        PKCECodeFlow.VERIFIER_CHARS[
+          randomBytes[i] % PKCECodeFlow.VERIFIER_CHARS.length
         ];
     }
 
@@ -121,10 +122,8 @@ export class PKCEAuthCode {
    * Uses `generateCodeVerifier` and `getCodeChallenge` under the hood.
    */
   static async generateCodes(verifierLength?: number) {
-    const code_verifier = await PKCEAuthCode.generateCodeVerifier(
-      verifierLength
-    );
-    const code_challenge = await PKCEAuthCode.getCodeChallenge(code_verifier);
+    const code_verifier = await this.generateCodeVerifier(verifierLength);
+    const code_challenge = await this.getCodeChallenge(code_verifier);
 
     return { code_verifier, code_challenge };
   }
@@ -146,7 +145,7 @@ export class PKCEAuthCode {
       method: "POST"
     });
 
-    if (!res.ok) throw await SpotifyAuthError.create(res);
+    if (!res.ok) throw await AuthError.create(res);
 
     return (await res.json()) as KeypairResponse;
   }
@@ -169,22 +168,27 @@ export class PKCEAuthCode {
       method: "POST"
     });
 
-    if (!res.ok) throw await SpotifyAuthError.create(res);
+    if (!res.ok) throw await AuthError.create(res);
 
     return (await res.json()) as KeypairResponse;
   }
 
+  createRefresher(refresh_token: string) {
+    return (async () => {
+      const data = await this.refresh(refresh_token);
+      refresh_token = data.refresh_token;
+      return data;
+    }).bind(this);
+  }
+
   createAuthProvider(
     refresh_token: string,
-    opts?: Omit<AuthProviderOpts<KeypairResponse>, "refresher">
-  ) {
-    return createAuthProvider({
-      refresher: (async () => {
-        const data = await this.refresh(refresh_token);
-        refresh_token = data.refresh_token;
-        return data;
-      }).bind(this),
-      ...opts
-    });
+    access_token?: string
+  ): IAuthProvider {
+    const refresher = this.createRefresher(refresh_token);
+    return {
+      refresh: async () => (await refresher()).access_token,
+      token: access_token
+    };
   }
 }

@@ -63,7 +63,10 @@ export interface CallbackSuccessData
 
 export type CallbackData = CallbackSuccessData | CallbackErrorData;
 
-export class ImplicitGrant {
+/**
+ * Implicit Grant Flow
+ */
+export class ImplicitFlow {
   constructor(private readonly client_id: string) {}
 
   getAuthURL({ scopes, ...opts }: GetAuthURLOpts) {
@@ -73,7 +76,7 @@ export class ImplicitGrant {
       response_type: "token",
       scope: scopes?.join(" "),
       client_id: this.client_id,
-      ...opts,
+      ...opts
     });
 
     return url;

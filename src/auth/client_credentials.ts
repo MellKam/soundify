@@ -1,14 +1,16 @@
+import { IAuthProvider } from "../shared";
 import {
   AccessResponse,
-  AuthProviderOpts,
-  createAuthProvider,
   getBasicAuthHeader,
   SPOTIFY_AUTH,
-  SpotifyAuthError,
+  AuthError,
   URL_ENCODED
 } from "./general";
 
-export class ClientCredentials {
+/**
+ * Client Credentials Flow
+ */
+export class ClientCredentialsFlow {
   private readonly basicAuthHeader: string;
 
   constructor(creds: { client_id: string; client_secret: string }) {
@@ -30,17 +32,20 @@ export class ClientCredentials {
       })
     });
 
-    if (!res.ok) throw await SpotifyAuthError.create(res);
+    if (!res.ok) throw await AuthError.create(res);
 
     return (await res.json()) as AccessResponse;
   }
 
-  createAuthProvider(
-    opts?: Omit<AuthProviderOpts<AccessResponse>, "refresher">
-  ) {
-    return createAuthProvider({
-      refresher: this.getAccessToken.bind(this),
-      ...opts
-    });
+  createRefresher() {
+    return this.getAccessToken.bind(this);
+  }
+
+  createAuthProvider(access_token?: string): IAuthProvider {
+    const refresher = this.createRefresher();
+    return {
+      refresh: async () => (await refresher()).access_token,
+      token: access_token
+    };
   }
 }

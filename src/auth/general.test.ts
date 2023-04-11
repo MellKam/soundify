@@ -1,7 +1,6 @@
 import {
   AuthCodeCallbackData,
-  SpotifyAuthError,
-  createAuthProvider,
+  AuthError,
   getBasicAuthHeader,
   parseCallbackData
 } from "./general";
@@ -46,45 +45,6 @@ it("parseCallbackData with invalid data", () => {
   );
 });
 
-it("createAuthProvider with default token", async () => {
-  const oldToken = faker.random.alphaNumeric(32);
-  const mockToken = faker.random.alphaNumeric(32);
-  const refresher = vi.fn(() => {
-    return Promise.resolve({
-      access_token: mockToken
-    });
-  });
-
-  const authProvider = createAuthProvider({ refresher, token: oldToken });
-
-  expect(authProvider.token).toBe(oldToken);
-
-  const newToken = await authProvider.refresher();
-
-  expect(refresher).toBeCalledTimes(1);
-  expect(newToken).toBe(mockToken);
-});
-
-it("createAuthProvider onRefreshSuccess event", async () => {
-  const mockToken = faker.random.alphaNumeric(32);
-  const refresher = vi.fn(() => {
-    return Promise.resolve({
-      access_token: mockToken
-    });
-  });
-
-  const onRefreshSuccess = vi.fn();
-
-  const authProvider = createAuthProvider({ refresher, onRefreshSuccess });
-
-  await authProvider.refresher();
-
-  expect(onRefreshSuccess).toBeCalledWith({
-    access_token: mockToken
-  });
-  expect(onRefreshSuccess).toBeCalledTimes(1);
-});
-
 it("getBasicAuthHeader", () => {
   const result = getBasicAuthHeader("123", "456");
 
@@ -92,28 +52,25 @@ it("getBasicAuthHeader", () => {
 });
 
 it("SpotifyAuthError.create() #1", async () => {
-  const error = await SpotifyAuthError.create(
-    new Response(
-      JSON.stringify({
-        error: "invalid_client",
-        error_description: "Somehting went wrong"
-      })
-    )
-  );
+  const rawError = {
+    error: "invalid_client",
+    error_description: "Somehting went wrong"
+  };
+  const error = await AuthError.create(new Response(JSON.stringify(rawError)));
 
-  expect(error).toBeInstanceOf(SpotifyAuthError);
+  expect(error).toBeInstanceOf(AuthError);
   expect(error.message).toBe("invalid_client");
   expect(error.status).toBe(200);
-  expect(error.description).toBe("Somehting went wrong");
+  expect(error.raw).toMatchObject(rawError);
 });
 
 it("SpotifyAuthError.create() #2", async () => {
-  const error = await SpotifyAuthError.create(
+  const error = await AuthError.create(
     new Response("Unexpected error", { status: 500 })
   );
 
-  expect(error).toBeInstanceOf(SpotifyAuthError);
+  expect(error).toBeInstanceOf(AuthError);
   expect(error.message).toBe("Unexpected error");
   expect(error.status).toBe(500);
-  expect(error.description).toBeUndefined();
+  expect(error.raw).toBe("Unexpected error");
 });

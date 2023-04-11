@@ -1,4 +1,4 @@
-import { IAuthProvider, parseResponse } from "../shared";
+import { IAuthProvider, JSONObject, parseResponse } from "../shared";
 
 export const SPOTIFY_AUTH = "https://accounts.spotify.com/";
 export const URL_ENCODED = "application/x-www-form-urlencoded;";
@@ -101,39 +101,28 @@ export const SCOPES = {
 
 export type AuthScope = (typeof SCOPES)[keyof typeof SCOPES];
 
+/**
+ * @see https://developer.spotify.com/documentation/web-api/concepts/api-calls#authentication-error-object
+ */
 export type SpotifyAuthErrorObject = {
   error: string;
   error_description?: string;
 };
 
-export class SpotifyAuthError extends Error {
-  status: number;
-  description?: string;
-
-  constructor(opts: {
-    message: string;
-    status: number;
-    description?: string;
-    options?: ErrorOptions;
-  }) {
-    super(opts.message, opts.options);
-    this.name = "SpotifyAuthError";
-    this.description = opts.description;
-    this.status = opts.status;
+export class AuthError extends Error {
+  constructor(
+    public readonly raw: string | SpotifyAuthErrorObject,
+    public readonly status: number,
+    options?: ErrorOptions
+  ) {
+    super(typeof raw === "object" ? raw.error : raw, options);
+    this.name = "AuthError";
   }
 
   static async create(res: Response) {
-    const body = await parseResponse<SpotifyAuthErrorObject>(res);
-
-    return new SpotifyAuthError({
-      message: typeof body === "string" ? body : body.error,
-      description:
-        typeof body === "object" ? body.error_description : undefined,
-      status: res.status
-    });
+    const raw = await parseResponse<SpotifyAuthErrorObject>(res);
+    return new AuthError(raw, res.status);
   }
-
-  // TODO toJSON() method
 }
 
 export type AuthCodeCallbackSuccess = {
@@ -246,40 +235,7 @@ export type ApiTokenReqParams = {
   grant_type: "refresh_token" | "client_credentials" | "authorization_code";
 };
 
-interface ResponseWithAccess {
-  access_token: string;
-}
+type ResponseWithToken = { access_token: string };
 
-export type OnRefresh<T extends ResponseWithAccess> = (
-  /**
-   * New authorization data that is returned after the update
-   */
-  data: T
-) => void | Promise<void>;
-
-export type AuthProviderOpts<
-  T extends ResponseWithAccess = ResponseWithAccess
-> = {
-  refresher: () => Promise<T>;
-  token?: string;
-  /**
-   * A callback event that is triggered after a successful refresh
-   */
-  onRefreshSuccess?: OnRefresh<T>;
-};
-
-export const createAuthProvider = <
-  T extends ResponseWithAccess = ResponseWithAccess
->(
-  opts: AuthProviderOpts<T>
-): IAuthProvider => {
-  return {
-    refresher: async () => {
-      const data = await opts.refresher();
-
-      if (opts.onRefreshSuccess) opts.onRefreshSuccess(data);
-      return data.access_token;
-    },
-    token: opts.token
-  };
-};
+export type FlowRefresher<T extends ResponseWithToken = ResponseWithToken> =
+  () => Promise<T>;
