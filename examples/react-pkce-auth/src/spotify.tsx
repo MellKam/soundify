@@ -12,7 +12,7 @@ const SpotifyContext = createContext<SpotifyClient | null>(null);
 
 const env = {
   client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-  redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
+  redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI
 };
 
 const authFlow = new PKCECodeFlow(env.client_id);
@@ -25,14 +25,12 @@ const authorize = async () => {
     authFlow.getAuthURL({
       code_challenge,
       scopes: ["user-read-private", "user-top-read"],
-      redirect_uri: env.redirect_uri,
-    }),
+      redirect_uri: env.redirect_uri
+    })
   );
 };
 
-export const SpotifyProvider = ({ children }: {
-  children: ReactNode;
-}) => {
+export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
   const client = useMemo(() => {
     const access_token = localStorage.getItem(SPOTIFY_ACCESS_TOKNE);
     const refresh_token = localStorage.getItem(SPOTIFY_REFRESH_TOKEN);
@@ -50,9 +48,9 @@ export const SpotifyProvider = ({ children }: {
 
           return access_token;
         },
-        token: access_token ?? undefined,
+        token: access_token ?? undefined
       },
-      { onUnauthorized: authorize },
+      { onUnauthorized: authorize }
     );
   }, []);
 
@@ -66,9 +64,7 @@ export const SpotifyProvider = ({ children }: {
   }
 
   return (
-    <SpotifyContext.Provider value={client}>
-      {children}
-    </SpotifyContext.Provider>
+    <SpotifyContext.Provider value={client}>{children}</SpotifyContext.Provider>
   );
 };
 
@@ -86,7 +82,7 @@ export const useHandleCallback = () => {
     queryKey: ["spotify-callback"],
     queryFn: async () => {
       const data = PKCECodeFlow.parseCallbackData(
-        new URLSearchParams(location.search),
+        new URLSearchParams(location.search)
       );
       if ("error" in data) {
         throw new Error(data.error);
@@ -100,7 +96,7 @@ export const useHandleCallback = () => {
       return await authFlow.getGrantData({
         code: data.code,
         code_verifier,
-        redirect_uri: env.redirect_uri,
+        redirect_uri: env.redirect_uri
       });
     },
     staleTime: Infinity,
@@ -109,6 +105,6 @@ export const useHandleCallback = () => {
       localStorage.setItem(SPOTIFY_REFRESH_TOKEN, refresh_token);
       localStorage.setItem(SPOTIFY_ACCESS_TOKNE, access_token);
     },
-    retry: false,
+    retry: false
   });
 };

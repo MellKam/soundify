@@ -10,30 +10,37 @@ export default function () {
   const client = useMemo(() => {
     const accessToken = getCookie(ACCESS_TOKEN);
 
-    return new SpotifyClient({
-      token: typeof accessToken === "string" ? accessToken : undefined,
-      refresh: async () => {
-        const res = await fetch("/api/refresh");
-        if (!res.ok) {
-          throw new Error(await res.text());
-        }
+    return new SpotifyClient(
+      {
+        token: typeof accessToken === "string" ? accessToken : undefined,
+        refresh: async () => {
+          const res = await fetch("/api/refresh");
+          if (!res.ok) {
+            throw new Error(await res.text());
+          }
 
-        const access_token = getCookie(ACCESS_TOKEN);
-        if (typeof access_token !== "string") {
-          throw new Error("Cannot refresh access token");
-        }
+          const access_token = getCookie(ACCESS_TOKEN);
+          if (typeof access_token !== "string") {
+            throw new Error("Cannot refresh access token");
+          }
 
-        return access_token;
+          return access_token;
+        }
       },
-    }, {
-      onUnauthorized: authorize,
-    });
+      {
+        onUnauthorized: authorize
+      }
+    );
   }, []);
 
-  const { data: user, status, error } = useQuery({
+  const {
+    data: user,
+    status,
+    error
+  } = useQuery({
     queryKey: ["user-profile"],
     queryFn: () => getCurrentUser(client),
-    retry: false,
+    retry: false
   });
 
   if (status === "error") {

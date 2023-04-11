@@ -6,7 +6,7 @@ export const SpotifyContext = createContext<SpotifyClient | null>(null);
 
 const env = {
   client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-  redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
+  redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI
 };
 
 const authFlow = new ImplicitFlow(env.client_id);
@@ -19,8 +19,8 @@ const authorize = () => {
     authFlow.getAuthURL({
       scopes: ["user-read-email"],
       state,
-      redirect_uri: env.redirect_uri,
-    }),
+      redirect_uri: env.redirect_uri
+    })
   );
 };
 
@@ -38,9 +38,7 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
   const client = new SpotifyClient(accessToken, { onUnauthorized: authorize });
 
   return (
-    <SpotifyContext.Provider value={client}>
-      {children}
-    </SpotifyContext.Provider>
+    <SpotifyContext.Provider value={client}>{children}</SpotifyContext.Provider>
   );
 };
 
@@ -70,6 +68,6 @@ export const useHandleCallback = () => {
       localStorage.removeItem("state");
       localStorage.setItem("SPOTIFY_ACCESS_TOKEN", params.access_token);
       return true;
-    },
+    }
   });
 };

@@ -18,5 +18,5 @@ export {
   type JSONObject,
   type JSONValue,
   type SearchParam,
-  type SearchParams,
+  type SearchParams
 } from "../shared";

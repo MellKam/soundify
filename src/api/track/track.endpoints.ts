@@ -6,7 +6,7 @@ import {
   AudioFeatures,
   GetRecommendationsOpts,
   Recomendations,
-  Track,
+  Track
 } from "./track.types";
 
 /**
@@ -23,7 +23,7 @@ export const getTrack = async (
   market?: Market
 ) => {
   return await client.fetch<Track>("/tracks/" + track_id, "json", {
-    query: { market },
+    query: { market }
   });
 };
 
@@ -43,8 +43,8 @@ export const getTracks = async (
     await client.fetch<{ tracks: Track[] }>("/tracks", "json", {
       query: {
         ids: track_ids,
-        market,
-      },
+        market
+      }
     })
   ).tracks;
 };
@@ -68,7 +68,7 @@ export const getSavedTracks = async (
   opts: GetSavedTracksOpts
 ) => {
   return await client.fetch<PagingObject<Track>>("/me/tracks", "json", {
-    query: opts,
+    query: opts
   });
 };
 
@@ -82,8 +82,8 @@ export const saveTracks = async (client: HTTPClient, track_ids: string[]) => {
   await client.fetch("/me/tracks", "void", {
     method: "PUT",
     query: {
-      ids: track_ids,
-    },
+      ids: track_ids
+    }
   });
 };
 
@@ -110,8 +110,8 @@ export const removeSavedTracks = async (
   await client.fetch("/me/tracks", "void", {
     method: "DELETE",
     query: {
-      ids: track_ids,
-    },
+      ids: track_ids
+    }
   });
 };
 
@@ -140,8 +140,8 @@ export const checkSavedTracks = async (
 ) => {
   return await client.fetch<boolean[]>("/me/tracks/contains", "json", {
     query: {
-      ids: track_ids,
-    },
+      ids: track_ids
+    }
   });
 };
 
@@ -171,8 +171,8 @@ export const getTracksAudioFeatures = async (
       "json",
       {
         query: {
-          ids: track_ids,
-        },
+          ids: track_ids
+        }
       }
     )
   ).audio_features;
@@ -222,6 +222,6 @@ export const getRecommendations = async (
   opts: GetRecommendationsOpts
 ) => {
   return await client.fetch<Recomendations>("/recommendations", "json", {
-    query: opts,
+    query: opts
   });
 };

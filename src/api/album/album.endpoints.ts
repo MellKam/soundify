@@ -17,7 +17,7 @@ export const getAlbum = async (
   market?: Market
 ) => {
   return await client.fetch<Album>("/albums/" + album_id, "json", {
-    query: { market },
+    query: { market }
   });
 };
 
@@ -35,7 +35,7 @@ export const getAlbums = async (
 ) => {
   return (
     await client.fetch<{ albums: Album[] }>("/albums", "json", {
-      query: { market, ids: album_ids },
+      query: { market, ids: album_ids }
     })
   ).albums;
 };
@@ -65,7 +65,7 @@ export const getAlbumTracks = async (
     `/albums/${album_id}/tracks`,
     "json",
     {
-      query: opts,
+      query: opts
     }
   );
 };
@@ -100,7 +100,7 @@ export const getSavedAlbums = async (
       album: Album;
     }>
   >("/me/albums", "json", {
-    query: opts,
+    query: opts
   });
 };
 
@@ -113,7 +113,7 @@ export const getSavedAlbums = async (
 export const saveAlbums = async (client: HTTPClient, albums_ids: string[]) => {
   await client.fetch("/me/albums", "void", {
     method: "PUT",
-    query: { ids: albums_ids },
+    query: { ids: albums_ids }
   });
 };
 
@@ -140,8 +140,8 @@ export const removeSavedAlbums = async (
   await client.fetch("/me/albums", "void", {
     method: "DELETE",
     query: {
-      ids: album_ids,
-    },
+      ids: album_ids
+    }
   });
 };
 
@@ -170,8 +170,8 @@ export const checkSavedAlbums = async (
 ) => {
   return await client.fetch<boolean[]>("/me/albums/contains", "json", {
     query: {
-      ids: album_ids,
-    },
+      ids: album_ids
+    }
   });
 };
 
@@ -209,7 +209,7 @@ export const getNewAlbumReleases = async (
       "/browse/new-releases",
       "json",
       {
-        query: opts,
+        query: opts
       }
     )
   ).albums;

@@ -1,16 +1,16 @@
 {
-	"compilerOptions": {
-		"forceConsistentCasingInFileNames": true,
-		"allowSyntheticDefaultImports": true,
-		"noFallthroughCasesInSwitch": true,
-		"noImplicitReturns": true,
-		"noUnusedParameters": true,
-		"strict": true,
-		"declaration": true,
-		"moduleResolution": "node",
-		"module": "ESNext",
-		"rootDir": "./src/",
-		"outDir": "./dist/",
-		"target": "ESNext"
-	}
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "rootDir": "./src/",
+    "outDir": "./dist/",
+    "target": "ESNext"
+  }
 }

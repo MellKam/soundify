@@ -11,10 +11,9 @@
   </a>
 </p>
 
-This is a subpackage of the Soundify project that handles Spotify authorization. Supports all authorization flows and works in any environment. 
+This is a subpackage of the Soundify project that handles Spotify authorization. Supports all authorization flows and works in any environment.
 
 - [`@soundify/web-auth`](https://www.npmjs.com/package/@soundify/web-auth) - Authorization for nodejs (server-side)
 - [`@soudnify/node-auth`](https://www.npmjs.com/package/@soundify/node-auth) - Authorization for browser (client-side)
 
 [Soundify documentation](https://github.com/MellKam/soundify#readme)
-

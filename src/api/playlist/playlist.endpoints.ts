@@ -5,7 +5,7 @@ import {
   FeaturedPlaylists,
   Playlist,
   PlaylistSimplified,
-  PlaylistTrack,
+  PlaylistTrack
 } from "../playlist/playlist.types";
 import { HTTPClient } from "../client";
 
@@ -42,7 +42,7 @@ export const getPlaylist = async (
   opts?: GetPlaylistOpts
 ) => {
   return await client.fetch<Playlist>("/playlists/" + playlist_id, "json", {
-    query: opts,
+    query: opts
   });
 };
 
@@ -81,7 +81,7 @@ export const changePlaylistDetails = async (
 ) => {
   await client.fetch("/playlists/" + playlist_id, "void", {
     method: "PUT",
-    json: body,
+    json: body
   });
 };
 
@@ -112,7 +112,7 @@ export const getPlaylistTrack = async (
     `/playlists/${playlist_id}/tracks`,
     "json",
     {
-      query: opts,
+      query: opts
     }
   );
 };
@@ -140,8 +140,8 @@ export const addItemsToPlaylist = async (
       method: "POST",
       query: {
         uris,
-        position,
-      },
+        position
+      }
     }
   );
 };
@@ -200,7 +200,7 @@ export const reorderPlaylistItems = async (
     "json",
     {
       method: "PUT",
-      json: opts,
+      json: opts
     }
   );
 };
@@ -223,7 +223,7 @@ export const replacePlaylistItems = async (
     "json",
     {
       method: "PUT",
-      json: { uris },
+      json: { uris }
     }
   );
 };
@@ -248,9 +248,9 @@ export const removePlaylistItems = async (
     {
       method: "DELETE",
       json: {
-        tracks: uris.map((uri) => ({ uri })),
-        snapshot_id,
-      },
+        tracks: uris.map(uri => ({ uri })),
+        snapshot_id
+      }
     }
   );
 };
@@ -286,7 +286,7 @@ export const getCurrentUsersPlaylists = async (
     "/me/playlists",
     "json",
     {
-      query: opts,
+      query: opts
     }
   );
 };
@@ -307,7 +307,7 @@ export const getUsersPlaylists = async (
     `/users/${user_id}/playlists`,
     "json",
     {
-      query: opts,
+      query: opts
     }
   );
 };
@@ -345,7 +345,7 @@ export const createPlaylist = async (
 ) => {
   return await client.fetch<Playlist>(`/users/${user_id}/playlists`, "json", {
     json: body,
-    method: "POST",
+    method: "POST"
   });
 };
 
@@ -382,7 +382,7 @@ export const getFeaturedPlaylists = async (
     "/browse/featured-playlists",
     "json",
     {
-      query: opts,
+      query: opts
     }
   );
 };
@@ -411,7 +411,7 @@ export const getCategorysPlaylists = async (
     `/browse/categories/${category_id}/playlists`,
     "json",
     {
-      query: opts,
+      query: opts
     }
   );
 };
@@ -445,8 +445,8 @@ export const uploadPlaylistCoverImage = async (
   return await client.fetch(`/playlists/${playlist_id}/images`, "void", {
     method: "PUT",
     headers: {
-      "Content-Type": "image/jpeg",
+      "Content-Type": "image/jpeg"
     },
-    body: image,
+    body: image
   });
 };

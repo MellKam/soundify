@@ -62,7 +62,9 @@
     "build:js": "rollup -c",
     "build:types": "tsc",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "lint:check": "prettier --check ./src/ ./examples",
+    "lint": "prettier --write ./src ./examples"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "15.0.2",

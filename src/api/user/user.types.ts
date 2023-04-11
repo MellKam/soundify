@@ -1,7 +1,7 @@
 import {
   type ExternalUrls,
   type Followers,
-  type Image,
+  type Image
 } from "../general.types";
 import { JSONObject } from "../../shared";
 

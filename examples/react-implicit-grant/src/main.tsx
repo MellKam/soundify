@@ -9,16 +9,16 @@ import { SpotifyProvider } from "./spotify";
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
-	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<BrowserRouter>
-				<SpotifyProvider>
-					<Routes>
-						<Route path="/" element={<IndexPage />} />
-						<Route path="/callback" element={<CallbackPage />} />
-					</Routes>
-				</SpotifyProvider>
-			</BrowserRouter>
-		</QueryClientProvider>
-	</React.StrictMode>,
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <SpotifyProvider>
+          <Routes>
+            <Route path="/" element={<IndexPage />} />
+            <Route path="/callback" element={<CallbackPage />} />
+          </Routes>
+        </SpotifyProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>
 );

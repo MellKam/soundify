@@ -26,8 +26,8 @@ export const getArtists = async (client: HTTPClient, artist_ids: string[]) => {
   return (
     await client.fetch<{ artists: Artist[] }>("/artists", "json", {
       query: {
-        ids: artist_ids,
-      },
+        ids: artist_ids
+      }
     })
   ).artists;
 };
@@ -81,8 +81,8 @@ export const getArtistTopTracks = async (
       "json",
       {
         query: {
-          market,
-        },
+          market
+        }
       }
     )
   ).tracks;

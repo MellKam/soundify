@@ -8,11 +8,11 @@ export const Page = () => {
   const {
     status,
     data: userProfile,
-    error,
+    error
   } = useQuery({
     queryKey: ["user-profile"],
     queryFn: () => getCurrentUser(client),
-    retry: false,
+    retry: false
   });
 
   if (status === "error") {

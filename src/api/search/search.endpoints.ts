@@ -4,7 +4,7 @@ import {
   SearchFilters,
   SearchResponse,
   SearchType,
-  SearchTypeLiteral,
+  SearchTypeLiteral
 } from "../search/search.types";
 import { HTTPClient } from "../client";
 
@@ -68,7 +68,7 @@ export const search = async <T extends SearchType[] | SearchType>(
               .map(([key, value]) => (key === "q" ? value : `${key}:${value}`))
               .join(" "),
       type,
-      ...opts,
-    },
+      ...opts
+    }
   });
 };

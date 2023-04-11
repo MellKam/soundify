@@ -4,7 +4,7 @@ import { UserPrivate, UserPublic } from "../user/user.types";
 import {
   CursorPagingObject,
   PagingObject,
-  PagingOptions,
+  PagingOptions
 } from "../general.types";
 import { SearchParams } from "../../shared";
 import { HTTPClient } from "../client";
@@ -57,7 +57,7 @@ export const getUserTopItems = async <T extends TopItemType>(
     "/me/top/" + type,
     "json",
     {
-      query: opts,
+      query: opts
     }
   );
 };
@@ -119,7 +119,7 @@ export const followPlaylist = async (
 ) => {
   await client.fetch(`/playlists/${playlist_id}/followers`, "void", {
     method: "PUT",
-    json: { public: is_public },
+    json: { public: is_public }
   });
 };
 
@@ -136,7 +136,7 @@ export const unfollowPlaylist = async (
   playlist_id: string
 ) => {
   await client.fetch(`/playlists/${playlist_id}/followers`, "void", {
-    method: "DELETE",
+    method: "DELETE"
   });
 };
 
@@ -168,8 +168,8 @@ export const getFollowedArtists = async (
       {
         query: {
           type: "artist",
-          ...opts,
-        },
+          ...opts
+        }
       }
     )
   ).artists;
@@ -191,8 +191,8 @@ export const followArtists = async (
     method: "PUT",
     query: {
       type: "artist",
-      ids: artist_ids,
-    },
+      ids: artist_ids
+    }
   });
 };
 
@@ -221,8 +221,8 @@ export const followUsers = async (client: HTTPClient, user_ids: string[]) => {
     method: "PUT",
     query: {
       type: "user",
-      ids: user_ids,
-    },
+      ids: user_ids
+    }
   });
 };
 
@@ -254,8 +254,8 @@ export const unfollowArtists = async (
     method: "DELETE",
     query: {
       type: "artist",
-      ids: artist_ids,
-    },
+      ids: artist_ids
+    }
   });
 };
 
@@ -284,8 +284,8 @@ export const unfollowUsers = async (client: HTTPClient, user_ids: string[]) => {
     method: "DELETE",
     query: {
       type: "user",
-      ids: user_ids,
-    },
+      ids: user_ids
+    }
   });
 };
 
@@ -316,8 +316,8 @@ export const checkIfUserFollowsArtists = async (
   return await client.fetch<boolean[]>("/me/following/contains", "json", {
     query: {
       type: "artist",
-      ids: artist_ids,
-    },
+      ids: artist_ids
+    }
   });
 };
 
@@ -351,8 +351,8 @@ export const checkIfUserFollowsUsers = async (
   return await client.fetch<boolean[]>("/me/following/contains", "json", {
     query: {
       type: "user",
-      ids: user_ids,
-    },
+      ids: user_ids
+    }
   });
 };
 
@@ -388,8 +388,8 @@ export const checkIfUsersFollowPlaylist = async (
     "json",
     {
       query: {
-        ids: user_ids,
-      },
+        ids: user_ids
+      }
     }
   );
 };

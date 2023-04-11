@@ -9,8 +9,8 @@ type OmitFirst<T extends unknown[]> = T extends [unknown, ...infer R]
 
 export type ISpoitfyAPI = SearchEndpoint & {
   [K in Exclude<keyof typeof endpoints, "search">]: (
-    ...args: OmitFirst<Parameters<typeof endpoints[K]>>
-  ) => ReturnType<typeof endpoints[K]>;
+    ...args: OmitFirst<Parameters<(typeof endpoints)[K]>>
+  ) => ReturnType<(typeof endpoints)[K]>;
 };
 
 // deno-lint-ignore no-explicit-any
@@ -28,7 +28,7 @@ export const createSpotifyAPI = <
   const client = new SpotifyClient(authProvider, opts) as SpotifyClient<T> &
     ISpoitfyAPI;
 
-  (Object.keys(endpoints) as (keyof typeof endpoints)[]).forEach((name) => {
+  (Object.keys(endpoints) as (keyof typeof endpoints)[]).forEach(name => {
     client[name] = (endpoints[name] as Endpoint).bind(null, client);
   });
 

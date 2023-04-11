@@ -7,7 +7,7 @@ import { ArtistSimplified } from "../artist/artist.types";
 import {
   ExternalIds,
   ExternalUrls,
-  RestrictionsReason,
+  RestrictionsReason
 } from "../general.types";
 
 export interface LinkedTrack extends JSONObject {

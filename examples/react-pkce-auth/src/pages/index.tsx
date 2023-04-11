@@ -5,10 +5,14 @@ import { useSpotifyClient } from "../spotify";
 export const Page = () => {
   const client = useSpotifyClient();
 
-  const { status, data: topArtists, error } = useQuery({
+  const {
+    status,
+    data: topArtists,
+    error
+  } = useQuery({
     queryKey: ["user-profile"],
     queryFn: () => getUserTopItems(client, "artists"),
-    retry: false,
+    retry: false
   });
 
   if (status === "error") {
@@ -26,15 +30,15 @@ export const Page = () => {
           display: "flex",
           flexDirection: "column",
           rowGap: "8px",
-          paddingLeft: "0",
+          paddingLeft: "0"
         }}
       >
-        {topArtists.items.map((artist) => (
+        {topArtists.items.map(artist => (
           <li
             style={{
               display: "flex",
               alignItems: "center",
-              columnGap: "12px",
+              columnGap: "12px"
             }}
             key={artist.id}
           >

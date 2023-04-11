@@ -4,7 +4,7 @@ import {
   ExternalUrls,
   Image,
   PagingObject,
-  RestrictionsReason,
+  RestrictionsReason
 } from "../general.types";
 import { Artist, ArtistSimplified } from "../artist/artist.types";
 import { Market } from "../market/market.types";

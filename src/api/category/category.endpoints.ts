@@ -48,7 +48,7 @@ export const getBrowseCategories = async (
       "/browse/categories",
       "json",
       {
-        query: opts,
+        query: opts
       }
     )
   ).categories;
@@ -84,7 +84,7 @@ export const getBrowseCategory = async (
     "/browse/categories/" + category_id,
     "json",
     {
-      query: opts,
+      query: opts
     }
   );
 };
