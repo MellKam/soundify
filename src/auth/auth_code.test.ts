@@ -1,10 +1,6 @@
 import { AuthCodeFlow } from "./auth_code";
 import createFetchMock from "vitest-fetch-mock";
-import {
-  AuthError,
-  SpotifyAuthErrorObject,
-  getBasicAuthHeader
-} from "./general";
+import { AuthError, AuthErrorObject, getBasicAuthHeader } from "./general";
 import { faker } from "@faker-js/faker";
 import {
   getKeypairResponse,
@@ -90,7 +86,7 @@ it("AuthCode: getGrantData #1", async () => {
 });
 
 it("AuthCode: getGrantData #2", async () => {
-  const rawError: SpotifyAuthErrorObject = {
+  const rawError: AuthErrorObject = {
     error: "invalid_client",
     error_description: "Something went wront"
   };
@@ -146,7 +142,7 @@ it("AuthCode: refresh #1", async () => {
 
 it("AuthCode: refresh #2", async () => {
   const refresh_token = faker.random.alphaNumeric(64);
-  const rawError: SpotifyAuthErrorObject = {
+  const rawError: AuthErrorObject = {
     error: faker.lorem.lines(1),
     error_description: faker.lorem.lines(1)
   };

@@ -103,7 +103,7 @@ export interface GetPlaylistTracksOpts
  * @param playlist_id The Spotify ID of the playlist.
  * @param opts Additional options for request
  */
-export const getPlaylistTrack = async (
+export const getPlaylistTracks = async (
   client: HTTPClient,
   playlist_id: string,
   opts?: GetPlaylistTracksOpts
@@ -248,7 +248,7 @@ export const removePlaylistItems = async (
     {
       method: "DELETE",
       json: {
-        tracks: uris.map(uri => ({ uri })),
+        tracks: uris.map((uri) => ({ uri })),
         snapshot_id
       }
     }

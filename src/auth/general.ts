@@ -1,5 +1,3 @@
-import { IAuthProvider, JSONObject, parseResponse } from "../shared";
-
 export const SPOTIFY_AUTH = "https://accounts.spotify.com/";
 export const URL_ENCODED = "application/x-www-form-urlencoded;";
 
@@ -104,24 +102,19 @@ export type AuthScope = (typeof SCOPES)[keyof typeof SCOPES];
 /**
  * @see https://developer.spotify.com/documentation/web-api/concepts/api-calls#authentication-error-object
  */
-export type SpotifyAuthErrorObject = {
+export type AuthErrorObject = {
   error: string;
   error_description?: string;
 };
 
 export class AuthError extends Error {
   constructor(
-    public readonly raw: string | SpotifyAuthErrorObject,
+    public readonly raw: string | AuthErrorObject,
     public readonly status: number,
     options?: ErrorOptions
   ) {
     super(typeof raw === "object" ? raw.error : raw, options);
     this.name = "AuthError";
-  }
-
-  static async create(res: Response) {
-    const raw = await parseResponse<SpotifyAuthErrorObject>(res);
-    return new AuthError(raw, res.status);
   }
 }
 
@@ -237,5 +230,5 @@ export type ApiTokenReqParams = {
 
 type ResponseWithToken = { access_token: string };
 
-export type FlowRefresher<T extends ResponseWithToken = ResponseWithToken> =
+export type Refresher<T extends ResponseWithToken = ResponseWithToken> =
   () => Promise<T>;

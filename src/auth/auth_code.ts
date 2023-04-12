@@ -1,4 +1,4 @@
-import { IAuthProvider, toQueryString } from "../shared";
+import { IAuthProvider, parseResponse, toQueryString } from "../shared";
 import {
   ApiTokenReqParams,
   AuthorizeReqParams,
@@ -10,7 +10,8 @@ import {
   SPOTIFY_AUTH,
   AuthError,
   URL_ENCODED,
-  FlowRefresher
+  Refresher,
+  AuthErrorObject
 } from "./general";
 
 type GetAuthURLOpts = {
@@ -100,6 +101,11 @@ export class AuthCodeFlow {
   }
 
   /**
+   * Helper function that parses the callback data returned by an spotify authorization server in search params.
+   */
+  static parseCallbackData = parseCallbackData;
+
+  /**
    * Retrieves an access and refresh token from the Spotify API using an authorization code and client credentials.
    *
    * @param redirect_uri URI for redirection after the user grants or denies permission.
@@ -132,7 +138,12 @@ export class AuthCodeFlow {
       }
     });
 
-    if (!res.ok) throw await AuthError.create(res);
+    if (!res.ok) {
+      throw new AuthError(
+        await parseResponse<AuthErrorObject>(res),
+        res.status
+      );
+    }
 
     return (await res.json()) as KeypairResponse;
   }
@@ -155,17 +166,17 @@ export class AuthCodeFlow {
       }
     });
 
-    if (!res.ok) throw await AuthError.create(res);
+    if (!res.ok) {
+      throw new AuthError(
+        await parseResponse<AuthErrorObject>(res),
+        res.status
+      );
+    }
 
     return (await res.json()) as ScopedAccessResponse;
   }
 
-  /**
-   * Helper function that parses the callback data returned by an spotify authorization server in search params.
-   */
-  static parseCallbackData = parseCallbackData;
-
-  createRefresher(refresh_token: string): FlowRefresher<ScopedAccessResponse> {
+  createRefresher(refresh_token: string): Refresher<ScopedAccessResponse> {
     return this.refresh.bind(this, refresh_token);
   }
 

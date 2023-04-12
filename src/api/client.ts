@@ -9,7 +9,7 @@ import {
 /**
  * @see https://developer.spotify.com/documentation/web-api/concepts/api-calls#regular-error-object
  */
-type SpotifyRegularErrorObject = {
+type RegularErrorObject = {
   error: {
     message: string;
     status: number;
@@ -19,7 +19,7 @@ type SpotifyRegularErrorObject = {
 
 export class APIError extends Error {
   constructor(
-    public readonly raw: string | SpotifyRegularErrorObject,
+    public readonly raw: string | RegularErrorObject,
     public readonly status: number,
     options?: ErrorOptions
   ) {
@@ -30,7 +30,7 @@ export class APIError extends Error {
 
 export class RateLimitError extends APIError {
   constructor(
-    raw: string | SpotifyRegularErrorObject,
+    raw: string | RegularErrorObject,
     public readonly retryAfter: number,
     options?: ErrorOptions
   ) {
@@ -195,7 +195,7 @@ export class SpotifyClient<
 
       if (res.ok) return res;
 
-      const rawError = await parseResponse<SpotifyRegularErrorObject>(res);
+      const rawError = await parseResponse<RegularErrorObject>(res);
 
       if (
         res.status === 401 &&

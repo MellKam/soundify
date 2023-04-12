@@ -1,4 +1,4 @@
-import { IAuthProvider, toQueryString } from "../shared";
+import { IAuthProvider, parseResponse, toQueryString } from "../shared";
 import {
   ApiTokenReqParams,
   AuthorizeReqParams,
@@ -7,7 +7,8 @@ import {
   parseCallbackData,
   SPOTIFY_AUTH,
   AuthError,
-  URL_ENCODED
+  URL_ENCODED,
+  AuthErrorObject
 } from "./general";
 
 export type GetAuthURLOpts = {
@@ -145,7 +146,12 @@ export class PKCECodeFlow {
       method: "POST"
     });
 
-    if (!res.ok) throw await AuthError.create(res);
+    if (!res.ok) {
+      throw new AuthError(
+        await parseResponse<AuthErrorObject>(res),
+        res.status
+      );
+    }
 
     return (await res.json()) as KeypairResponse;
   }
@@ -168,7 +174,12 @@ export class PKCECodeFlow {
       method: "POST"
     });
 
-    if (!res.ok) throw await AuthError.create(res);
+    if (!res.ok) {
+      throw new AuthError(
+        await parseResponse<AuthErrorObject>(res),
+        res.status
+      );
+    }
 
     return (await res.json()) as KeypairResponse;
   }

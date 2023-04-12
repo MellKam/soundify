@@ -1,10 +1,11 @@
-import { IAuthProvider } from "../shared";
+import { IAuthProvider, parseResponse } from "../shared";
 import {
   AccessResponse,
   getBasicAuthHeader,
   SPOTIFY_AUTH,
   AuthError,
-  URL_ENCODED
+  URL_ENCODED,
+  AuthErrorObject
 } from "./general";
 
 /**
@@ -32,7 +33,12 @@ export class ClientCredentialsFlow {
       })
     });
 
-    if (!res.ok) throw await AuthError.create(res);
+    if (!res.ok) {
+      throw new AuthError(
+        await parseResponse<AuthErrorObject>(res),
+        res.status
+      );
+    }
 
     return (await res.json()) as AccessResponse;
   }
