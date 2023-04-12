@@ -61,7 +61,7 @@ it("AuthCode: getGrantData #1", async () => {
   const code = faker.random.alphaNumeric(48);
   const mockResponse = getKeypairResponse();
 
-  fetchMocker.doMockOnce(req => {
+  fetchMocker.doMockOnce((req) => {
     const url = new URL(req.url);
     expect(req.method).toBe("POST");
     expect(url.pathname).toBe("/api/token");
@@ -91,7 +91,7 @@ it("AuthCode: getGrantData #2", async () => {
     error_description: "Something went wront"
   };
 
-  fetchMocker.doMockOnce(req => {
+  fetchMocker.doMockOnce((req) => {
     const url = new URL(req.url);
     expect(req.method).toBe("POST");
     expect(url.pathname).toBe("/api/token");
@@ -117,7 +117,7 @@ it("AuthCode: refresh #1", async () => {
   const refresh_token = faker.random.alphaNumeric(64);
   const mockResponse = getScopedResponse();
 
-  fetchMocker.doMockOnce(req => {
+  fetchMocker.doMockOnce((req) => {
     const url = new URL(req.url);
     expect(req.method).toBe("POST");
     expect(url.pathname).toBe("/api/token");
@@ -147,7 +147,7 @@ it("AuthCode: refresh #2", async () => {
     error_description: faker.lorem.lines(1)
   };
 
-  fetchMocker.doMockOnce(req => {
+  fetchMocker.doMockOnce((req) => {
     const url = new URL(req.url);
     expect(req.method).toBe("POST");
     expect(url.pathname).toBe("/api/token");

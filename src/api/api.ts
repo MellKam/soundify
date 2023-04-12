@@ -28,7 +28,7 @@ export const createSpotifyAPI = <
   const client = new SpotifyClient(authProvider, opts) as SpotifyClient<T> &
     ISpoitfyAPI;
 
-  (Object.keys(endpoints) as (keyof typeof endpoints)[]).forEach(name => {
+  (Object.keys(endpoints) as (keyof typeof endpoints)[]).forEach((name) => {
     client[name] = (endpoints[name] as Endpoint).bind(null, client);
   });
 

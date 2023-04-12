@@ -33,7 +33,7 @@ export const Page = () => {
           paddingLeft: "0"
         }}
       >
-        {topArtists.items.map(artist => (
+        {topArtists.items.map((artist) => (
           <li
             style={{
               display: "flex",

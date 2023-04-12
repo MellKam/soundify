@@ -167,7 +167,7 @@ export class SpotifyClient<
     const _body = body ? body : json ? JSON.stringify(json) : undefined;
     const _headers = new Headers(SpotifyClient.BASE_HEADERS);
     if (headers) {
-      Object.entries(headers).forEach(record => _headers.append(...record));
+      Object.entries(headers).forEach((record) => _headers.append(...record));
     }
 
     let isRefreshed = false;
@@ -218,7 +218,7 @@ export class SpotifyClient<
         const retryAfter = Number(res.headers.get("Retry-After")) || 0;
 
         if (this.opts.waitForRateLimit) {
-          await new Promise(r => setTimeout(r, retryAfter * 1000));
+          await new Promise((r) => setTimeout(r, retryAfter * 1000));
           return call();
         }
 
@@ -227,7 +227,7 @@ export class SpotifyClient<
 
       if (res.status >= 500 && retries5xx) {
         if (this.opts.retryDelayOn5xx) {
-          await new Promise(r => setTimeout(r, this.opts.retryDelayOn5xx));
+          await new Promise((r) => setTimeout(r, this.opts.retryDelayOn5xx));
         }
 
         retries5xx--;
