@@ -12,46 +12,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Test
-        run: deno test -A
-        env:
-          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
-          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        with:
-          run_install: false
-          version: 8.1.1
-
-      - name: Setup node
+       - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
-          registry-url: "https://registry.npmjs.org"
 
-      - name: Get tag version
-        if: startsWith(github.ref, 'refs/tags/')
-        id: get_tag_version
-        run: echo ::set-output name=TAG_VERSION::${GITHUB_REF/refs\/tags\//}
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: true
+          version: 8.2.0
 
       - name: build and publish
-        if: startsWith(github.ref, 'refs/tags/')
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          deno task build all ${{steps.get_tag_version.outputs.TAG_VERSION}} 
-
-          cd ./dist/shared/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ../..
-
-          cd ./dist/api/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ../..
-
-          cd ./dist/web-auth/ && pnpm publish --ignore-scripts --access public --no-git-checks && cd ../..
-
-          cd ./dist/node-auth/ && pnpm publish --ignore-scripts --access public --no-git-checks
+        run: 
+          pnpm build && pnpm publish --ignore-scripts --access public --no-git-checks
+          
