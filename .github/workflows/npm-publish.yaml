@@ -16,6 +16,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@soundify"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -24,6 +26,6 @@ jobs:
           version: 8.2.0
 
       - name: build and publish
+        run: pnpm build && pnpm publish --ignore-scripts --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm build && pnpm publish --ignore-scripts --access public --no-git-checks
