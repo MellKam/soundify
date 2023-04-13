@@ -2,5 +2,7 @@ node_modules
 dist
 *.local
 .env
-cov_profile
+coverage
 coverage.lcov
+types
+.DS_Store

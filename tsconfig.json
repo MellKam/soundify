@@ -1,26 +1,19 @@
 {
-	"compilerOptions": {
-		"forceConsistentCasingInFileNames": true,
-		"noFallthroughCasesInSwitch": true,
-		"noImplicitReturns": true,
-		"noUnusedParameters": true,
-		"strict": true,
-		"declaration": true,
-		"moduleResolution": "node",
-		"module": "ESNext",
-		"outDir": "./dist/",
-		"target": "ESNext"
-	},
-	"include": [
-		"mod.ts",
-		"./shared/**/*.ts",
-		"./api/**/*.ts",
-		"./auth/**/*.ts"
-	],
-	"exclude": [
-		"auth/platform/**/*.web.ts",
-		"./examples/**",
-		"./scripts/**",
-		"./dist/**"
-	]
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "declaration": true,
+    "lib": ["DOM", "ESNext", "DOM.Iterable"],
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ESNext",
+    "outDir": "types"
+  },
+  "include": ["./src/"],
+  "exclude": ["node_modules", "./src/**/**.test.ts"]
 }

@@ -1,0 +1,101 @@
+{
+  "name": "@soundify/web-api",
+  "version": "0.2.0-alpha.0",
+  "description": "🎧 Modern Spotify api wrapper for Node, Deno, and browser",
+  "type": "module",
+  "main": "dist/server.cjs",
+  "module": "dist/server.js",
+  "types": "types/index.d.ts",
+  "browser": {
+    "dist/server.cjs": "dist/browser-prod.cjs",
+    "dist/server.js": "dist/browser-prod.js"
+  },
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "types/",
+    "src/",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "browser": {
+        "development": {
+          "import": {
+            "types": "./types/index.d.ts",
+            "default": "./dist/browser-dev.js"
+          },
+          "require": "./dist/browser-dev.cjs"
+        },
+        "import": {
+          "types": "./types/index.d.ts",
+          "default": "./dist/browser-prod.js"
+        },
+        "require": "./dist/browser-prod..cjs"
+      },
+      "node": {
+        "import": {
+          "types": "./types/index.d.ts",
+          "default": "./dist/server.js"
+        },
+        "require": "./dist/server.cjs"
+      },
+      "deno": "./dist/server.js",
+      "bun": "./dist/server.js",
+      "import": {
+        "types": "./types/index.d.ts",
+        "default": "./dist/server.js"
+      },
+      "require": "./dist/server.cjs"
+    }
+  },
+  "scripts": {
+    "dev:watch": "rollup -c -w",
+    "build": "pnpm run build:clean && pnpm run build:js && pnpm run build:types",
+    "build:clean": "rimraf dist/ types/",
+    "build:js": "rollup -c",
+    "build:types": "tsc --emitDeclarationOnly",
+    "types:check": "tsc --noEmit",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint:check": "prettier --check ./src/ ./examples",
+    "lint": "prettier --write ./src ./examples"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "15.0.2",
+    "@faker-js/faker": "7.6.0",
+    "@rollup/plugin-replace": "5.0.2",
+    "@rollup/plugin-babel": "6.0.3",
+    "@types/node": "18.15.11",
+    "@babel/core": "7.21.4",
+    "@babel/preset-typescript": "7.21.4",
+    "rimraf": "^4.4.1",
+    "rollup": "3.20.2",
+    "vitest": "0.30.0",
+    "@vitest/coverage-c8": "0.30.0",
+    "typescript": "5.0.4",
+    "vitest-fetch-mock": "0.2.2",
+    "prettier": "2.8.7",
+    "envalid": "7.3.1"
+  },
+  "author": {
+    "name": "Artem Melnyk",
+    "url": "https://github.com/MellKam"
+  },
+  "homepage": "https://github.com/MellKam/soundify/readme",
+  "keywords": [
+    "spotify",
+    "api",
+    "wrapper",
+    "music",
+    "client",
+    "soundify",
+    "web",
+    "js",
+    "ts",
+    "deno"
+  ]
+}

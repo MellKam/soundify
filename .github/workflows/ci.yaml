@@ -15,49 +15,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup deno
-        uses: denoland/setup-deno@v1
+      - name: Setup node
+        uses: actions/setup-node@v3
         with:
-          deno-version: v1.x
+          node-version: "18.x"
 
-      - name: Lint
-        run: deno task lint:check
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: true
+          version: 8.2.0
+
+      - name: Lint check
+        run: pnpm lint:check
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Test
-        run: deno test -A --coverage=cov_profile
-        env:
-          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
-          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-
-      - name: Create coverage report
-        run: deno coverage ./cov_profile --lcov >> coverage.lcov
-
-      - name: Collect coverage
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.lcov
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
 
       - name: Setup node
         uses: actions/setup-node@v3
@@ -67,8 +42,40 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          run_install: false
-          version: 8.1.1
+          run_install: true
+          version: 8.2.0
+
+      - name: Test
+        run: pnpm test:coverage
+        env:
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+
+      - name: Collect coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/coverage.lcov
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: true
+          version: 8.2.0
+
+      - name: Check types
+        run: pnpm types:check
 
       - name: Build
-        run: deno task build
+        run: pnpm build
