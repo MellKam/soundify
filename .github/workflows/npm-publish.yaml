@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-       - name: Setup node
+      - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
@@ -26,6 +26,4 @@ jobs:
       - name: build and publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: 
-          pnpm build && pnpm publish --ignore-scripts --access public --no-git-checks
-          
+        run: pnpm build && pnpm publish --ignore-scripts --access public --no-git-checks
