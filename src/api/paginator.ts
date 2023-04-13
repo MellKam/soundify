@@ -1,6 +1,9 @@
 import { JSONObject } from "../shared";
 import { PagingObject, PagingOptions } from "./general.types";
 
+/**
+ * Represents the possible directions a paginator can take, where the values of "next" and "prev" indicate whether the iterator is navigating forward or backward.
+ */
 type PaginatorDirection = "next" | "prev";
 
 type NextPageOpts = {
@@ -18,13 +21,8 @@ const DEFAULTS: Required<PaginatorOpts> = {
   offset: 0
 };
 
-// const createChunkIterator = (
-//   private fetcher: (opts: PagingOptions) => Promise<PagingObject<T>>,
-//   defaults: PaginatorOpts = {}
-// ) => {};
-
 export class ChunkPaginator<T extends JSONObject> {
-  private defaults!: Required<PaginatorOpts>;
+  private defaults: Required<PaginatorOpts>;
 
   constructor(
     private fetcher: (opts: PagingOptions) => Promise<PagingObject<T>>,
@@ -36,16 +34,18 @@ export class ChunkPaginator<T extends JSONObject> {
     this.defaults = defaults as Required<PaginatorOpts>;
   }
 
+  iter() {
+    return this[Symbol.asyncIterator]();
+  }
+
   [Symbol.asyncIterator](): AsyncIterator<T[], T[], NextPageOpts | undefined> {
     let done = false;
-    let offset = this.defaults.offset;
-    let limit = this.defaults.limit;
-    let direction = this.defaults.direction;
+    let { direction, limit, offset } = this.defaults;
 
     return {
       next: async (opts = {}) => {
         if (done) return { done, value: [] };
-        limit = opts.limit ? opts.limit : this.defaults.limit;
+        limit = opts.limit ?? this.defaults.limit;
         offset = opts.setOffset ? opts.setOffset(offset) : offset;
 
         const chunk = await this.fetcher({ limit, offset });
@@ -65,8 +65,8 @@ export class ChunkPaginator<T extends JSONObject> {
   }
 }
 
-export class SignlePaginator<T extends JSONObject> {
-  private defaults!: Required<PaginatorOpts>;
+export class Paginator<T extends JSONObject> {
+  private defaults: Required<PaginatorOpts>;
 
   constructor(
     private fetcher: (opts: PagingOptions) => Promise<PagingObject<T>>,
@@ -78,10 +78,20 @@ export class SignlePaginator<T extends JSONObject> {
     this.defaults = defaults as Required<PaginatorOpts>;
   }
 
+  async collect() {
+    const items: T[] = [];
+    for await (const item of this) {
+      items.push(item);
+    }
+    return items;
+  }
+
+  iter() {
+    return this[Symbol.asyncIterator]();
+  }
+
   async *[Symbol.asyncIterator](): AsyncGenerator<T, T> {
-    let offset = this.defaults.offset;
-    let limit = this.defaults.limit;
-    let direction = this.defaults.direction;
+    let { direction, limit, offset } = this.defaults;
 
     while (true) {
       const chunk = await this.fetcher({ limit, offset });

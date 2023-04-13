@@ -86,7 +86,7 @@ export interface PlaylistTrack extends JSONObject {
    * Whether this track or episode is a local file or not.
    */
   is_local: boolean;
-  track: Track | null;
+  track: Track;
 }
 
 export interface Playlist extends PlaylistSimplified, JSONObject {
