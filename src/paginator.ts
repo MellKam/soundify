@@ -1,5 +1,5 @@
-import { JSONObject } from "../shared";
-import { PagingObject, PagingOptions } from "./general.types";
+import { JSONObject } from "./shared";
+import { PagingObject, PagingOptions } from "./api/general.types";
 
 /**
  * Represents the possible directions a paginator can take, where the values of "next" and "prev" indicate whether the iterator is navigating forward or backward.

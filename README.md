@@ -3,11 +3,8 @@
      <img align="center" width="480px" src="https://svgshare.com/i/rf9.svg">
   </p>
   <p align="center">
-    <a href="https://www.npmjs.com/package/@soundify/api">
-      <img alt="npm" src="https://img.shields.io/npm/v/@soundify/api?color=509BF5">
-    </a>
-    <a href="https://deno.land/x/soundify">
-      <img alt="deno.land" src="https://img.shields.io/github/v/tag/MellKam/soundify?color=509BF5&label=deno.land%2Fx&logo=deno">
+    <a href="https://www.npmjs.com/package/@soundify/web-api">
+      <img alt="npm" src="https://img.shields.io/npm/v/@soundify/web-api?color=509BF5">
     </a>
     <a href="https://github.com/MellKam/soundify/blob/main/LICENSE">
       <img alt="license" src="https://img.shields.io/github/license/MellKam/soundify?color=509BF5">
