@@ -129,13 +129,13 @@ import { AuthCode } from "@soundify/web-api";
 
 const authFlow = new AuthCode({
   client_id: "YOUR_CLIENT_ID",
-  client_secret: "YOUR_CLIENT_SECRET",
+  client_secret: "YOUR_CLIENT_SECRET"
 });
 
 const loginHandler = async (req, res) => {
   const authURL = authFlow.getAuthURL({
     redirect_uri: "YOUR_REDIRECT_URI",
-    scopes: ["user-read-email"],
+    scopes: ["user-read-email"]
   });
   res.redirect(302, authURL.toString());
 };
@@ -147,7 +147,7 @@ const codeHandler = async (req, res) => {
 
     const { access_token, refresh_token } = await authFlow.getGrantData(
       "YOUR_REDIRECT_URI",
-      code,
+      code
     );
     res.cookie("refresh_token", refresh_token);
     res.status(200).json({ access_token });
@@ -198,14 +198,14 @@ const authorize = async () => {
     authFlow.getAuthURL({
       code_challenge,
       scopes: ["user-read-email"],
-      redirect_uri: "YOUR_REDIRECT_URI",
-    }),
+      redirect_uri: "YOUR_REDIRECT_URI"
+    })
   );
 };
 
 const codeHandler = async () => {
   const data = PKCEAuthCode.parseCallbackData(
-    new URLSearchParams(location.search),
+    new URLSearchParams(location.search)
   );
 
   if ("error" in data) {
@@ -220,7 +220,7 @@ const codeHandler = async () => {
   const { refresh_token, access_token } = authFlow.getGrantData({
     code: data.code,
     code_verifier,
-    redirect_uri: "YOUR_REDIRECT_URI",
+    redirect_uri: "YOUR_REDIRECT_URI"
   });
 
   localStorage.removeItem("code_verifier");
@@ -255,7 +255,7 @@ import { ClientCredentials } from "@soundify/web-api";
 
 const authFlow = new ClientCredentials({
   client_id: "YOUR_CLIENT_ID",
-  client_secret: "YOUR_CLIENT_SECRET",
+  client_secret: "YOUR_CLIENT_SECRET"
 });
 
 const { access_token } = await authFlow.getAccessToken();
@@ -292,8 +292,8 @@ const authorize = () => {
     authFlow.getAuthURL({
       scopes: ["user-read-email"],
       state,
-      redirect_uri: "YOUR_REDIRECT_URI",
-    }),
+      redirect_uri: "YOUR_REDIRECT_URI"
+    })
   );
 };
 
@@ -364,7 +364,7 @@ const authProvider = new AuthProvider({
   refresher: async () => {
     // somehow refresh and get new `access_token`
     return { access_token };
-  },
+  }
 });
 
 const client = new SpotifyClient(authProvider);
@@ -417,10 +417,9 @@ AuthCode.getAuthURL({
 })
 ```
 
-## Contributors
+## Contributors ✨
 
-All contributions are very welcome
-[emoji key](https://allcontributors.org/docs/en/emoji-key) ❤️
+All contributions are very welcome ❤️ ([emoji key](https://allcontributors.org/docs/en/emoji-key))
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
