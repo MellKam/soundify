@@ -98,6 +98,11 @@ export interface Image extends JSONObject {
   width: number | null;
 }
 
+export interface ResumePoint extends JSONObject {
+  fully_played: boolean;
+  resume_position_ms: number;
+}
+
 export interface Followers extends JSONObject {
   /**
    * This will always be set to null, as the Web API does not support it at the moment.
