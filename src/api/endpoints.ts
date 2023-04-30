@@ -7,4 +7,5 @@ export * from "./playlist/playlist.endpoints";
 export * from "./track/track.endpoints";
 export * from "./user/user.endpoints";
 export * from "./episode/episode.endpoints";
+export * from "./show/show.endpoints";
 export { search, type SearchOpts } from "./search/search.endpoints";
