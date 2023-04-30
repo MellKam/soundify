@@ -7,6 +7,8 @@ export * from "./playlist/playlist.types";
 export * from "./track/track.types";
 export * from "./user/user.types";
 export * from "./search/search.types";
+export * from "./episode/episode.types";
+export * from "./show/show.types";
 
 export * from "./endpoints";
 export * from "./general.types";
