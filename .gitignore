@@ -6,3 +6,4 @@ coverage
 coverage.lcov
 types
 .DS_Store
+.idea
