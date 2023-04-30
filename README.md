@@ -1,4 +1,7 @@
 <div align="center">
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
   <p align="center">
      <img align="center" width="480px" src="https://svgshare.com/i/rf9.svg">
   </p>
@@ -420,6 +423,21 @@ AuthCode.getAuthURL({
 ## Contributors
 
 All contributions are very welcome
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/danilluk1"><img src="https://avatars.githubusercontent.com/u/51733612?v=4?s=100" width="100px;" alt="danluki"/><br /><sub><b>danluki</b></sub></a><br /><a href="https://github.com/MellKam/soundify/commits?author=danilluk1" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 [emoji key](https://allcontributors.org/docs/en/emoji-key) ❤️
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
