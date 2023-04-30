@@ -9,7 +9,26 @@
   "imageSize": 100,
   "commit": true,
   "commitConvention": "eslint",
-  "contributors": [],
+  "contributors": [
+    {
+      "login": "MellKam",
+      "name": "Artem Melnyk",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51422045?v=4",
+      "profile": "http://t.me/mellkam",
+      "contributions": [
+        "maintenance"
+      ]
+    },
+    {
+      "login": "danilluk1",
+      "name": "danluki",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51733612?v=4",
+      "profile": "https://github.com/danilluk1",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
   "contributorsPerLine": 7,
   "linkToUsage": false
 }

@@ -424,6 +424,15 @@ All contributions are very welcome ❤️ ([emoji key](https://allcontributors.o
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="left" width="14.28%"><a href="http://t.me/mellkam"><img src="https://avatars.githubusercontent.com/u/51422045?v=4?s=100" width="100px;" alt="Artem Melnyk"/><br /><sub><b>Artem Melnyk</b></sub></a><br /><a href="#maintenance-MellKam" title="Maintenance">🚧</a></td>
+      <td align="center" valign="left" width="14.28%"><a href="https://github.com/danilluk1"><img src="https://avatars.githubusercontent.com/u/51733612?v=4?s=100" width="100px;" alt="danluki"/><br /><sub><b>danluki</b></sub></a><br /><a href="https://github.com/MellKam/soundify/commits?author=danilluk1" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
