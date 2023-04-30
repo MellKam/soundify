@@ -40,7 +40,7 @@ export const getShows = async (
   ).shows;
 };
 
-export interface GetShowTrackOpts extends PagingOptions {
+export interface GetShowEpisodesOpts extends PagingOptions {
   /**
    * An ISO 3166-1 alpha-2 country code.
    * If a country code is specified, only content that is available in that market will be returned.
@@ -59,7 +59,7 @@ export interface GetShowTrackOpts extends PagingOptions {
 export const getShowEpisodes = async (
   client: HTTPClient,
   show_id: string,
-  opts?: GetShowTrackOpts
+  opts?: GetShowEpisodesOpts
 ) => {
   return await client.fetch<PagingObject<EpisodeSimplified>>(
     `/shows/${show_id}/episodes`,
@@ -77,9 +77,11 @@ export interface GetSavedShowsOpts extends PagingOptions {
    */
   market?: Market;
 }
+
 /**
+ * Get a list of shows saved in the current Spotify user's library.
  *
- * @param client  Spotify HTTPClient
+ * @param client Spotify HTTPClient
  * @param opts Additional option for request
  */
 export const getSavedShows = async (
@@ -88,15 +90,20 @@ export const getSavedShows = async (
 ) => {
   return await client.fetch<
     PagingObject<{
+      /**
+       * The date and time the album was saved Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with a zero offset: YYYY-MM-DDTHH:MM:SSZ.
+       */
       added_at: string;
+      /**
+       * Information about the show.
+       */
       show: Show;
     }>
-  >("/me/shows", "json", {
-    query: opts
-  });
+  >("/me/shows", "json", { query: opts });
 };
 
 /**
+ * Save one or more shows to current Spotify user's library.
  *
  * @param client Spotify HTTPClient
  * @param shows_ids List of the Spotify IDs for the shows. Maximum: 20
@@ -109,6 +116,7 @@ export const saveShows = async (client: HTTPClient, shows_ids: string[]) => {
 };
 
 /**
+ * Save show to current Spotify user's library.
  *
  * @param client  Spotify HTTPClient
  * @param show_id The Spotify ID of the show
@@ -118,6 +126,7 @@ export const saveShow = async (client: HTTPClient, show_id: string) => {
 };
 
 /**
+ * Delete one or more shows from current Spotify user's library.
  *
  * @param client Spotify HTTPClient
  * @param show_ids List of the Spotify IDs for the shows. Maximum: 20
@@ -163,6 +172,7 @@ export const checkSavedShows = async (
 
 /**
  * Check if show is already saved in the current Spotify user's 'Your Shows' library.
+ *
  * @param client Spotify HTTPClient
  * @param show_id The Spotify ID of the show
  */

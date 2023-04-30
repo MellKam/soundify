@@ -1,6 +1,5 @@
 import { JSONObject } from "../../shared";
 import {
-  Copyright,
   ExternalUrls,
   Image,
   RestrictionsReason,
@@ -13,7 +12,6 @@ export interface EpisodeSimplified extends JSONObject {
    * A URL to a 30 second preview (MP3 format).
    */
   audio_preview_url: string;
-
   /**
    * A description of the episode without HTML tags.
    */
