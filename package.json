@@ -86,7 +86,8 @@
     "name": "Artem Melnyk",
     "url": "https://github.com/MellKam"
   },
-  "homepage": "https://github.com/MellKam/soundify/readme",
+  "repository": "https://github.com/MellKam/soundify",
+  "readme": "https://github.com/MellKam/soundify#readme",
   "keywords": [
     "spotify",
     "api",
