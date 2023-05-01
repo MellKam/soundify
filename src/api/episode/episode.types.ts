@@ -5,7 +5,7 @@ import {
   RestrictionsReason,
   ResumePoint
 } from "../general.types";
-import { Show } from "../show/show.types";
+import { Show, ShowSimplified } from "../show/show.types";
 
 export interface EpisodeSimplified extends JSONObject {
   /**
@@ -85,7 +85,7 @@ export interface EpisodeSimplified extends JSONObject {
   /**
    * The Spotify URI for the episode.
    */
-  url: string;
+  uri: string;
   /**
    * Included in the response when a content restriction is applied.
    */
@@ -103,5 +103,5 @@ export interface Episode extends EpisodeSimplified, JSONObject {
   /**
    * The show on which episode belongs.
    */
-  show: Show;
+  show: ShowSimplified;
 }
