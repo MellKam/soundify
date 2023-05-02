@@ -8,4 +8,6 @@ export * from "./track/track.endpoints";
 export * from "./user/user.endpoints";
 export * from "./episode/episode.endpoints";
 export * from "./show/show.endpoints";
+export * from "./chapter/chapter.endpoints";
+export * from "./audiobook/audiobook.endpoints";
 export { search, type SearchOpts } from "./search/search.endpoints";

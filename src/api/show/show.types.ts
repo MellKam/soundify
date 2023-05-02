@@ -67,7 +67,7 @@ export interface ShowSimplified extends JSONObject {
   /**
    * The Spotify URI for the show.
    */
-  url: string;
+  uri: string;
   /**
    * The total number of episodes in the show.
    */

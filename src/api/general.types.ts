@@ -120,6 +120,20 @@ export interface Followers extends JSONObject {
   total: number;
 }
 
+export interface Author extends JSONObject {
+  /**
+   * The name of the author.
+   */
+  name: string;
+}
+
+export interface Narrator extends JSONObject {
+  /**
+   * The name of the narrator.
+   */
+  name: string;
+}
+
 export interface ExternalUrls extends JSONObject {
   spotify: string;
 }
