@@ -7,8 +7,8 @@
   "module": "dist/server.js",
   "types": "types/index.d.ts",
   "browser": {
-    "dist/server.cjs": "dist/browser-prod.cjs",
-    "dist/server.js": "dist/browser-prod.js"
+    "dist/server.cjs": "dist/browser.cjs",
+    "dist/server.js": "dist/browser.js"
   },
   "license": "MIT",
   "files": [
@@ -23,41 +23,21 @@
     ".": {
       "types": "./types/index.d.ts",
       "browser": {
-        "development": {
-          "import": {
-            "types": "./types/index.d.ts",
-            "default": "./dist/browser-dev.js"
-          },
-          "require": "./dist/browser-dev.cjs"
-        },
-        "import": {
-          "types": "./types/index.d.ts",
-          "default": "./dist/browser-prod.js"
-        },
-        "require": "./dist/browser-prod..cjs"
+        "import": "./dist/browser.js",
+        "require": "./dist/browser.cjs"
       },
       "node": {
-        "import": {
-          "types": "./types/index.d.ts",
-          "default": "./dist/server.js"
-        },
+        "import": "./dist/server.js",
         "require": "./dist/server.cjs"
       },
       "deno": "./dist/server.js",
       "bun": "./dist/server.js",
-      "import": {
-        "types": "./types/index.d.ts",
-        "default": "./dist/server.js"
-      },
+      "import": "./dist/server.js",
       "require": "./dist/server.cjs"
     }
   },
   "scripts": {
-    "dev:watch": "rollup -c -w",
-    "build": "pnpm run build:clean && pnpm run build:js && pnpm run build:types",
-    "build:clean": "rimraf dist/ types/",
-    "build:js": "rollup -c",
-    "build:types": "tsc --emitDeclarationOnly",
+    "build": "rimraf dist/ types/ && __IS_NODE__=true vite build && __IS_NODE__=false vite build && tsc --emitDeclarationOnly --declaration",
     "types:check": "tsc --noEmit",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -65,22 +45,17 @@
     "lint": "prettier --write ./src ./examples"
   },
   "devDependencies": {
-    "@babel/core": "7.21.5",
-    "@babel/preset-typescript": "7.21.5",
-    "@faker-js/faker": "7.6.0",
-    "@rollup/plugin-babel": "6.0.3",
-    "@rollup/plugin-node-resolve": "15.0.2",
-    "@rollup/plugin-replace": "5.0.2",
     "@types/node": "18.16.3",
-    "@vitest/coverage-c8": "0.30.1",
     "all-contributors-cli": "6.25.0",
     "envalid": "7.3.1",
     "prettier": "2.8.8",
     "rimraf": "5.0.0",
-    "rollup": "3.21.2",
     "typescript": "5.0.4",
+    "vite": "4.3.4",
     "vitest": "0.30.1",
-    "vitest-fetch-mock": "0.2.2"
+    "@vitest/coverage-c8": "0.30.1",
+    "vitest-fetch-mock": "0.2.2",
+    "@faker-js/faker": "7.6.0"
   },
   "author": {
     "name": "Artem Melnyk",

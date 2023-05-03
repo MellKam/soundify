@@ -7,13 +7,29 @@
     "noImplicitReturns": true,
     "noUnusedParameters": true,
     "strict": true,
-    "declaration": true,
-    "lib": ["DOM", "ESNext", "DOM.Iterable"],
+    "lib": [
+      "DOM",
+      "ESNext",
+      "DOM.Iterable"
+    ],
+    "noUnusedLocals": true,
     "moduleResolution": "node",
     "module": "ESNext",
     "target": "ESNext",
-    "outDir": "types"
+    "outDir": "types",
+    "baseUrl": ".",
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "ignoreDeprecations": "5.0",
+    "noUncheckedIndexedAccess": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false
   },
-  "include": ["./src/"],
-  "exclude": ["node_modules", "./src/**/**.test.ts"]
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "./src/**/*.test.ts"
+  ]
 }

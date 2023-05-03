@@ -1,23 +1,32 @@
 import { JSONObject } from "../../shared";
+import { AudiobookSimplified } from "../audiobook/audiobook.types";
 import {
   ExternalUrls,
   Image,
   RestrictionsReason,
   ResumePoint
 } from "../general.types";
-import { ShowSimplified } from "../show/show.types";
+import { Market } from "../market/market.types";
 
-export interface EpisodeSimplified extends JSONObject {
+export interface ChapterSimplified extends JSONObject {
   /**
    * A URL to a 30 second preview (MP3 format).
    */
   audio_preview_url: string;
   /**
-   * A description of the episode without HTML tags.
+   * A list of the countries in which the episode can be played.
+   */
+  available_markets: Market[];
+  /**
+   * The number of the episode
+   */
+  chapter_number: number;
+  /**
+   * The description of the episode without html tags.
    */
   description: string;
   /**
-   * A description of the episode with HTML tags.
+   * The description of the episode with html tags.
    */
   html_description: string;
   /**
@@ -45,18 +54,10 @@ export interface EpisodeSimplified extends JSONObject {
    */
   images: Image[];
   /**
-   * True, if the episode is hosted outside of Spotify's CDN.
-   */
-  is_externally_hosted: boolean;
-  /**
    * If true, the episode is playable in the given market.
    * Otherwise false.
    */
   is_playable: boolean;
-  /**
-   * The language used in the episode. Identified by a ISO 639 code. Deprecated.
-   */
-  language?: string;
   /**
    * A list of the languages used in the episode, identified by their ISO 639-1 code.
    */
@@ -99,9 +100,6 @@ export interface EpisodeSimplified extends JSONObject {
   };
 }
 
-export interface Episode extends EpisodeSimplified, JSONObject {
-  /**
-   * The show on which episode belongs.
-   */
-  show: ShowSimplified;
+export interface Chapter extends ChapterSimplified, JSONObject {
+  audiobook: AudiobookSimplified;
 }
