@@ -52,13 +52,13 @@ export type GetGrantDataOpts = {
   code: string;
 };
 
+const VERIFIER_CHARS =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+
 /**
  * Authorization Code with PKCE Flow
  */
 export class PKCECodeFlow {
-  private static VERIFIER_CHARS =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-
   constructor(private readonly client_id: string) {}
 
   getAuthURL({ scopes, ...opts }: GetAuthURLOpts) {
@@ -84,23 +84,20 @@ export class PKCECodeFlow {
    * @default 64
    */
   static async generateCodeVerifier(length = 64) {
-    const randomBytes = "_IS_NODE_"
+    const randomBytes = __IS_NODE__
       ? new Uint8Array((await import("node:crypto")).randomBytes(length))
       : crypto.getRandomValues(new Uint8Array(length));
 
     let codeVerifier = "";
     for (let i = 0; i < length; i++) {
-      codeVerifier +=
-        PKCECodeFlow.VERIFIER_CHARS[
-          randomBytes[i] % PKCECodeFlow.VERIFIER_CHARS.length
-        ];
+      codeVerifier += VERIFIER_CHARS[randomBytes[i]! % VERIFIER_CHARS.length];
     }
 
     return codeVerifier;
   }
 
   static async getCodeChallenge(code_verifier: string) {
-    if ("_IS_NODE_") {
+    if (__IS_NODE__) {
       return (await import("node:crypto"))
         .createHash("sha256")
         .update(code_verifier)

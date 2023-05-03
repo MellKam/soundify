@@ -162,7 +162,7 @@ export const getBasicAuthHeader = (
 ) => {
   return (
     "Basic " +
-    ("_IS_NODE_"
+    (__IS_NODE__
       ? Buffer.from(client_id + ":" + client_secret).toString("base64")
       : btoa(client_id + ":" + client_secret))
   );
