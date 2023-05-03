@@ -167,7 +167,9 @@ export class SpotifyClient<
     const _body = body ? body : json ? JSON.stringify(json) : undefined;
     const _headers = new Headers(SpotifyClient.BASE_HEADERS);
     if (headers) {
-      Object.entries(headers).forEach((record) => _headers.append(...record));
+      for (const key in headers) {
+        _headers.append(key, headers[key]);
+      }
     }
 
     let isRefreshed = false;

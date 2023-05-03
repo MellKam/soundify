@@ -22,9 +22,16 @@ export type NonNullableJSON<T extends JSONObject> = {
   [K in keyof T]: NonNullable<T[K]>;
 };
 
-export type SearchParam = string | number | boolean | SearchParamArray;
-export type SearchParamArray = SearchParam[];
-export type SearchParams = { [k: string]: SearchParam | undefined };
+export type SearchParam =
+  | string
+  | number
+  | boolean
+  | readonly string[]
+  | readonly number[]
+  | readonly boolean[];
+export interface SearchParams {
+  [k: string]: SearchParam | undefined;
+}
 
 /**
  * Creates a query string from the object and skips `undefined` values.
@@ -32,8 +39,9 @@ export type SearchParams = { [k: string]: SearchParam | undefined };
 export const toQueryString = <T extends SearchParams>(obj: T): string => {
   const params = new URLSearchParams();
 
-  for (const [name, value] of Object.entries(obj)) {
-    if (typeof value !== "undefined") params.set(name, value.toString());
+  for (const key in obj) {
+    const value = obj[key] as SearchParam | undefined;
+    if (typeof value !== "undefined") params.set(key, value.toString());
   }
 
   return params.toString();

@@ -23,7 +23,7 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           run_install: true
-          version: 8.2.0
+          version: latest
 
       - name: build and publish
         run: pnpm build && pnpm publish --ignore-scripts --access public --no-git-checks

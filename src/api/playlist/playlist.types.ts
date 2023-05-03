@@ -3,6 +3,8 @@ import { UserPublic } from "../user/user.types";
 import { Track } from "../track/track.types";
 import { JSONObject } from "../../shared";
 
+export type SnapshotResponse = { snapshot_id: string };
+
 export interface PlaylistSimplified extends JSONObject {
   /**
    * `true` if the owner allows other users to modify the playlist.

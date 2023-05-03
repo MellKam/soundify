@@ -1,6 +1,6 @@
 {
   "name": "@soundify/web-api",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "🎧 Modern Spotify api wrapper for Node, Deno, and browser",
   "type": "module",
   "main": "dist/server.cjs",
@@ -61,6 +61,7 @@
     "name": "Artem Melnyk",
     "url": "https://github.com/MellKam"
   },
+  "packageManager": "pnpm@8.4.0",
   "repository": "https://github.com/MellKam/soundify",
   "readme": "https://github.com/MellKam/soundify#readme",
   "keywords": [
