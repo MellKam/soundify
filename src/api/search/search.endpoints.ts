@@ -59,16 +59,16 @@ export const search = async <T extends SearchType[] | SearchType>(
   type: T,
   opts?: SearchOpts
 ): Promise<Pick<SearchResponse, SearchTypeLiteral<T>>> => {
-  return await client.fetch("/search", "json", {
-    query: {
-      q:
-        typeof query === "string"
-          ? query
-          : Object.entries(query)
-              .map(([key, value]) => (key === "q" ? value : `${key}:${value}`))
-              .join(" "),
-      type,
-      ...opts
+  let q = "";
+  if (typeof query === "string") {
+    q = query;
+  } else {
+    for (const key in query) {
+      q += key === "q" ? query[key] : `${key}:${query[key]}`;
     }
+  }
+
+  return await client.fetch("/search", "json", {
+    query: { q, type, ...opts }
   });
 };

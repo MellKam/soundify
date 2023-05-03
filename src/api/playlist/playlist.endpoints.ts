@@ -5,7 +5,8 @@ import {
   FeaturedPlaylists,
   Playlist,
   PlaylistSimplified,
-  PlaylistTrack
+  PlaylistTrack,
+  SnapshotResponse
 } from "../playlist/playlist.types";
 import { HTTPClient } from "../client";
 
@@ -117,8 +118,6 @@ export const getPlaylistTracks = async (
   );
 };
 
-type SnapshotResponse = { snapshot_id: string };
-
 /**
  * Add one or more items to a user's playlist
  *
@@ -163,7 +162,7 @@ export const addItemToPlaylist = async (
   return await addItemsToPlaylist(client, playlist_id, [uri], position);
 };
 
-export interface ReorderPlaylistItemsOpts extends SearchParams {
+export interface ReorderPlaylistItemsOpts extends JSONObject {
   /**
    * The position of the first item to be reordered.
    */

@@ -31,9 +31,9 @@ export type GetUserTopItemsOpts = {
   time_range?: "long_term" | "medium_term" | "short_term";
 } & PagingOptions;
 
-type TopItemType = "artists" | "tracks";
-type TopItem = Artist | Track;
-interface TopItemMap extends Record<TopItemType, TopItem> {
+export type UserTopItemType = "artists" | "tracks";
+export type UserTopItem = Artist | Track;
+interface UserTopItemMap extends Record<UserTopItemType, UserTopItem> {
   artists: Artist;
   tracks: Track;
 }
@@ -48,18 +48,25 @@ interface TopItemMap extends Record<TopItemType, TopItem> {
  * @param type The type of entity to return. ("artists" or "tracks")
  * @param opts Additional option for request
  */
-export const getUserTopItems = async <T extends TopItemType>(
+export const getUserTopItems = async <T extends UserTopItemType>(
   client: HTTPClient,
   type: T,
   opts?: GetUserTopItemsOpts
 ) => {
-  return await client.fetch<PagingObject<TopItemMap[T]>>(
+  return await client.fetch<PagingObject<UserTopItemMap[T]>>(
     "/me/top/" + type,
     "json",
     {
       query: opts
     }
   );
+};
+
+export type UserTopItemsEndpoint = {
+  getUserTopItems: <T extends UserTopItemType>(
+    type: T,
+    opts?: GetUserTopItemsOpts
+  ) => Promise<PagingObject<UserTopItemMap[T]>>;
 };
 
 /**
@@ -167,8 +174,8 @@ export const getFollowedArtists = async (
       "json",
       {
         query: {
-          type: "artist",
-          ...opts
+          ...opts,
+          type: "artist"
         }
       }
     )

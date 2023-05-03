@@ -28,13 +28,13 @@ export class ChunkPaginator<T extends JSONObject> {
     private fetcher: (opts: PagingOptions) => Promise<PagingObject<T>>,
     defaults: PaginatorOpts = {}
   ) {
-    Object.keys(DEFAULTS).forEach((key) => {
+    for (const key in DEFAULTS) {
       if (!defaults[key]) defaults[key] = DEFAULTS[key];
-    });
+    }
     this.defaults = defaults as Required<PaginatorOpts>;
   }
 
-  iter() {
+  asyncIterator() {
     return this[Symbol.asyncIterator]();
   }
 
@@ -72,21 +72,13 @@ export class Paginator<T extends JSONObject> {
     private fetcher: (opts: PagingOptions) => Promise<PagingObject<T>>,
     defaults: PaginatorOpts = {}
   ) {
-    Object.keys(DEFAULTS).forEach((key) => {
+    for (const key in DEFAULTS) {
       if (!defaults[key]) defaults[key] = DEFAULTS[key];
-    });
+    }
     this.defaults = defaults as Required<PaginatorOpts>;
   }
 
-  async collect() {
-    const items: T[] = [];
-    for await (const item of this) {
-      items.push(item);
-    }
-    return items;
-  }
-
-  iter() {
+  asyncIterator() {
     return this[Symbol.asyncIterator]();
   }
 
@@ -110,5 +102,13 @@ export class Paginator<T extends JSONObject> {
 
       offset = direction === "next" ? offset + limit : offset - limit;
     }
+  }
+
+  async collect() {
+    const items: T[] = [];
+    for await (const item of this) {
+      items.push(item);
+    }
+    return items;
   }
 }
