@@ -24,7 +24,7 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           run_install: true
-          version: 8.2.0
+          version: latest
 
       - name: Lint check
         run: pnpm lint:check
@@ -43,7 +43,7 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           run_install: true
-          version: 8.2.0
+          version: latest
 
       - name: Test
         run: pnpm test:coverage
@@ -72,7 +72,7 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           run_install: true
-          version: 8.2.0
+          version: latest
 
       - name: Check types
         run: pnpm types:check
