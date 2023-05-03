@@ -5,7 +5,7 @@ import {
   RestrictionsReason,
   ResumePoint
 } from "../general.types";
-import { Show, ShowSimplified } from "../show/show.types";
+import { ShowSimplified } from "../show/show.types";
 
 export interface EpisodeSimplified extends JSONObject {
   /**

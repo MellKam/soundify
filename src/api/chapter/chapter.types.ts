@@ -1,5 +1,5 @@
 import { JSONObject } from "../../shared";
-import { Audiobook, AudiobookSimplified } from "../audiobook/audiobook.types";
+import { AudiobookSimplified } from "../audiobook/audiobook.types";
 import {
   ExternalUrls,
   Image,
