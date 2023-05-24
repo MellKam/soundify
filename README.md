@@ -44,10 +44,16 @@
 
 # Installation
 
-## [NPM](https://www.npmjs.com/org/soundify/web-api)
+## [NPM](https://npmjs.com/package/@soundify/web-api)
 
 ```bash
 npm i @soundify/web-api
+```
+
+## Deno
+
+```ts
+import { ... } from "npm:@soundify/web-api";
 ```
 
 # Gettings started
