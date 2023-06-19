@@ -12,8 +12,8 @@ export const getRandomScopes = (): AuthScope[] => {
 
 export const getKeypairResponse = (): KeypairResponse => {
   return {
-    refresh_token: faker.random.alphaNumeric(64),
-    access_token: faker.random.alphaNumeric(64),
+    refresh_token: faker.string.alphanumeric(64),
+    access_token: faker.string.alphanumeric(64),
     expires_in: 3600,
     token_type: "Bearer",
     scope: getRandomScopes().join(" ")
@@ -22,7 +22,7 @@ export const getKeypairResponse = (): KeypairResponse => {
 
 export const getScopedResponse = (): ScopedAccessResponse => {
   return {
-    access_token: faker.random.alphaNumeric(64),
+    access_token: faker.string.alphanumeric(64),
     expires_in: 3600,
     token_type: "Bearer",
     scope: getRandomScopes().join(" ")

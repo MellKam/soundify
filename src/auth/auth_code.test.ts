@@ -18,8 +18,8 @@ let creds: ConstructorParameters<typeof AuthCodeFlow>[0];
 
 beforeEach(() => {
   creds = {
-    client_id: faker.random.alphaNumeric(32),
-    client_secret: faker.random.alphaNumeric(86)
+    client_id: faker.string.alphanumeric(32),
+    client_secret: faker.string.alphanumeric(86)
   };
 
   authFlow = new AuthCodeFlow(creds);
@@ -41,7 +41,7 @@ it("AuthCode: getAuthURL", () => {
     scopes: getRandomScopes(),
     redirect_uri: faker.internet.url(),
     show_dialog: faker.datatype.boolean(),
-    state: faker.datatype.uuid()
+    state: faker.string.uuid()
   };
 
   const url = authFlow.getAuthURL(opts);
@@ -58,7 +58,7 @@ it("AuthCode: getAuthURL", () => {
 
 it("AuthCode: getGrantData #1", async () => {
   const redirect_uri = faker.internet.url();
-  const code = faker.random.alphaNumeric(48);
+  const code = faker.string.alphanumeric(48);
   const mockResponse = getKeypairResponse();
 
   fetchMocker.doMockOnce((req) => {
@@ -102,7 +102,7 @@ it("AuthCode: getGrantData #2", async () => {
   try {
     await authFlow.getGrantData(
       faker.internet.url(),
-      faker.random.alphaNumeric(48)
+      faker.string.alphanumeric(48)
     );
   } catch (error) {
     expect(error).toBeInstanceOf(AuthError);
@@ -114,7 +114,7 @@ it("AuthCode: getGrantData #2", async () => {
 });
 
 it("AuthCode: refresh #1", async () => {
-  const refresh_token = faker.random.alphaNumeric(64);
+  const refresh_token = faker.string.alphanumeric(64);
   const mockResponse = getScopedResponse();
 
   fetchMocker.doMockOnce((req) => {
@@ -141,7 +141,7 @@ it("AuthCode: refresh #1", async () => {
 });
 
 it("AuthCode: refresh #2", async () => {
-  const refresh_token = faker.random.alphaNumeric(64);
+  const refresh_token = faker.string.alphanumeric(64);
   const rawError: AuthErrorObject = {
     error: faker.lorem.lines(1),
     error_description: faker.lorem.lines(1)

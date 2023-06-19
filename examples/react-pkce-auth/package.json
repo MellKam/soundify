@@ -7,17 +7,17 @@
     "build": "vite build"
   },
   "devDependencies": {
-    "@types/react": "18.0.32",
-    "@types/react-dom": "18.0.11",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
     "@vitejs/plugin-react": "3.1.0",
-    "typescript": "4.9.5",
-    "vite": "4.2.1"
+    "typescript": "5.1.3",
+    "vite": "4.3.9"
   },
   "dependencies": {
-    "@tanstack/react-query": "4.28.0",
+    "@tanstack/react-query": "4.29.14",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.10.0",
+    "react-router-dom": "6.13.0",
     "@soundify/web-api": "workspace:*"
   }
 }

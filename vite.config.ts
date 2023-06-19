@@ -1,4 +1,4 @@
-import { defineConfig, Plugin } from "vite";
+import { defineConfig } from "vite";
 
 const __IS_NODE__ = process.env.__IS_NODE__ === "true" ?? true;
 

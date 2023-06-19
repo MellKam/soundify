@@ -9,8 +9,8 @@ import { vi, it, expect } from "vitest";
 
 it("parseCallbackData with code", () => {
   const callbackData: AuthCodeCallbackData = {
-    code: faker.random.alphaNumeric(128),
-    state: faker.random.alphaNumeric(64)
+    code: faker.string.alphanumeric(128),
+    state: faker.string.alphanumeric(64)
   };
 
   const result = parseCallbackData(new URLSearchParams(callbackData));
@@ -21,7 +21,7 @@ it("parseCallbackData with code", () => {
 it("parseCallbackData with error", () => {
   const callbackData: AuthCodeCallbackData = {
     error: faker.lorem.lines(),
-    state: faker.random.alphaNumeric(64)
+    state: faker.string.alphanumeric(64)
   };
 
   const result = parseCallbackData(new URLSearchParams(callbackData));
@@ -31,7 +31,7 @@ it("parseCallbackData with error", () => {
 
 it("parseCallbackData without state", () => {
   const callbackData: AuthCodeCallbackData = {
-    code: faker.random.alphaNumeric(128)
+    code: faker.string.alphanumeric(128)
   };
 
   const result = parseCallbackData(new URLSearchParams(callbackData));
