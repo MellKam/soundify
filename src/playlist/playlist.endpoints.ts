@@ -3,8 +3,8 @@ import type { Image, PagingObject, PagingOptions } from "../general.types.ts";
 import type {
 	FeaturedPlaylists,
 	Playlist,
-	PlaylistSimplified,
 	PlaylistTrack,
+	SimplifiedPlaylist,
 	SnapshotResponse,
 } from "./playlist.types.ts";
 import type { HTTPClient } from "../client.ts";
@@ -262,7 +262,7 @@ export const getCurrentUsersPlaylists = async (
 	options?: PagingOptions,
 ) => {
 	const res = await client.fetch("/v1/me/playlists", { query: options });
-	return res.json() as Promise<PagingObject<PlaylistSimplified>>;
+	return res.json() as Promise<PagingObject<SimplifiedPlaylist>>;
 };
 
 /**
@@ -280,7 +280,7 @@ export const getUsersPlaylists = async (
 	const res = await client.fetch(`/v1/users/${userId}/playlists`, {
 		query: options,
 	});
-	return res.json() as Promise<PagingObject<PlaylistSimplified>>;
+	return res.json() as Promise<PagingObject<SimplifiedPlaylist>>;
 };
 
 export type CreatePlaylistBody = {

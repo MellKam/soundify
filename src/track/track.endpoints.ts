@@ -3,8 +3,8 @@ import type { PagingObject, PagingOptions } from "../general.types.ts";
 import type {
 	AudioAnalysis,
 	AudioFeatures,
-	GetRecommendationsOpts,
 	Recomendations,
+	RecommendationsRequest,
 	Track,
 } from "./track.types.ts";
 import type { Prettify } from "../shared.ts";
@@ -220,7 +220,7 @@ export const getTracksAudioAnalysis = async (
  */
 export const getRecommendations = async (
 	client: HTTPClient,
-	options: GetRecommendationsOpts,
+	options: RecommendationsRequest,
 ) => {
 	const res = await client.fetch("/v1/srecommendations", {
 		query: options,

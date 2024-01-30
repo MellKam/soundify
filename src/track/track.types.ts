@@ -1,11 +1,9 @@
-import type { Prettify } from "../shared.ts";
-import type { AlbumSimplified } from "../album/album.types.ts";
-import type { Artist } from "../artist/artist.types.ts";
-import type { ArtistSimplified } from "../artist/artist.types.ts";
+import type { SimplifiedAlbum } from "../album/album.types.ts";
+import type { Artist, SimplifiedArtist } from "../artist/artist.types.ts";
 import type {
 	ExternalIds,
 	ExternalUrls,
-	RestrictionsReason,
+	Restrictions,
 } from "../general.types.ts";
 
 export type LinkedTrack = {
@@ -21,9 +19,6 @@ export type LinkedTrack = {
 	 * The Spotify ID for the track.
 	 */
 	id: string;
-	/**
-	 * The object type: "track".
-	 */
 	type: "track";
 	/**
 	 * The Spotify URI for the track.
@@ -31,11 +26,11 @@ export type LinkedTrack = {
 	uri: string;
 };
 
-export type TrackSimplified = {
+export interface SimplifiedTrack {
 	/**
 	 * The artists who performed the track.
 	 */
-	artists: ArtistSimplified[];
+	artists: SimplifiedArtist[];
 	/**
 	 * A list of the countries in which the track can be played.
 	 */
@@ -82,9 +77,7 @@ export type TrackSimplified = {
 	/**
 	 * Included in the response when a content restriction is applied.
 	 */
-	restrictions?: {
-		reason: RestrictionsReason;
-	};
+	restrictions?: Restrictions;
 	/**
 	 * The number of the track. If an album has several discs, the track number is the number on the specified disc.
 	 */
@@ -93,39 +86,34 @@ export type TrackSimplified = {
 	 * The Spotify ID for the track.
 	 */
 	id: string;
-	/**
-	 * The object type: "track".
-	 */
 	type: "track";
 	/**
 	 * The Spotify URI for the track.
 	 */
 	uri: string;
-};
+}
 
-export type Track = Prettify<
-	Omit<TrackSimplified, "artists"> & {
-		/**
-		 * The album on which the track appears.
-		 */
-		album: AlbumSimplified;
-		/**
-		 * The artists who performed the track.
-		 */
-		artists: Artist[];
-		/**
-		 * Known external IDs for the track.
-		 */
-		external_ids: ExternalIds;
-		/**
-		 * The popularity of the track.
-		 * The value will be between 0 and 100, with 100 being the most popular.
-		 */
-		popularity: number;
-	}
->;
+export interface Track extends SimplifiedTrack {
+	/**
+	 * The album on which the track appears.
+	 */
+	album: SimplifiedAlbum;
+	/**
+	 * The artists who performed the track.
+	 */
+	artists: Artist[];
+	/**
+	 * Known external IDs for the track.
+	 */
+	external_ids: ExternalIds;
+	/**
+	 * The popularity of the track.
+	 * The value will be between 0 and 100, with 100 being the most popular.
+	 */
+	popularity: number;
+}
 
-export type AudioFeatures = {
+export interface AudioFeatures {
 	/**
 	 * A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.
 	 */
@@ -197,9 +185,6 @@ export type AudioFeatures = {
 	 * A link to the Web API endpoint providing full details of the track.
 	 */
 	track_href: string;
-	/**
-	 * The object type.
-	 */
 	type: "audio_features";
 	/**
 	 * The Spotify URI for the track.
@@ -209,9 +194,9 @@ export type AudioFeatures = {
 	 * A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. Happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. Sad, depressed, angry).
 	 */
 	valence: number;
-};
+}
 
-type AudioAnalysisMeta = {
+interface AudioAnalysisMeta {
 	/**
 	 * The version of the Analyzer used to analyze this track.
 	 */
@@ -241,9 +226,9 @@ type AudioAnalysisMeta = {
 	 * The method used to read the track's audio data.
 	 */
 	input_process: string;
-};
+}
 
-type AudioAnalysisTrack = {
+interface AudioAnalysisTrack {
 	/**
 	 * The exact number of audio samples analyzed from this track.
 	 */
@@ -364,9 +349,9 @@ type AudioAnalysisTrack = {
 	 * A version number for the Rhythmstring used in the rhythmstring field.
 	 */
 	rhythm_version: number;
-};
+}
 
-type TimeInterval = {
+interface TimeInterval {
 	/**
 	 * The starting point (in seconds) of the time interval.
 	 */
@@ -379,90 +364,86 @@ type TimeInterval = {
 	 * The confidence, from 0.0 to 1.0, of the reliability of the interval.
 	 */
 	confidence: number;
-};
+}
 
-type AudioAnalysisSection = Prettify<
-	TimeInterval & {
-		/**
-		 * The overall loudness of the section in decibels (dB).
-		 * Loudness values are useful for comparing relative loudness of sections within tracks.
-		 */
-		loudness: number;
-		/**
-		 * The overall estimated tempo of the section in beats per minute (BPM).
-		 * In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.
-		 */
-		tempo: number;
-		/**
-		 * The confidence, from 0.0 to 1.0, of the reliability of the `tempo`.
-		 * Some tracks contain tempo changes or sounds which don't contain tempo (like pure speech) which would correspond to a low value in this field.
-		 */
-		tempo_confidence: number;
-		/**
-		 * The estimated overall key of the section.
-		 * The values in this field ranging from 0 to 11 mapping to pitches using standard Pitch Class notation
-		 * (E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on).
-		 * If no key was detected, the value is -1.
-		 */
-		key: number;
-		/**
-		 * The confidence, from 0.0 to 1.0, of the reliability of the `key`.
-		 * Songs with many key changes may correspond to low values in this field.
-		 */
-		key_confidence: number;
-		/**
-		 * Indicates the modality (major or minor) of a section, the type of scale from which its melodic content is derived.
-		 * This field will contain a 0 for "minor", a 1 for "major", or a -1 for no result.
-		 */
-		mode: number;
-		/**
-		 * The confidence, from 0.0 to 1.0, of the reliability of the `mode`.
-		 */
-		mode_confidence: number;
-		/**
-		 * An estimated time signature. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure).
-		 * The time signature ranges from 3 to 7 indicating time signatures of "3/4", to "7/4".
-		 */
-		time_signature: number;
-		/**
-		 * The confidence, from 0.0 to 1.0, of the reliability of the time_signature.
-		 * Sections with time signature changes may correspond to low values in this field.
-		 */
-		time_signature_confidence: number;
-	}
->;
+interface AudioAnalysisSection extends TimeInterval {
+	/**
+	 * The overall loudness of the section in decibels (dB).
+	 * Loudness values are useful for comparing relative loudness of sections within tracks.
+	 */
+	loudness: number;
+	/**
+	 * The overall estimated tempo of the section in beats per minute (BPM).
+	 * In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.
+	 */
+	tempo: number;
+	/**
+	 * The confidence, from 0.0 to 1.0, of the reliability of the `tempo`.
+	 * Some tracks contain tempo changes or sounds which don't contain tempo (like pure speech) which would correspond to a low value in this field.
+	 */
+	tempo_confidence: number;
+	/**
+	 * The estimated overall key of the section.
+	 * The values in this field ranging from 0 to 11 mapping to pitches using standard Pitch Class notation
+	 * (E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on).
+	 * If no key was detected, the value is -1.
+	 */
+	key: number;
+	/**
+	 * The confidence, from 0.0 to 1.0, of the reliability of the `key`.
+	 * Songs with many key changes may correspond to low values in this field.
+	 */
+	key_confidence: number;
+	/**
+	 * Indicates the modality (major or minor) of a section, the type of scale from which its melodic content is derived.
+	 * This field will contain a 0 for "minor", a 1 for "major", or a -1 for no result.
+	 */
+	mode: number;
+	/**
+	 * The confidence, from 0.0 to 1.0, of the reliability of the `mode`.
+	 */
+	mode_confidence: number;
+	/**
+	 * An estimated time signature. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure).
+	 * The time signature ranges from 3 to 7 indicating time signatures of "3/4", to "7/4".
+	 */
+	time_signature: number;
+	/**
+	 * The confidence, from 0.0 to 1.0, of the reliability of the time_signature.
+	 * Sections with time signature changes may correspond to low values in this field.
+	 */
+	time_signature_confidence: number;
+}
 
-type AudioAnalysisSegment = Prettify<
-	TimeInterval & {
-		/**
-		 * The onset loudness of the segment in decibels (dB).
-		 */
-		loudness_start: number;
-		/**
-		 * The peak loudness of the segment in decibels (dB).
-		 */
-		loudness_max_time: number;
-		/**
-		 * The segment-relative offset of the segment peak loudness in seconds.
-		 */
-		loudness_max: number;
-		/**
-		 * The offset loudness of the segment in decibels (dB). This value should be equivalent to the loudness_start of the following segment.
-		 */
-		loudness_end: number;
-		/**
-		 * Pitch content is given by a “chroma” vector, corresponding to the 12 pitch classes C, C#, D to B, with values ranging from 0 to 1 that describe the relative dominance of every pitch in the chromatic scale.
-		 */
-		pitches: number[];
-		/**
-		 * Timbre is the quality of a musical note or sound that distinguishes different types of musical instruments, or voices.
-		 * It is a complex notion also referred to as sound color, texture, or tone quality, and is derived from the shape of a segment’s spectro-temporal surface, independently of pitch and loudness.
-		 */
-		timbre: number[];
-	}
->;
+interface AudioAnalysisSegment extends TimeInterval {
+	/**
+	 * The onset loudness of the segment in decibels (dB).
+	 */
+	loudness_start: number;
+	/**
+	 * The peak loudness of the segment in decibels (dB).
+	 */
+	loudness_max_time: number;
+	/**
+	 * The segment-relative offset of the segment peak loudness in seconds.
+	 */
+	loudness_max: number;
+	/**
+	 * The offset loudness of the segment in decibels (dB). This value should be equivalent to the loudness_start of the following segment.
+	 */
+	loudness_end: number;
+	/**
+	 * Pitch content is given by a “chroma” vector, corresponding to the 12 pitch classes C, C#, D to B, with values ranging from 0 to 1 that describe the relative dominance of every pitch in the chromatic scale.
+	 */
+	pitches: number[];
+	/**
+	 * Timbre is the quality of a musical note or sound that distinguishes different types of musical instruments, or voices.
+	 * It is a complex notion also referred to as sound color, texture, or tone quality, and is derived from the shape of a segment’s spectro-temporal surface, independently of pitch and loudness.
+	 */
+	timbre: number[];
+}
 
-export type AudioAnalysis = {
+export interface AudioAnalysis {
 	meta: AudioAnalysisMeta;
 	track: AudioAnalysisTrack;
 	/**
@@ -487,9 +468,9 @@ export type AudioAnalysis = {
 	 * A tatum represents the lowest regular pulse train that a listener intuitively infers from the timing of perceived musical events (segments).
 	 */
 	tatums: TimeInterval[];
-};
+}
 
-export type GetRecommendationsOpts = {
+export interface RecommendationsRequest {
 	/**
 	 * List of Spotify IDs for seed artists. Maximum 5 IDs
 	 */
@@ -649,9 +630,9 @@ export type GetRecommendationsOpts = {
 	 * Range: `>= 0 <= 1`
 	 */
 	target_valence?: number;
-};
+}
 
-export type RecommendationSeed = {
+export interface RecommendationSeed {
 	/**
 	 * The number of tracks available after min_* and max_* filters have been applied.
 	 */
@@ -680,15 +661,12 @@ export type RecommendationSeed = {
 	 * The entity type of this seed.
 	 */
 	type: "artist" | "track" | "genre";
-};
+}
 
 export type Recomendations = {
-	/**
-	 * An array of recommendation seed objects.
-	 */
 	seeds: RecommendationSeed[];
 	/**
-	 * An array of track object (simplified) ordered according to the parameters supplied.
+	 * An array of track object ordered according to the parameters supplied.
 	 */
-	tracks: TrackSimplified[];
+	tracks: Track[];
 };

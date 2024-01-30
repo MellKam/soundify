@@ -1,5 +1,4 @@
-import type { Prettify } from "../shared.ts";
-import type { EpisodeSimplified } from "../episode/episode.types.ts";
+import type { SimplifiedEpisode } from "../episode/episode.types.ts";
 import type {
 	Copyright,
 	ExternalUrls,
@@ -7,7 +6,7 @@ import type {
 	PagingObject,
 } from "../general.types.ts";
 
-export type ShowSimplified = {
+export interface SimplifiedShow {
 	/**
 	 * A list of the countries in which the track can be played.
 	 */
@@ -64,9 +63,6 @@ export type ShowSimplified = {
 	 * The publisher of the show.
 	 */
 	publisher: string;
-	/**
-	 * THe object type.
-	 */
 	type: "show";
 	/**
 	 * The Spotify URI for the show.
@@ -76,13 +72,11 @@ export type ShowSimplified = {
 	 * The total number of episodes in the show.
 	 */
 	total_episodes: number;
-};
+}
 
-export type Show = Prettify<
-	ShowSimplified & {
-		/**
-		 * The episodes of the show.
-		 */
-		episodes: PagingObject<EpisodeSimplified>;
-	}
->;
+export interface Show extends SimplifiedShow {
+	/**
+	 * The episodes of the show.
+	 */
+	episodes: PagingObject<SimplifiedEpisode>;
+}

@@ -1,7 +1,7 @@
 import type { HTTPClient } from "../client.ts";
 import type { PagingObject, PagingOptions } from "../general.types.ts";
-import type { TrackSimplified } from "../track/track.types.ts";
-import type { Album, AlbumSimplified } from "./album.types.ts";
+import type { SimplifiedTrack } from "../track/track.types.ts";
+import type { Album, SimplifiedAlbum } from "./album.types.ts";
 import type { Prettify } from "../shared.ts";
 
 /**
@@ -66,7 +66,7 @@ export const getAlbumTracks = async (
 	const res = await client.fetch(`/v1/albums/${albumId}/tracks`, {
 		query: options,
 	});
-	return res.json() as Promise<PagingObject<TrackSimplified>>;
+	return res.json() as Promise<PagingObject<SimplifiedTrack>>;
 };
 
 export type GetSavedAlbumsOpts = Prettify<
@@ -207,5 +207,5 @@ export const getNewAlbumReleases = async (
 	options?: GetNewReleasesOpts,
 ) => {
 	const res = await client.fetch("/v1/browse/new-releases", { query: options });
-	return (await res.json() as { albums: PagingObject<AlbumSimplified> }).albums;
+	return (await res.json() as { albums: PagingObject<SimplifiedAlbum> }).albums;
 };

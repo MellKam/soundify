@@ -1,3 +1,6 @@
+import { Episode } from "./episode/episode.types.ts";
+import { Track } from "./track/track.types.ts";
+
 export type PagingObject<TItem> = {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
@@ -80,6 +83,20 @@ export type PagingOptions = {
  * "explicit" - The content item is explicit and the user's account is set to not play explicit content.
  */
 export type RestrictionsReason = "market" | "product" | "explicit";
+
+export type Restrictions = {
+	/**
+	 * The reason for the restriction.
+	 *
+	 * Episodes may be restricted if the content is not available in a given market, to the user's subscription type, or when the user's account is set to not play explicit content.
+	 */
+	reason: RestrictionsReason;
+};
+
+/**
+ * The precision with which `release_date` value is known.
+ */
+export type ReleaseDatePrecision = "year" | "month" | "day";
 
 export type Image = {
 	/**
@@ -175,3 +192,5 @@ export type ItemType =
 	| "show"
 	| "episode"
 	| "audiobook";
+
+export type TrackItem = Track | Episode;

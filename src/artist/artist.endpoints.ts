@@ -1,7 +1,7 @@
 import type { HTTPClient } from "../client.ts";
 import type { Prettify } from "../shared.ts";
 import type { PagingObject, PagingOptions } from "../general.types.ts";
-import type { AlbumGroup, AlbumSimplified } from "../album/album.types.ts";
+import type { AlbumGroup, SimplifiedAlbum } from "../album/album.types.ts";
 import type { Track } from "../track/track.types.ts";
 import type { Artist } from "../artist/artist.types.ts";
 
@@ -56,7 +56,7 @@ export const getArtistAlbums = async (
 	const res = await client.fetch(`/artists/${artistId}/albums`, {
 		query: options,
 	});
-	return res.json() as Promise<PagingObject<AlbumSimplified>>;
+	return res.json() as Promise<PagingObject<SimplifiedAlbum>>;
 };
 
 /**

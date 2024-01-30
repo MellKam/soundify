@@ -4,26 +4,20 @@ import type {
 	ExternalUrls,
 	Image,
 	PagingObject,
-	RestrictionsReason,
+	ReleaseDatePrecision,
+	Restrictions,
 } from "../general.types.ts";
-import type { Artist, ArtistSimplified } from "../artist/artist.types.ts";
-import type { TrackSimplified } from "../track/track.types.ts";
-import type { Prettify } from "../shared.ts";
+import type { Artist, SimplifiedArtist } from "../artist/artist.types.ts";
+import type { SimplifiedTrack } from "../track/track.types.ts";
 
-/**
- * The types of album.
- */
 export type AlbumType = "single" | "album" | "compilation";
-
 /**
- * The groups of album.
+ * **The field is present when getting an artist's albums.** \
+ * Compare to `album_type` this field represents relationship between the artist and the album.
  */
 export type AlbumGroup = AlbumType | "appears_on";
 
-type AlbumBase = {
-	/**
-	 * The type of the album.
-	 */
+interface AlbumBase {
 	album_type: AlbumType;
 	/**
 	 * The number of tracks in the album.
@@ -34,9 +28,6 @@ type AlbumBase = {
 	 * ISO 3166-1 alpha-2 country codes.
 	 */
 	available_markets: string[];
-	/**
-	 * Known external URLs for this album.
-	 */
 	external_urls: ExternalUrls;
 	/**
 	 * A link to the Web API endpoint providing full details of the album.
@@ -63,21 +54,11 @@ type AlbumBase = {
 	/**
 	 * The precision with which `release_date` value is known.
 	 */
-	release_date_precision: "year" | "month" | "day";
+	release_date_precision: ReleaseDatePrecision;
 	/**
 	 * Included in the response when a content restriction is applied.
 	 */
-	restrictions?: {
-		/**
-		 * The reason for the restriction.
-		 *
-		 * Albums may be restricted if the content is not available in a given market, to the user's subscription type, or when the user's account is set to not play explicit content.
-		 */
-		reason: RestrictionsReason;
-	};
-	/**
-	 * The object type.
-	 */
+	restrictions?: Restrictions;
 	type: "album";
 	/**
 	 * The Spotify URI for the album.
@@ -86,50 +67,49 @@ type AlbumBase = {
 	/**
 	 * Known external IDs for the track.
 	 */
-	external_ids?: ExternalIds;
+	external_ids: ExternalIds;
 	/**
 	 * The copyright statements of the album.
 	 */
-	copyrights?: Copyright[];
+	copyrights: Copyright[];
 	/**
 	 * A list of the genres the album is associated with.
 	 * If not yet classified, the array is empty.
 	 */
-	genres?: string[];
+	genres: string[];
 	/**
 	 * The label associated with the album.
 	 */
-	label?: string;
+	label: string;
 	/**
 	 * The popularity of the artist.
 	 * The value will be between 0 and 100, with 100 being the most popular.
 	 */
-	popularity?: number;
+	popularity: number;
+}
+
+export interface SimplifiedAlbum extends AlbumBase {
+	/**
+	 * **The field is present when getting an artist's albums.** \
+	 * Compare to `album_type` this field represents relationship between the artist and the album.
+	 */
+	album_group?: AlbumGroup;
+	/**
+	 * The artists of the album.
+	 */
+	artists: SimplifiedArtist[];
+}
+
+export interface Album extends AlbumBase {
+	artists: Artist[];
+	tracks: PagingObject<SimplifiedTrack>;
+}
+
+export type SavedAlbum = {
+	/**
+	 * The date and time the album was saved.
+	 * Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with a zero offset: YYYY-MM-DDTHH:MM:SSZ.
+	 */
+	added_at: string;
+	album: Album;
 };
-
-export type AlbumSimplified = Prettify<
-	AlbumBase & {
-		/**
-		 * **The field is present when getting an artist's albums.**
-		 * Compare to `album_type` this field represents relationship between the artist and the album.
-		 */
-		album_group?: AlbumGroup;
-		/**
-		 * The artists of the album.
-		 */
-		artists: ArtistSimplified[];
-	}
->;
-
-export type Album = Prettify<
-	AlbumBase & {
-		/**
-		 * The artists of the album.
-		 */
-		artists: Artist[];
-		/**
-		 * The tracks of the album.
-		 */
-		tracks: PagingObject<TrackSimplified>;
-	}
->;

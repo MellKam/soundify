@@ -1,13 +1,13 @@
-import type { Prettify } from "../shared.ts";
 import type {
 	ExternalUrls,
 	Image,
-	RestrictionsReason,
+	ReleaseDatePrecision,
+	Restrictions,
 	ResumePoint,
 } from "../general.types.ts";
-import type { ShowSimplified } from "../show/show.types.ts";
+import type { SimplifiedShow } from "../show/show.types.ts";
 
-export type EpisodeSimplified = {
+export interface SimplifiedEpisode {
 	/**
 	 * A URL to a 30 second preview (MP3 format).
 	 */
@@ -73,14 +73,11 @@ export type EpisodeSimplified = {
 	/**
 	 * The precision with which `release_date` value is known.
 	 */
-	release_date_precision: "year" | "month" | "day";
+	release_date_precision: ReleaseDatePrecision;
 	/**
 	 * The user's most recent position in the episode.
 	 */
 	resume_point: ResumePoint;
-	/**
-	 * The object type.
-	 */
 	type: "episode";
 	/**
 	 * The Spotify URI for the episode.
@@ -89,21 +86,12 @@ export type EpisodeSimplified = {
 	/**
 	 * Included in the response when a content restriction is applied.
 	 */
-	restrictions?: {
-		/**
-		 * The reason for the restriction.
-		 *
-		 * Episodes may be restricted if the content is not available in a given market, to the user's subscription type, or when the user's account is set to not play explicit content.
-		 */
-		reason: RestrictionsReason;
-	};
-};
+	restrictions?: Restrictions;
+}
 
-export type Episode = Prettify<
-	EpisodeSimplified & {
-		/**
-		 * The show on which episode belongs.
-		 */
-		show: ShowSimplified;
-	}
->;
+export interface Episode extends SimplifiedEpisode {
+	/**
+	 * The show on which episode belongs.
+	 */
+	show: SimplifiedShow;
+}

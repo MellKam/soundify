@@ -1,4 +1,4 @@
-import type { ChapterSimplified } from "../chapter/chapter.types.ts";
+import type { SimplifiedChapter } from "../chapter/chapter.types.ts";
 import type {
 	Author,
 	Copyright,
@@ -7,9 +7,8 @@ import type {
 	Narrator,
 	PagingObject,
 } from "../general.types.ts";
-import type { Prettify } from "../shared.ts";
 
-export type AudiobookSimplified = {
+export interface SimplifiedAudiobook {
 	/**
 	 * The author(s) for the audiobook.
 	 */
@@ -74,26 +73,20 @@ export type AudiobookSimplified = {
 	 * The publisher of the audiobook.
 	 */
 	publisher: string;
-	/**
-	 * The object type.
-	 */
 	type: "audiobook";
 	/**
 	 * The Spotify URI for the audiobook.
 	 */
 	uri: string;
-
 	/**
 	 * The number of chapters in this audiobook.
 	 */
 	total_chapters: number;
-};
+}
 
-export type Audiobook = Prettify<
-	AudiobookSimplified & {
-		/**
-		 * The chapters of the audiobook.
-		 */
-		chapters: PagingObject<ChapterSimplified>;
-	}
->;
+export interface Audiobook extends SimplifiedAudiobook {
+	/**
+	 * The chapters of the audiobook.
+	 */
+	chapters: PagingObject<SimplifiedChapter>;
+}

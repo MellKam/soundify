@@ -1,13 +1,13 @@
-import type { Prettify } from "../shared.ts";
-import type { AudiobookSimplified } from "../audiobook/audiobook.types.ts";
+import type { SimplifiedAudiobook } from "../audiobook/audiobook.types.ts";
 import type {
 	ExternalUrls,
 	Image,
-	RestrictionsReason,
+	ReleaseDatePrecision,
+	Restrictions,
 	ResumePoint,
 } from "../general.types.ts";
 
-export type ChapterSimplified = {
+export interface SimplifiedChapter {
 	/**
 	 * A URL to a 30 second preview (MP3 format).
 	 */
@@ -73,7 +73,7 @@ export type ChapterSimplified = {
 	/**
 	 * The precision with which `release_date` value is known.
 	 */
-	release_date_precision: "year" | "month" | "day";
+	release_date_precision: ReleaseDatePrecision;
 	/**
 	 * The user's most recent position in the episode.
 	 */
@@ -89,16 +89,9 @@ export type ChapterSimplified = {
 	/**
 	 * Included in the response when a content restriction is applied.
 	 */
-	restrictions?: {
-		/**
-		 * The reason for the restriction.
-		 *
-		 * Episodes may be restricted if the content is not available in a given market, to the user's subscription type, or when the user's account is set to not play explicit content.
-		 */
-		reason: RestrictionsReason;
-	};
-};
+	restrictions?: Restrictions;
+}
 
-export type Chapter = Prettify<
-	ChapterSimplified & { audiobook: AudiobookSimplified }
->;
+export interface Chapter extends SimplifiedChapter {
+	audiobook: SimplifiedAudiobook;
+}

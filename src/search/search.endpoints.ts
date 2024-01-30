@@ -1,8 +1,8 @@
 import type { PagingObject } from "../general.types.ts";
-import type { AlbumSimplified } from "../album/album.types.ts";
+import type { SimplifiedAlbum } from "../album/album.types.ts";
 import type { Artist } from "../artist/artist.types.ts";
 import type { Track } from "../track/track.types.ts";
-import type { PlaylistSimplified } from "../playlist/playlist.types.ts";
+import type { SimplifiedPlaylist } from "../playlist/playlist.types.ts";
 import { HTTPClient } from "../client.ts";
 
 /**
@@ -28,8 +28,8 @@ export type SearchTypeLiteral<T extends SearchType | SearchType[]> = T extends
 export type SearchResponse = {
 	tracks: PagingObject<Track>;
 	artists: PagingObject<Artist>;
-	albums: PagingObject<AlbumSimplified>;
-	playlists: PagingObject<PlaylistSimplified>;
+	albums: PagingObject<SimplifiedAlbum>;
+	playlists: PagingObject<SimplifiedPlaylist>;
 };
 
 export type SearchFilters = {

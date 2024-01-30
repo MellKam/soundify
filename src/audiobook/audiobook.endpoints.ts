@@ -1,8 +1,8 @@
-import type { ChapterSimplified } from "../chapter/chapter.types.ts";
+import type { SimplifiedChapter } from "../chapter/chapter.types.ts";
 import type { HTTPClient } from "../client.ts";
 import type { Prettify } from "../shared.ts";
 import type { PagingObject, PagingOptions } from "../general.types.ts";
-import type { Audiobook, AudiobookSimplified } from "./audiobook.types.ts";
+import type { Audiobook, SimplifiedAudiobook } from "./audiobook.types.ts";
 
 /**
  * Get Spotify catalog information for a single Audiobook.
@@ -66,7 +66,7 @@ export const getAudiobookChapters = async (
 	const res = await client.fetch(`/audiobooks/${audiobookId}/chapters`, {
 		query: options,
 	});
-	return res.json() as Promise<PagingObject<ChapterSimplified>>;
+	return res.json() as Promise<PagingObject<SimplifiedChapter>>;
 };
 
 export type GetSavedAudiobooksOpts = Prettify<
@@ -99,7 +99,7 @@ export const getSavedAudiobooks = async (
 			/**
 			 * Information about the audiobook.
 			 */
-			audiobook: AudiobookSimplified;
+			audiobook: SimplifiedAudiobook;
 		}>
 	>;
 };

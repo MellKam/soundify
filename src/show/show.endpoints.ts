@@ -1,8 +1,8 @@
 import type { HTTPClient } from "../client.ts";
 import type { Prettify } from "../shared.ts";
-import type { EpisodeSimplified } from "../episode/episode.types.ts";
+import type { SimplifiedEpisode } from "../episode/episode.types.ts";
 import type { PagingObject, PagingOptions } from "../general.types.ts";
-import type { Show, ShowSimplified } from "./show.types.ts";
+import type { Show, SimplifiedShow } from "./show.types.ts";
 
 /**
  * Get spotify catalog information for a single show by its unique Spotify ID.
@@ -35,7 +35,7 @@ export const getShows = async (
 	const res = await client.fetch("/v1/shows", {
 		query: { market, ids: showIds },
 	});
-	return (await res.json() as { shows: ShowSimplified }).shows;
+	return (await res.json() as { shows: SimplifiedShow }).shows;
 };
 
 export type GetShowEpisodesOpts = Prettify<
@@ -64,7 +64,7 @@ export const getShowEpisodes = async (
 	const res = await client.fetch(`/v1/shows/${showId}/episodes`, {
 		query: options,
 	});
-	return res.json() as Promise<PagingObject<EpisodeSimplified>>;
+	return res.json() as Promise<PagingObject<SimplifiedEpisode>>;
 };
 
 export type GetSavedShowsOpts = Prettify<
