@@ -14,6 +14,7 @@ await load({ export: true });
 const env = z
 	.object({
 		SPOTIFY_CLIENT_ID: z.string(),
+		SPOTIFY_CLIENT_SECRET: z.string(),
 		SPOTIFY_REDIRECT_URI: z.string().url(),
 	})
 	.parse(Deno.env.toObject());
@@ -26,6 +27,7 @@ const authServer = await oauth.processDiscoveryResponse(
 
 const oauthClient: oauth.Client = {
 	client_id: env.SPOTIFY_CLIENT_ID,
+	client_secret: env.SPOTIFY_CLIENT_SECRET,
 	token_endpoint_auth_method: "client_secret_basic",
 };
 
@@ -33,10 +35,8 @@ const app = new Application();
 const router = new Router();
 
 router.get("/login", async (ctx) => {
-	const codeVerifier = oauth.generateRandomCodeVerifier();
-	const codeChallenge = await oauth.calculatePKCECodeChallenge(codeVerifier);
-
-	await ctx.cookies.set("code_verifier", codeVerifier, {
+	const state = oauth.generateRandomState();
+	await ctx.cookies.set("state", state, {
 		httpOnly: true,
 		path: "/callback",
 	});
@@ -45,8 +45,7 @@ router.get("/login", async (ctx) => {
 	authUrl.searchParams.set("client_id", env.SPOTIFY_CLIENT_ID);
 	authUrl.searchParams.set("redirect_uri", env.SPOTIFY_REDIRECT_URI);
 	authUrl.searchParams.set("response_type", "code");
-	authUrl.searchParams.set("code_challenge", codeChallenge);
-	authUrl.searchParams.set("code_challenge_method", "S256");
+	authUrl.searchParams.set("state", state);
 	authUrl.searchParams.set(
 		"scope",
 		Object.values(OAUTH_SCOPES).join(" "),
@@ -57,11 +56,16 @@ router.get("/login", async (ctx) => {
 
 router.get("/callback", async (ctx) => {
 	try {
+		const state = await ctx.cookies.get("state");
+		if (!state) {
+			throw new Error("no state found");
+		}
+
 		const params = oauth.validateAuthResponse(
 			authServer,
 			oauthClient,
 			ctx.request.url,
-			oauth.expectNoState,
+			state,
 		);
 		if (oauth.isOAuth2Error(params)) {
 			throw new Error(
@@ -71,17 +75,12 @@ router.get("/callback", async (ctx) => {
 			);
 		}
 
-		const codeVerifier = await ctx.cookies.get("code_verifier");
-		if (!codeVerifier) {
-			throw new Error("no code verifier");
-		}
-
 		const response = await oauth.authorizationCodeGrantRequest(
 			authServer,
 			oauthClient,
 			params,
 			env.SPOTIFY_REDIRECT_URI,
-			codeVerifier,
+			"",
 		);
 		const result = await oauth.processAuthorizationCodeOAuth2Response(
 			authServer,
@@ -104,7 +103,7 @@ router.get("/callback", async (ctx) => {
 		ctx.response.status = 500;
 		ctx.response.body = error.message;
 	} finally {
-		await ctx.cookies.set("code_verifier", null, {
+		await ctx.cookies.set("state", null, {
 			httpOnly: true,
 			path: "/callback",
 		});

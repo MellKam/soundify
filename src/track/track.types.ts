@@ -470,7 +470,7 @@ export interface AudioAnalysis {
 	tatums: TimeInterval[];
 }
 
-export interface RecommendationsRequest {
+export type RecommendationsOptions = {
 	/**
 	 * List of Spotify IDs for seed artists. Maximum 5 IDs
 	 */
@@ -630,7 +630,7 @@ export interface RecommendationsRequest {
 	 * Range: `>= 0 <= 1`
 	 */
 	target_valence?: number;
-}
+};
 
 export interface RecommendationSeed {
 	/**

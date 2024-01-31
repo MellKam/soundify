@@ -4,7 +4,7 @@ import type {
 	AudioAnalysis,
 	AudioFeatures,
 	Recomendations,
-	RecommendationsRequest,
+	RecommendationsOptions,
 	Track,
 } from "./track.types.ts";
 import type { Prettify } from "../shared.ts";
@@ -220,7 +220,7 @@ export const getTracksAudioAnalysis = async (
  */
 export const getRecommendations = async (
 	client: HTTPClient,
-	options: RecommendationsRequest,
+	options: RecommendationsOptions,
 ) => {
 	const res = await client.fetch("/v1/srecommendations", {
 		query: options,
