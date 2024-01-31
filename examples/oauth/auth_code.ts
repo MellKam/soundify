@@ -7,6 +7,7 @@ import {
 } from "../../src/mod.ts";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
+import { encodeBase64Url } from "std/encoding/base64url.ts";
 import { Application, Router } from "oak";
 
 await load({ export: true });
@@ -75,19 +76,27 @@ router.get("/callback", async (ctx) => {
 			);
 		}
 
-		const response = await oauth.authorizationCodeGrantRequest(
-			authServer,
-			oauthClient,
-			params,
-			env.SPOTIFY_REDIRECT_URI,
-			"",
-		);
+		const response = await fetch(new URL("/api/token", SPOTIFY_AUTH_URL), {
+			method: "POST",
+			body: new URLSearchParams({
+				grant_type: "authorization_code",
+				redirect_uri: env.SPOTIFY_REDIRECT_URI,
+				code: params.get("code")!,
+			}),
+			headers: {
+				"Authorization": "Basic " +
+					encodeBase64Url(
+						env.SPOTIFY_CLIENT_ID + ":" + env.SPOTIFY_CLIENT_SECRET,
+					),
+			},
+		});
+
 		const result = await oauth.processAuthorizationCodeOAuth2Response(
 			authServer,
 			oauthClient,
 			response,
 		);
-		console.log(result);
+		console.log(result.refresh_token);
 		if (oauth.isOAuth2Error(result)) {
 			throw new Error(result.error);
 		}

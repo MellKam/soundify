@@ -1,7 +1,7 @@
 import * as oauth from "https://deno.land/x/oauth4webapi@v2.8.1/mod.ts";
 import { SPOTIFY_AUTH_URL } from "./mod.ts";
 import { z } from "zod";
-import { load } from "https://deno.land/std@0.213.0/dotenv/mod.ts";
+import { load } from "std/dotenv/mod.ts";
 import { SpotifyClient } from "./client.ts";
 
 await load({ export: true });
@@ -42,10 +42,21 @@ const refresher = async () => {
 		throw new Error(data.error + data.error_description);
 	}
 
+	await Deno.writeTextFile("/tmp/soundify_test_cache.txt", data.access_token);
+
 	return data.access_token;
 };
 
-const accessToken = await refresher();
+const refreshOrGetCachedToken = async () => {
+	try {
+		const token = await Deno.readTextFile("/tmp/soundify_test_cache.txt");
+		return token;
+	} catch (_) {
+		return await refresher();
+	}
+};
+
+const accessToken = await refreshOrGetCachedToken();
 
 export const client = new SpotifyClient(accessToken, {
 	onRateLimit: (timeout) => console.log(`Rate limit timeout ${timeout}ms`),

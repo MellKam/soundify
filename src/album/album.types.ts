@@ -7,10 +7,10 @@ import type {
 	ReleaseDatePrecision,
 	Restrictions,
 } from "../general.types.ts";
-import type { Artist, SimplifiedArtist } from "../artist/artist.types.ts";
+import type { SimplifiedArtist } from "../artist/artist.types.ts";
 import type { SimplifiedTrack } from "../track/track.types.ts";
 
-export type AlbumType = "single" | "album" | "compilation";
+export type AlbumType = "single" | "album" | "compilation" | "ep";
 /**
  * **The field is present when getting an artist's albums.** \
  * Compare to `album_type` this field represents relationship between the artist and the album.
@@ -64,6 +64,21 @@ interface AlbumBase {
 	 * The Spotify URI for the album.
 	 */
 	uri: string;
+}
+
+export interface SimplifiedAlbum extends AlbumBase {
+	/**
+	 * **The field is present when getting an artist's albums.** \
+	 * Compare to `album_type` this field represents relationship between the artist and the album.
+	 */
+	album_group?: AlbumGroup;
+	/**
+	 * The artists of the album.
+	 */
+	artists: SimplifiedArtist[];
+}
+
+export interface Album extends AlbumBase {
 	/**
 	 * Known external IDs for the track.
 	 */
@@ -86,22 +101,7 @@ interface AlbumBase {
 	 * The value will be between 0 and 100, with 100 being the most popular.
 	 */
 	popularity: number;
-}
-
-export interface SimplifiedAlbum extends AlbumBase {
-	/**
-	 * **The field is present when getting an artist's albums.** \
-	 * Compare to `album_type` this field represents relationship between the artist and the album.
-	 */
-	album_group?: AlbumGroup;
-	/**
-	 * The artists of the album.
-	 */
 	artists: SimplifiedArtist[];
-}
-
-export interface Album extends AlbumBase {
-	artists: Artist[];
 	tracks: PagingObject<SimplifiedTrack>;
 }
 

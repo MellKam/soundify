@@ -1,7 +1,7 @@
 import type { HTTPClient } from "../client.ts";
 import type { PagingObject, PagingOptions } from "../general.types.ts";
 import type { SimplifiedTrack } from "../track/track.types.ts";
-import type { Album, SimplifiedAlbum } from "./album.types.ts";
+import type { Album, SavedAlbum, SimplifiedAlbum } from "./album.types.ts";
 import type { Prettify } from "../shared.ts";
 
 /**
@@ -90,18 +90,7 @@ export const getSavedAlbums = async (
 	options?: GetSavedAlbumsOpts,
 ) => {
 	const res = await client.fetch("/v1/me/albums", { query: options });
-	return res.json() as Promise<
-		PagingObject<{
-			/**
-			 * The date and time the album was saved Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with a zero offset: YYYY-MM-DDTHH:MM:SSZ.
-			 */
-			added_at: string;
-			/**
-			 * Information about the album.
-			 */
-			album: Album;
-		}>
-	>;
+	return res.json() as Promise<PagingObject<SavedAlbum>>;
 };
 
 /**
@@ -149,11 +138,11 @@ export const removeSavedAlbums = (
  * @param client Spotify HTTPClient
  * @param albumId The Spotify ID of the album
  */
-export const removeSavedAlbum = async (
+export const removeSavedAlbum = (
 	client: HTTPClient,
 	albumId: string,
 ) => {
-	await removeSavedAlbums(client, [albumId]);
+	return removeSavedAlbums(client, [albumId]);
 };
 
 /**

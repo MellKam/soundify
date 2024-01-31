@@ -22,7 +22,10 @@ export const getArtist = async (client: HTTPClient, artistId: string) => {
  * @param client Spotify HTTPClient
  * @param artistIds List of the Spotify IDs for the artists. Maximum: 50 IDs.
  */
-export const getArtists = async (client: HTTPClient, artistIds: string[]) => {
+export const getSeveralArtists = async (
+	client: HTTPClient,
+	artistIds: string[],
+) => {
 	const res = await client.fetch("/v1/artists", { query: { ids: artistIds } });
 	return (await res.json() as { artists: Artist[] }).artists;
 };
@@ -53,7 +56,7 @@ export const getArtistAlbums = async (
 	artistId: string,
 	options?: GetArtistAlbumsOpts,
 ) => {
-	const res = await client.fetch(`/artists/${artistId}/albums`, {
+	const res = await client.fetch(`/v1/artists/${artistId}/albums`, {
 		query: options,
 	});
 	return res.json() as Promise<PagingObject<SimplifiedAlbum>>;
