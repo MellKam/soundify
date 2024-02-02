@@ -74,19 +74,23 @@ const createSpotifyError = async (
 	return new SpotifyError(message, response, body, options);
 };
 
-export type FetchOptions = {
+export interface FetchLikeOptions extends Omit<RequestInit, "body"> {
 	query?: SearchParams;
 	body?: BodyInit | null | Record<string, unknown> | unknown[];
-} & Omit<RequestInit, "body">;
+};
+
+type FetchLike = (
+	resource: URL,
+	options: FetchLikeOptions,
+) => Promise<Response>;
+export type Middleware = (next: FetchLike) => FetchLike;
 
 /**
  * Interface that provides a fetch method to make HTTP requests to Spotify API.
  */
 export interface HTTPClient {
-	fetch(path: string, opts?: FetchOptions): Promise<Response>;
+	fetch(path: string, options?: FetchLikeOptions): Promise<Response>
 }
-
-export const SPOTIFY_API_URL = "https://api.spotify.com/";
 
 const isPlainObject = (obj: unknown): obj is Record<PropertyKey, unknown> => {
 	return (
@@ -98,20 +102,16 @@ const isPlainObject = (obj: unknown): obj is Record<PropertyKey, unknown> => {
 
 export type SpotifyClinetOptions = {
 	baseUrl?: string;
+	/**
+	 * @returns new access token
+	 */
 	refresher?: () => Promise<string>;
 	onRateLimit?: (retryAfter?: number) => Promise<void> | void;
 	/**
 	 * @default false
 	 */
 	waitForRateLimit?: boolean;
-	/**
-	 * @default 0
-	 */
-	retryTimesOn5xx?: number;
-	/**
-	 * @default 0
-	 */
-	retryDelayOn5xx?: number;
+	middlewares?: Middleware[];
 };
 
 export class SpotifyClient {
@@ -121,10 +121,10 @@ export class SpotifyClient {
 		private accessToken: string,
 		private readonly options: SpotifyClinetOptions = {}
 	) {
-		this.baseUrl = options.baseUrl ? options.baseUrl : SPOTIFY_API_URL;
+		this.baseUrl = options.baseUrl ? options.baseUrl : "https://api.spotify.com/";
 	}
 
-	fetch(path: string, opts: FetchOptions = {}) {
+	fetch(path: string, opts: FetchLikeOptions = {}) {
 		const url = new URL(path, this.baseUrl);
 		if (opts.query) {
 			for (const key in opts.query) {
@@ -147,21 +147,22 @@ export class SpotifyClient {
 			: (opts.body as BodyInit | null | undefined);
 
 		let isRefreshed = false;
-		let retries5xx = this.options.retryTimesOn5xx;
 
-		const recursiveCall = async (): Promise<Response> => {
+		const recursiveFetch = async (): Promise<Response> => {
 			headers.set("Authorization", "Bearer " + this.accessToken);
 
-			const res = await fetch(url, { ...opts, body, headers });
+			const res = await (this.options.middlewares || []).reduceRight(
+				(next, mw) => mw(next),
+				fetch as FetchLike,
+			)(url, { ...opts, body, headers });
+
 			if (res.ok) return res;
 
 			if (res.status === 401 && this.options.refresher && !isRefreshed) {
 				this.accessToken = await this.options.refresher();
 				isRefreshed = true;
-				return recursiveCall();
+				return recursiveFetch();
 			}
-
-			const error = await createSpotifyError(res);
 
 			if (res.status === 429) {
 				// time in seconds
@@ -173,24 +174,13 @@ export class SpotifyClient {
 
 				if (retryAfter && this.options.waitForRateLimit) {
 					await new Promise((r) => setTimeout(r, retryAfter * 1000));
-					return recursiveCall();
+					return recursiveFetch();
 				}
-
-				throw error;
 			}
 
-			if (res.status >= 500 && retries5xx) {
-				if (this.options.retryDelayOn5xx) {
-					await new Promise((r) => setTimeout(r, this.options.retryDelayOn5xx));
-				}
-
-				retries5xx--;
-				return recursiveCall();
-			}
-
-			throw error;
+			throw await createSpotifyError(res);
 		};
 
-		return recursiveCall();
+		return recursiveFetch();
 	}
 }
