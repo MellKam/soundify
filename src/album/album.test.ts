@@ -1,10 +1,4 @@
-import {
-	albumGroupEnum,
-	albumSchema,
-	albumTypeEnum,
-	savedAlbumSchema,
-	simplifiedAlbumSchema,
-} from "./album.schemas.ts";
+import { albumSchema, savedAlbumSchema } from "./album.schemas.ts";
 import { client } from "../test_client.ts";
 import {
 	getAlbum,
@@ -22,6 +16,9 @@ import {
 import { z } from "zod";
 import { pagingObjectSchema } from "../general.shemas.ts";
 import { AssertTrue, IsExact } from "std/testing/types.ts";
+import { simplifiedAlbumSchema } from "./album.base.schemas.ts";
+import { albumGroupEnum } from "./album.base.schemas.ts";
+import { albumTypeEnum } from "./album.base.schemas.ts";
 
 const MOCK_ALBUM_IDS = [
 	"35UJLpClj5EDrhpNIi4DFg", // Radiohead - The Bends

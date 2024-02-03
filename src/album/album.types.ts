@@ -27,7 +27,7 @@ interface AlbumBase {
 	 * The markets in which the album is available:
 	 * ISO 3166-1 alpha-2 country codes.
 	 */
-	available_markets: string[];
+	available_markets?: string[];
 	external_urls: ExternalUrls;
 	/**
 	 * A link to the Web API endpoint providing full details of the album.
@@ -64,6 +64,7 @@ interface AlbumBase {
 	 * The Spotify URI for the album.
 	 */
 	uri: string;
+	is_playable?: boolean;
 }
 
 export interface SimplifiedAlbum extends AlbumBase {

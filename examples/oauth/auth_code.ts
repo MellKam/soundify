@@ -40,6 +40,7 @@ router.get("/login", async (ctx) => {
 	await ctx.cookies.set("state", state, {
 		httpOnly: true,
 		path: "/callback",
+		expires: new Date(Date.now() + 60000), // 1 minute
 	});
 
 	const authUrl = new URL(authServer.authorization_endpoint!);
@@ -47,10 +48,7 @@ router.get("/login", async (ctx) => {
 	authUrl.searchParams.set("redirect_uri", env.SPOTIFY_REDIRECT_URI);
 	authUrl.searchParams.set("response_type", "code");
 	authUrl.searchParams.set("state", state);
-	authUrl.searchParams.set(
-		"scope",
-		Object.values(OAUTH_SCOPES).join(" "),
-	);
+	authUrl.searchParams.set("scope", Object.values(OAUTH_SCOPES).join(" "));
 
 	return ctx.response.redirect(authUrl);
 });
@@ -84,7 +82,7 @@ router.get("/callback", async (ctx) => {
 				code: params.get("code")!,
 			}),
 			headers: {
-				"Authorization": "Basic " +
+				Authorization: "Basic " +
 					encodeBase64Url(
 						env.SPOTIFY_CLIENT_ID + ":" + env.SPOTIFY_CLIENT_SECRET,
 					),

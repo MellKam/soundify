@@ -34,7 +34,7 @@ export interface SimplifiedTrack {
 	/**
 	 * A list of the countries in which the track can be played.
 	 */
-	available_markets: string[];
+	available_markets?: string[];
 	/**
 	 * The disc number (usually 1 unless the album consists of more than one disc).
 	 */
