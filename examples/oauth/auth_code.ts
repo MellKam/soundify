@@ -1,10 +1,5 @@
 import * as oauth from "oauth4webapi";
-import {
-	getCurrentUser,
-	OAUTH_SCOPES,
-	SPOTIFY_AUTH_URL,
-	SpotifyClient,
-} from "../../src/mod.ts";
+import { OAUTH_SCOPES, SPOTIFY_AUTH_URL } from "../../src/mod.ts";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
 import { encodeBase64Url } from "std/encoding/base64url.ts";
@@ -40,7 +35,6 @@ router.get("/login", async (ctx) => {
 	await ctx.cookies.set("state", state, {
 		httpOnly: true,
 		path: "/callback",
-		expires: new Date(Date.now() + 60000), // 1 minute
 	});
 
 	const authUrl = new URL(authServer.authorization_endpoint!);
@@ -57,7 +51,9 @@ router.get("/callback", async (ctx) => {
 	try {
 		const state = await ctx.cookies.get("state");
 		if (!state) {
-			throw new Error("no state found");
+			ctx.response.status = 400;
+			ctx.response.body = "Missing state cookie";
+			return;
 		}
 
 		const params = oauth.validateAuthResponse(
@@ -94,16 +90,26 @@ router.get("/callback", async (ctx) => {
 			oauthClient,
 			response,
 		);
-		console.log(result.refresh_token);
+
 		if (oauth.isOAuth2Error(result)) {
-			throw new Error(result.error);
+			throw new Error(
+				result.error + result.error_description
+					? " : " + result.error_description
+					: "",
+			);
 		}
 
-		const spotifyClient = new SpotifyClient(result.access_token);
-		const user = await getCurrentUser(spotifyClient);
+		if (!result.refresh_token) {
+			throw new Error("Missing refresh token");
+		}
+
+		await ctx.cookies.set("refresh_token", result.refresh_token, {
+			httpOnly: true,
+			path: "/refresh",
+		});
 
 		ctx.response.type = "application/json";
-		ctx.response.body = JSON.stringify(user);
+		ctx.response.body = JSON.stringify(result);
 		ctx.response.status = 200;
 	} catch (error) {
 		console.log(error);
@@ -115,6 +121,38 @@ router.get("/callback", async (ctx) => {
 			path: "/callback",
 		});
 	}
+});
+
+router.get("/refresh", async (ctx) => {
+	const refreshToken = await ctx.cookies.get("refresh_token");
+	if (!refreshToken) {
+		ctx.response.status = 400;
+		ctx.response.body = "Missing refresh token";
+		return;
+	}
+
+	const res = await oauth.refreshTokenGrantRequest(
+		authServer,
+		oauthClient,
+		refreshToken,
+	);
+	const result = await oauth.processRefreshTokenResponse(
+		authServer,
+		oauthClient,
+		res,
+	);
+
+	if (oauth.isOAuth2Error(result)) {
+		ctx.response.status = 500;
+		ctx.response.body = result.error + result.error_description
+			? " : " + result.error_description
+			: "";
+		return;
+	}
+
+	ctx.response.type = "application/json";
+	ctx.response.body = JSON.stringify(result);
+	ctx.response.status = 200;
 });
 
 app.use(router.routes());

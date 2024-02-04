@@ -35,7 +35,7 @@ pnpm add @soundify/web-api
 ```bash
 bun install @soundify/web-api
 ```
-```json
+```jsonc
 // deno.json
 {
   "imports": {
@@ -165,6 +165,28 @@ const me = await getCurrentUser(client);
 // client will receive 401 and call your refresher to get new token
 // you don't have to worry about it as long as your refresher is working
 console.log(me);
+```
+
+## Other customizations
+
+```ts
+import { SpotifyClient } from "@soundify/web-api";
+
+const client = new SpotifyClient("YOUR_ACCESS_TOKEN", {
+  // You can use any fetch implementation you want
+  // For example, you can use `node-fetch` in node.js
+  fetch: (input, init) => {
+    return fetch(input, init);
+  },
+  // You can change the base url of the client
+  // by default it's "https://api.spotify.com/"
+  beseUrl: "https://example.com/",
+  middlewares: [(next) => (url, opts) => {
+    // You can add your own middleware
+    // For example, you can add some headers to every request
+    return next(url, opts);
+  }],
+})
 ```
 
 ## Contributors ✨
