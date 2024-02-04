@@ -1,16 +1,4 @@
-export type JSONValue =
-	| null
-	| string
-	| number
-	| boolean
-	| JSONArray
-	| JSONObject;
-export type JSONArray = JSONValue[];
-export interface JSONObject {
-	[x: string]: JSONValue | undefined;
-}
-
-export type NonNullableJSON<T extends JSONObject> = {
+export type NonNullableObject<T> = {
 	[K in keyof T]: NonNullable<T[K]>;
 };
 

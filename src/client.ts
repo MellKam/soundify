@@ -21,7 +21,7 @@ export class SpotifyError extends Error {
 		message: string,
 		response: Response,
 		body: RegularErrorObject | string | null,
-		options?: ErrorOptions
+		options?: ErrorOptions,
 	) {
 		super(message, options);
 		this.response = response;
@@ -42,11 +42,12 @@ const CONTENT_TYPE = "Content-Type";
 
 const createSpotifyError = async (
 	response: Response,
-	options?: ErrorOptions
+	options?: ErrorOptions,
 ) => {
+	const urlWithoutQuery = response.url.split("?")[0];
 	let message = response.statusText
-		? `${response.status} ${response.statusText} (${response.url})`
-		: `${response.status} (${response.url})`;
+		? `${response.status} ${response.statusText} (${urlWithoutQuery})`
+		: `${response.status} (${urlWithoutQuery})`;
 	let body: RegularErrorObject | string | null = null;
 
 	if (response.body && response.type !== "opaque") {
@@ -65,8 +66,11 @@ const createSpotifyError = async (
 		}
 	}
 
-	const bodyMessage =
-		body === null ? null : typeof body === "string" ? body : body.error.message;
+	const bodyMessage = body === null
+		? null
+		: typeof body === "string"
+		? body
+		: body.error.message;
 	if (bodyMessage) {
 		message += " : " + bodyMessage;
 	}
@@ -77,7 +81,7 @@ const createSpotifyError = async (
 export interface FetchLikeOptions extends Omit<RequestInit, "body"> {
 	query?: SearchParams;
 	body?: BodyInit | null | Record<string, unknown> | unknown[];
-};
+}
 
 type FetchLike = (
 	resource: URL,
@@ -89,7 +93,7 @@ export type Middleware = (next: FetchLike) => FetchLike;
  * Interface that provides a fetch method to make HTTP requests to Spotify API.
  */
 export interface HTTPClient {
-	fetch(path: string, options?: FetchLikeOptions): Promise<Response>
+	fetch(path: string, options?: FetchLikeOptions): Promise<Response>;
 }
 
 const isPlainObject = (obj: unknown): obj is Record<PropertyKey, unknown> => {
@@ -101,27 +105,29 @@ const isPlainObject = (obj: unknown): obj is Record<PropertyKey, unknown> => {
 };
 
 export type SpotifyClinetOptions = {
+	fetch?: (input: URL, init?: RequestInit) => Promise<Response>;
 	baseUrl?: string;
 	/**
 	 * @returns new access token
 	 */
 	refresher?: () => Promise<string>;
-	onRateLimit?: (retryAfter?: number) => Promise<void> | void;
 	/**
 	 * @default false
 	 */
-	waitForRateLimit?: boolean;
+	waitForRateLimit?: boolean | ((retryAfter: number) => boolean);
 	middlewares?: Middleware[];
 };
 
-export class SpotifyClient {
+export class SpotifyClient implements HTTPClient {
 	private readonly baseUrl: string;
 
 	constructor(
 		private accessToken: string,
-		private readonly options: SpotifyClinetOptions = {}
+		private readonly options: SpotifyClinetOptions = {},
 	) {
-		this.baseUrl = options.baseUrl ? options.baseUrl : "https://api.spotify.com/";
+		this.baseUrl = options.baseUrl
+			? options.baseUrl
+			: "https://api.spotify.com/";
 	}
 
 	fetch(path: string, opts: FetchLikeOptions = {}) {
@@ -129,15 +135,16 @@ export class SpotifyClient {
 		if (opts.query) {
 			for (const key in opts.query) {
 				const value = opts.query[key];
-				if (typeof value !== "undefined")
+				if (typeof value !== "undefined") {
 					url.searchParams.set(key, value.toString());
+				}
 			}
 		}
 		const headers = new Headers(opts.headers);
 		headers.set("Accept", APP_JSON);
 
-		const isBodyJSON =
-			!!opts.body && (isPlainObject(opts.body) || Array.isArray(opts.body));
+		const isBodyJSON = !!opts.body &&
+			(isPlainObject(opts.body) || Array.isArray(opts.body));
 		if (isBodyJSON) {
 			headers.set(CONTENT_TYPE, APP_JSON);
 		}
@@ -153,7 +160,7 @@ export class SpotifyClient {
 
 			const res = await (this.options.middlewares || []).reduceRight(
 				(next, mw) => mw(next),
-				fetch as FetchLike,
+				(this.options.fetch || globalThis.fetch) as FetchLike,
 			)(url, { ...opts, body, headers });
 
 			if (res.ok) return res;
@@ -168,12 +175,18 @@ export class SpotifyClient {
 				// time in seconds
 				const retryAfter = Number(res.headers.get("Retry-After")) || undefined;
 
-				if (this.options.onRateLimit) {
-					this.options.onRateLimit(retryAfter);
-				}
+				if (retryAfter) {
+					const waitForRateLimit =
+						typeof this.options.waitForRateLimit === "function"
+							? this.options.waitForRateLimit(retryAfter)
+							: this.options.waitForRateLimit;
 
-				if (retryAfter && this.options.waitForRateLimit) {
-					await new Promise((r) => setTimeout(r, retryAfter * 1000));
+					if (waitForRateLimit) {
+						await new Promise((resolve) =>
+							setTimeout(resolve, retryAfter * 1000)
+						);
+					}
+
 					return recursiveFetch();
 				}
 			}

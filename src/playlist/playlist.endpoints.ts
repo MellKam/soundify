@@ -1,4 +1,4 @@
-import type { NonNullableJSON, Prettify } from "../shared.ts";
+import type { NonNullableObject, Prettify } from "../shared.ts";
 import type { Image, PagingObject, PagingOptions } from "../general.types.ts";
 import type {
 	FeaturedPlaylists,
@@ -397,7 +397,7 @@ export const getPlaylistCoverImage = async (
 	playlistId: string,
 ) => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/images`);
-	return res.json() as Promise<NonNullableJSON<Image>[]>;
+	return res.json() as Promise<NonNullableObject<Image>[]>;
 };
 
 /**

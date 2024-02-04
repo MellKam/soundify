@@ -1,4 +1,4 @@
-import type { JSONObject, Prettify } from "./shared.ts";
+import type { Prettify } from "./shared.ts";
 import type { PagingObject, PagingOptions } from "./general.types.ts";
 
 /**
@@ -6,29 +6,29 @@ import type { PagingObject, PagingOptions } from "./general.types.ts";
  */
 type PaginatorDirection = "next" | "prev";
 
-type NextPageOpts = {
+type NextPageOptions = {
 	limit?: number;
 	setOffset?: (offset: number) => number;
 };
 
-type PaginatorOpts = Prettify<
+type PageIterOptions = Prettify<
 	PagingOptions & {
 		direction?: PaginatorDirection;
 	}
 >;
 
-const DEFAULTS: Required<PaginatorOpts> = {
+const DEFAULTS: Required<PageIterOptions> = {
 	direction: "next",
 	limit: 20,
 	offset: 0,
 };
 
-export class ChunkPaginator<T extends JSONObject> {
-	private defaults: Required<PaginatorOpts>;
+export class ChunkIterator<TItem> {
+	private defaults: Required<PageIterOptions>;
 
 	constructor(
-		private fetcher: (opts: PagingOptions) => Promise<PagingObject<T>>,
-		defaults: PaginatorOpts = {},
+		private fetcher: (opts: PagingOptions) => Promise<PagingObject<TItem>>,
+		defaults: PageIterOptions = {},
 	) {
 		this.defaults = { ...DEFAULTS, ...defaults };
 	}
@@ -37,7 +37,11 @@ export class ChunkPaginator<T extends JSONObject> {
 		return this[Symbol.asyncIterator]();
 	}
 
-	[Symbol.asyncIterator](): AsyncIterator<T[], T[], NextPageOpts | undefined> {
+	[Symbol.asyncIterator](): AsyncIterator<
+		TItem[],
+		TItem[],
+		NextPageOptions | undefined
+	> {
 		let done = false;
 		let { direction, limit, offset } = this.defaults;
 
@@ -64,12 +68,14 @@ export class ChunkPaginator<T extends JSONObject> {
 	}
 }
 
-export class Paginator<T extends JSONObject> {
-	private defaults: Required<PaginatorOpts>;
+export class PageIterator<TItem> {
+	private defaults: Required<PageIterOptions>;
 
 	constructor(
-		private fetcher: (opts: PagingOptions) => Promise<PagingObject<T>>,
-		defaults: PaginatorOpts = {},
+		private fetcher: (
+			opts: PagingOptions,
+		) => Promise<PagingObject<TItem>>,
+		defaults: PageIterOptions = {},
 	) {
 		this.defaults = { ...DEFAULTS, ...defaults };
 	}
@@ -78,7 +84,7 @@ export class Paginator<T extends JSONObject> {
 		return this[Symbol.asyncIterator]();
 	}
 
-	async *[Symbol.asyncIterator](): AsyncGenerator<T, T> {
+	async *[Symbol.asyncIterator](): AsyncGenerator<TItem, TItem> {
 		let { direction, limit, offset } = this.defaults;
 
 		while (true) {
@@ -101,7 +107,7 @@ export class Paginator<T extends JSONObject> {
 	}
 
 	async collect() {
-		const items: T[] = [];
+		const items: TItem[] = [];
 		for await (const item of this) {
 			items.push(item);
 		}

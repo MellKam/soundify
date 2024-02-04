@@ -18,10 +18,14 @@
     ".": {
       "import": "./dist/mod.js",
       "require": "./dist/mod.cjs"
+    },
+    "./pagination": {
+      "import": "./dist/pagination.js",
+      "require": "./dist/pagination.cjs"
     }
   },
   "scripts": {
-    "build": "tsup ./src/mod.ts --format esm,cjs --minify --dts --sourcemap --out-dir dist"
+    "build": "tsup ./src/mod.ts ./src/pagination.ts --format esm,cjs --minify --dts --out-dir dist && rm ./dist/*.d.cts"
   },
   "devDependencies": {
     "all-contributors-cli": "6.26.1",
