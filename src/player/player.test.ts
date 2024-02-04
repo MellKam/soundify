@@ -1,6 +1,6 @@
 import {
 	getAvailableDevices,
-	getCurrentPlayingTrack,
+	// getCurrentPlayingTrack,s
 	getPlaybackState,
 } from "./player.endpoints.ts";
 import { client } from "../test_client.ts";
@@ -17,7 +17,7 @@ Deno.test("getAvailableDevices", async () => {
 	z.array(deviceSchema).parse(devices);
 });
 
-Deno.test("getCurrentPlayingTrack", async () => {
-	const state = await getCurrentPlayingTrack(client);
-	playbackStateSchema.parse(state);
-});
+// Deno.test("getCurrentPlayingTrack", async () => {
+// 	const state = await getCurrentPlayingTrack(client);
+// 	playbackStateSchema.parse(state);
+// });

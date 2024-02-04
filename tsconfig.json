@@ -4,10 +4,15 @@
 		"strict": true,
 		"moduleResolution": "Node",
 		"isolatedModules": true,
-		"lib": ["DOM", "ESNext", "DOM.Iterable"],
+		"lib": [
+			"DOM",
+			"ESNext",
+			"DOM.Iterable"
+		],
 		"module": "ESNext",
 		"target": "ESNext",
-		"outDir": "types",
+		"outDir": "dist",
+		"allowImportingTsExtensions": true,
 		"forceConsistentCasingInFileNames": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitAny": true,
@@ -18,6 +23,6 @@
 		"noUncheckedIndexedAccess": true,
 		"allowUnreachableCode": false,
 		"allowUnusedLabels": false,
-		"skipLibCheck": true
+		"skipLibCheck": true,
 	}
 }
