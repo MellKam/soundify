@@ -20,7 +20,7 @@ export type Device = {
 	name: string;
 	/**
 	 * Device type, such as "computer", "smartphone" or "speaker". */
-	type: "computer" | "smartphone" | "speaker";
+	type: string;
 	/**
 	 * The current volume in percent.
 	 * Range: 0 - 100
@@ -68,10 +68,17 @@ export type Context = {
 	uri: string;
 };
 
+/**
+ * "track" - repeat the current track. \
+ * "context" - repeat the current context. \
+ * "off" - turn repeat off.
+ */
+export type RepeatMode = "off" | "track" | "context";
+
 export type PlaybackState = {
 	/** The device that is currently active. */
 	device: Device;
-	repeat_state: "off" | "track" | "context";
+	repeat_state: RepeatMode;
 	/** If shuffle is on or off. */
 	shuffle_state: boolean;
 	context: Context | null;
@@ -87,7 +94,9 @@ export type PlaybackState = {
 	/**
 	 * Allows to update the user interface based on which playback actions are available within the current context.
 	 */
-	actions: Actions;
+	actions: {
+		disallows: Actions;
+	};
 };
 
 export type Queue = {
