@@ -62,7 +62,7 @@ const client = new SpotifyClient("YOUR_ACCESS_TOKEN");
 const me = await getCurrentUser(client);
 console.log(me);
 
-const result = await search(client, "Never Gonna Give You Up", "track");
+const result = await search(client, "track", "Never Gonna Give You Up");
 console.log(result.tracks.items.at(0));
 ```
 

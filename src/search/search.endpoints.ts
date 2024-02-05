@@ -1,28 +1,26 @@
-import type { PagingObject } from "../general.types.ts";
+import type { ItemType, PagingObject } from "../general.types.ts";
 import type { SimplifiedAlbum } from "../album/album.types.ts";
 import type { Artist } from "../artist/artist.types.ts";
 import type { Track } from "../track/track.types.ts";
 import type { SimplifiedPlaylist } from "../playlist/playlist.types.ts";
-import { HTTPClient } from "../client.ts";
+import type { HTTPClient } from "../client.ts";
+import type { SimplifiedAudiobook } from "../audiobook/audiobook.types.ts";
+import type { SimplifiedEpisode } from "../episode/episode.types.ts";
+import type { SimplifiedShow } from "../show/show.types.ts";
 
-/**
- * Item types to search across.
- */
-export type SearchType = "album" | "artist" | "playlist" | "track";
-// | "show"
-// | "episode"
-// | "audiobook"
-
-type SearchResponseTypeMap = {
+type ItemTypeToResultKey = {
 	album: "albums";
 	artist: "artists";
 	playlist: "playlists";
 	track: "tracks";
+	show: "shows";
+	episode: "episodes";
+	audiobook: "audiobooks";
 };
 
-export type SearchTypeLiteral<T extends SearchType | SearchType[]> = T extends
-	SearchType[] ? Pick<SearchResponseTypeMap, T[number]>[T[number]]
-	: T extends SearchType ? SearchResponseTypeMap[T]
+type ItemTypesToSearchResultKeys<T extends ItemType | ItemType[]> = T extends
+	ItemType[] ? Pick<ItemTypeToResultKey, T[number]>[T[number]]
+	: T extends ItemType ? ItemTypeToResultKey[T]
 	: never;
 
 export type SearchResponse = {
@@ -30,19 +28,43 @@ export type SearchResponse = {
 	artists: PagingObject<Artist>;
 	albums: PagingObject<SimplifiedAlbum>;
 	playlists: PagingObject<SimplifiedPlaylist>;
+	shows: PagingObject<SimplifiedShow>;
+	audiobooks: PagingObject<SimplifiedAudiobook>;
+	episodes: PagingObject<SimplifiedEpisode>;
 };
 
-export type SearchFilters = {
-	q?: string;
+export type SearchQueries = {
+	query?: string;
 	track?: string;
 	artist?: string;
 	album?: string;
+	/** You can filter on a single year or a range (e.g. 1955-1960). */
 	year?: number | string;
 	genre?: string;
 	upc?: number | string;
 	isrc?: number | string;
+	/**
+	 * The `tag:new` filter will return albums released in the past two weeks and `tag:hipster` can be used to return only albums with the lowest 10% popularity.
+	 */
 	tag?: "hipster" | "new";
 };
+
+type ItemTypeQueries = {
+	artists: "query" | "artist" | "genre" | "year";
+	tracks: "query" | "artist" | "album" | "genre" | "isrc" | "year";
+	albums: "query" | "artist" | "album" | "tag" | "year" | "upc";
+	playlists: "query";
+	shows: "query";
+	audiobooks: "query";
+	episodes: "query";
+};
+
+type SearchQueriesFromItemTypes<T extends ItemType[] | ItemType> = Pick<
+	SearchQueries,
+	ItemTypeQueries[
+		ItemTypesToSearchResultKeys<T>
+	]
+>;
 
 export type SearchOptions = {
 	/**
@@ -76,29 +98,22 @@ export type SearchOptions = {
  * Get Spotify catalog information about albums, artists, playlists, tracks, shows, episodes or audiobooks that match a keyword string.
  *
  * @param client Spotify HTTPClient
- * @param query Your search query
  * @param type One or multiple item types to search across
+ * @param query Your search query
  * @param options Additional options for request
  */
-export const search = async <T extends SearchType[] | SearchType>(
+export const search = async <T extends ItemType[] | ItemType>(
 	client: HTTPClient,
-	query: string | SearchFilters,
 	type: T,
+	query: string | SearchQueriesFromItemTypes<T>,
 	options?: SearchOptions,
-): Promise<Pick<SearchResponse, SearchTypeLiteral<T>>> => {
-	let q = "";
-	if (typeof query === "string") {
-		q = query;
-	} else {
-		for (const key in query) {
-			q += key === "q"
-				? query[key]
-				: `${key}:${query[key as keyof typeof query]}`;
-		}
-	}
+): Promise<Pick<SearchResponse, ItemTypesToSearchResultKeys<T>>> => {
+	const q = typeof query === "string" ? query : Object.entries(query)
+		.map(([key, value]) => (key === "query" ? value : `${key}:${value}`))
+		.join(" ");
 
 	const res = await client.fetch("/v1/search", {
-		query: { q: type, ...options },
+		query: { q, type, ...options },
 	});
 	return res.json() as Promise<SearchResponse>;
 };

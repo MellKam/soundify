@@ -4,7 +4,7 @@ import {
 	OAUTH_SCOPES,
 	SPOTIFY_AUTH_URL,
 	SpotifyClient,
-} from "../../src/mod.ts";
+} from "@soundify/web-api";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
 import { Application, Router } from "oak";

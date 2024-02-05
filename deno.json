@@ -3,7 +3,8 @@
 		"zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
 		"oauth4webapi": "https://deno.land/x/oauth4webapi@v2.8.1/mod.ts",
 		"oak": "https://deno.land/x/oak@v12.5.0/mod.ts",
-		"std/": "https://deno.land/std@0.213.0/"
+		"std/": "https://deno.land/std@0.213.0/",
+		"@soundify/web-api": "./src/mod.ts"
 	},
 	"fmt": { "useTabs": true }
 }
