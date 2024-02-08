@@ -1,34 +1,28 @@
 {
-  "compilerOptions": {
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noEmitOnError": true,
-    "noImplicitReturns": true,
-    "noUnusedParameters": true,
-    "strict": true,
-    "lib": [
-      "DOM",
-      "ESNext",
-      "DOM.Iterable",
-    ],
-    "noUnusedLocals": true,
-    "moduleResolution": "node",
-    "module": "ESNext",
-    "target": "ESNext",
-    "outDir": "types",
-    "baseUrl": ".",
-    "isolatedModules": true,
-    "skipLibCheck": true,
-    "ignoreDeprecations": "5.0",
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false
-  },
-  "include": [
-    "./src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "./src/**/*.test.ts"
-  ]
+	"compilerOptions": {
+		"baseUrl": ".",
+		"strict": true,
+		"moduleResolution": "Node",
+		"isolatedModules": true,
+		"lib": [
+			"DOM",
+			"ESNext",
+			"DOM.Iterable"
+		],
+		"module": "ESNext",
+		"target": "ESNext",
+		"outDir": "dist",
+		"allowImportingTsExtensions": true,
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": true,
+		"noEmitOnError": true,
+		"noImplicitReturns": true,
+		"noUnusedParameters": true,
+		"noUnusedLocals": true,
+		"noUncheckedIndexedAccess": true,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"skipLibCheck": true,
+	}
 }
