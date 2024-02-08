@@ -34,7 +34,7 @@ export type SearchResponse = {
 };
 
 export type SearchQueries = {
-	query?: string;
+	q?: string;
 	track?: string;
 	artist?: string;
 	album?: string;
@@ -50,13 +50,13 @@ export type SearchQueries = {
 };
 
 type ItemTypeQueries = {
-	artists: "query" | "artist" | "genre" | "year";
-	tracks: "query" | "artist" | "album" | "genre" | "isrc" | "year";
-	albums: "query" | "artist" | "album" | "tag" | "year" | "upc";
-	playlists: "query";
-	shows: "query";
-	audiobooks: "query";
-	episodes: "query";
+	artists: "q" | "artist" | "genre" | "year";
+	tracks: "q" | "artist" | "album" | "genre" | "isrc" | "year";
+	albums: "q" | "artist" | "album" | "tag" | "year" | "upc";
+	playlists: "q";
+	shows: "q";
+	audiobooks: "q";
+	episodes: "q";
 };
 
 type SearchQueriesFromItemTypes<T extends ItemType[] | ItemType> = Pick<
@@ -109,7 +109,7 @@ export const search = async <T extends ItemType[] | ItemType>(
 	options?: SearchOptions,
 ): Promise<Pick<SearchResponse, ItemTypesToSearchResultKeys<T>>> => {
 	const q = typeof query === "string" ? query : Object.entries(query)
-		.map(([key, value]) => (key === "query" ? value : `${key}:${value}`))
+		.map(([key, value]) => (key === "q" ? value : `${key}:${value}`))
 		.join(" ");
 
 	const res = await client.fetch("/v1/search", {

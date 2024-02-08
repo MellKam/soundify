@@ -222,7 +222,7 @@ export const getRecommendations = async (
 	client: HTTPClient,
 	options: RecommendationsOptions,
 ) => {
-	const res = await client.fetch("/v1/srecommendations", {
+	const res = await client.fetch("/v1/recommendations", {
 		query: options,
 	});
 	return res.json() as Promise<Recomendations>;

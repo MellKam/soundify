@@ -72,7 +72,47 @@ use. This may be not that important for server-side apps, but I'm sure frontend
 users will thank you for not including an extra 10kb of crappy js into your
 bundle.
 
-### Error handling 📛
+```ts
+import {
+	getAlbumTracks,
+	getArtist,
+	getArtistAlbums,
+	getRecommendations,
+	SpotifyClient,
+} from "@soundify/web-api";
+
+const client = new SpotifyClient("YOUR_ACCESS_TOKEN");
+
+const radiohead = await getArtist(client, "4Z8W4fKeB5YxbusRsdQVPb");
+console.log(`Radiohead popularity - ${radiohead.popularity}`);
+
+const pagingResult = await getArtistAlbums(client, radiohead.id, { limit: 1 });
+const album = pagingResult.items.at(0)!;
+console.log(`Album - ${album.name}`);
+
+const tracks = await getAlbumTracks(client, album.id, { limit: 5 });
+console.table(
+	tracks.items.map((track) => ({
+		name: track.name,
+		duration: track.duration_ms,
+	})),
+);
+
+const recomendations = await getRecommendations(client, {
+	seed_artists: [radiohead.id],
+	seed_tracks: tracks.items.map((track) => track.id).slice(0, 4),
+	market: "US",
+	limit: 5,
+});
+console.table(
+	recomendations.tracks.map((track) => ({
+		artist: track.artists.at(0)!.name,
+		name: track.name,
+	})),
+);
+```
+
+## Error handling 📛
 
 ```ts
 import { getCurrentUser, SpotifyClient, SpotifyError } from "@soundify/web-api";

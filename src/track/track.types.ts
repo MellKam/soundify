@@ -5,6 +5,7 @@ import type {
 	ExternalUrls,
 	Restrictions,
 } from "../general.types.ts";
+import type { RequireAtLeastOne } from "../shared.ts";
 
 export type LinkedTrack = {
 	/**
@@ -470,167 +471,175 @@ export interface AudioAnalysis {
 	tatums: TimeInterval[];
 }
 
-export type RecommendationsOptions = {
+type RecommendationRequiredOptions = {
 	/**
-	 * List of Spotify IDs for seed artists. Maximum 5 IDs
+	 * List of Spotify IDs for seed artists.
+	 * Up to 5 seed values may be provided in any combination of `seed_artists`, `seed_tracks` and `seed_genres`.
 	 */
 	seed_artists: string[];
 	/**
-	 * List of any genres in the set of available genre seeds. Maximum 5 genres
+	 * List of any genres in the set of available genre seeds.
+	 * Up to 5 seed values may be provided in any combination of `seed_artists`, `seed_tracks` and `seed_genres`.
 	 */
 	seed_genres: string[];
 	/**
-	 * List of Spotify IDs for a seed track. Maximum 5 IDs
+	 * A comma separated list of Spotify IDs for a seed track.
+	 * Up to 5 seed values may be provided in any combination of `seed_artists`, `seed_tracks` and `seed_genres`.
 	 */
 	seed_tracks: string[];
-	/**
-	 * The target size of the list of recommended tracks.
-	 * Minimum: 1. Maximum: 100. Default: 20.
-	 */
-	limit?: number;
-	/**
-	 * An ISO 3166-1 alpha-2 country code
-	 */
-	market?: string;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	max_acousticness?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	max_danceability?: number;
-	max_duration_ms?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	max_energy?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	max_instrumentalness?: number;
-	/**
-	 * Range: `>= 0 <= 11`
-	 */
-	max_key?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	max_liveness?: number;
-	max_loudness?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	max_mode?: number;
-	/**
-	 * Range `>= 0 <= 100`
-	 */
-	max_popularity?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	max_speechiness?: number;
-	max_tempo?: number;
-	max_time_signature?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	max_valence?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	min_acousticness?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	min_danceability?: number;
-	min_duration_ms?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	min_energy?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	min_instrumentalness?: number;
-	/**
-	 * Range: `>= 0 <= 11`
-	 */
-	min_key?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	min_liveness?: number;
-	min_loudness?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	min_mode?: number;
-	/**
-	 * Range `>= 0 <= 100`
-	 */
-	min_popularity?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	min_speechiness?: number;
-	min_tempo?: number;
-	/**
-	 * Range `<= 11`
-	 */
-	min_time_signature?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	min_valence?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	target_acousticness?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	target_danceability?: number;
-	/**
-	 * Target duration of the track (ms)
-	 */
-	target_duration_ms?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	target_energy?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	target_instrumentalness?: number;
-	/**
-	 * Range: `>= 0 <= 11`
-	 */
-	target_key?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	target_liveness?: number;
-	target_loudness?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	target_mode?: number;
-	/**
-	 * Range `>= 0 <= 100`
-	 */
-	target_popularity?: number;
-	target_speechiness?: number;
-	/**
-	 * Target tempo (BPM)
-	 */
-	target_tempo?: number;
-	target_time_signature?: number;
-	/**
-	 * Range: `>= 0 <= 1`
-	 */
-	target_valence?: number;
 };
+
+export type RecommendationsOptions =
+	& RequireAtLeastOne<RecommendationRequiredOptions>
+	& {
+		/**
+		 * The target size of the list of recommended tracks.
+		 * Minimum: 1. Maximum: 100. Default: 20.
+		 */
+		limit?: number;
+		/**
+		 * An ISO 3166-1 alpha-2 country code
+		 */
+		market?: string;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		max_acousticness?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		max_danceability?: number;
+		max_duration_ms?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		max_energy?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		max_instrumentalness?: number;
+		/**
+		 * Range: `>= 0 <= 11`
+		 */
+		max_key?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		max_liveness?: number;
+		max_loudness?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		max_mode?: number;
+		/**
+		 * Range `>= 0 <= 100`
+		 */
+		max_popularity?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		max_speechiness?: number;
+		max_tempo?: number;
+		max_time_signature?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		max_valence?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		min_acousticness?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		min_danceability?: number;
+		min_duration_ms?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		min_energy?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		min_instrumentalness?: number;
+		/**
+		 * Range: `>= 0 <= 11`
+		 */
+		min_key?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		min_liveness?: number;
+		min_loudness?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		min_mode?: number;
+		/**
+		 * Range `>= 0 <= 100`
+		 */
+		min_popularity?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		min_speechiness?: number;
+		min_tempo?: number;
+		/**
+		 * Range `<= 11`
+		 */
+		min_time_signature?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		min_valence?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		target_acousticness?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		target_danceability?: number;
+		/**
+		 * Target duration of the track (ms)
+		 */
+		target_duration_ms?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		target_energy?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		target_instrumentalness?: number;
+		/**
+		 * Range: `>= 0 <= 11`
+		 */
+		target_key?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		target_liveness?: number;
+		target_loudness?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		target_mode?: number;
+		/**
+		 * Range `>= 0 <= 100`
+		 */
+		target_popularity?: number;
+		target_speechiness?: number;
+		/**
+		 * Target tempo (BPM)
+		 */
+		target_tempo?: number;
+		target_time_signature?: number;
+		/**
+		 * Range: `>= 0 <= 1`
+		 */
+		target_valence?: number;
+	};
 
 export interface RecommendationSeed {
 	/**

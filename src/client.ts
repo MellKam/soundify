@@ -40,6 +40,13 @@ export class SpotifyError extends Error {
 const APP_JSON = "application/json";
 const CONTENT_TYPE = "Content-Type";
 
+const getBodyMessage = (body: RegularErrorObject | string | null) => {
+	if (body === null) return null;
+	if (typeof body === "string") return body;
+	return body.error.message +
+		(body.error.reason ? ` (${body.error.reason})` : "");
+};
+
 const createSpotifyError = async (
 	response: Response,
 	options?: ErrorOptions,
@@ -66,11 +73,7 @@ const createSpotifyError = async (
 		}
 	}
 
-	const bodyMessage = body === null
-		? null
-		: typeof body === "string"
-		? body
-		: body.error.message;
+	const bodyMessage = getBodyMessage(body);
 	if (bodyMessage) {
 		message += " : " + bodyMessage;
 	}
