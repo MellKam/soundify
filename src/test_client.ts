@@ -1,5 +1,5 @@
-import * as oauth from "https://deno.land/x/oauth4webapi@v2.8.1/mod.ts";
-import { SPOTIFY_AUTH_URL } from "./mod.ts";
+import * as oauth from "oauth4webapi";
+import { SPOTIFY_AUTH_URL } from "@soundify/web-api";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
 import { SpotifyClient } from "./client.ts";
@@ -59,7 +59,6 @@ const refreshOrGetCachedToken = async () => {
 const accessToken = await refreshOrGetCachedToken();
 
 export const client = new SpotifyClient(accessToken, {
-	onRateLimit: (timeout) => console.log(`Rate limit timeout ${timeout}ms`),
 	waitForRateLimit: true,
 	refresher,
 });

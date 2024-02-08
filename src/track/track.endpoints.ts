@@ -82,7 +82,7 @@ export const getSavedTracks = async (
  * @param trackIds List of the Spotify track IDs. Maximum 50 IDs
  */
 export const saveTracks = (client: HTTPClient, trackIds: string[]) => {
-	return client.fetch("/v1//me/tracks", {
+	return client.fetch("/v1/me/tracks", {
 		method: "PUT",
 		query: {
 			ids: trackIds,
@@ -172,7 +172,7 @@ export const getTracksAudioFeatures = async (
 	client: HTTPClient,
 	track_ids: string[],
 ) => {
-	const res = await client.fetch("/v1//audio-features", {
+	const res = await client.fetch("/v1/audio-features", {
 		query: {
 			ids: track_ids,
 		},

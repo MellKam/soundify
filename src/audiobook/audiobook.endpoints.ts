@@ -63,7 +63,7 @@ export const getAudiobookChapters = async (
 	audiobookId: string,
 	options?: GetAudiobookChapterOpts,
 ) => {
-	const res = await client.fetch(`/audiobooks/${audiobookId}/chapters`, {
+	const res = await client.fetch(`/v1/audiobooks/${audiobookId}/chapters`, {
 		query: options,
 	});
 	return res.json() as Promise<PagingObject<SimplifiedChapter>>;
