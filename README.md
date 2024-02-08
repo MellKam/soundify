@@ -4,11 +4,11 @@
   </p>
   <p align="center">
     <a href="https://www.npmjs.com/package/@soundify/web-api">
-      <img alt="npm" src="https://img.shields.io/npm/v/@soundify/web-api?color=509BF5">
+      <img alt="npm" src="https://img.shields.io/npm/v/@soundify/web-api">
     </a>
-    <a href="https://www.npmjs.com/package/@soundify/web-api">
-      <img src="https://img.shields.io/npm/dw/%40soundify%2Fweb-api?color=509BF5" alt="NPM downloads" />
-    </a>
+		<a href="https://bundlejs.com/?q=%40soundify%2Fweb-api&treeshake=%5B*%5D">
+			<img src="https://deno.bundlejs.com/?q=@soundify/web-api&badge=minified" alt="Size of package (minified)" />
+		</a>
     <a href="https://github.com/mellkam/soundify">
       <img src="https://img.shields.io/github/stars/mellkam/soundify" alt="Github stars" />
     </a>
@@ -22,7 +22,7 @@
 </div>
 
 <p align="center">
- <a href="https://radix-vue.com">Getting Started</a> | <a href="https://www.radix-vue.com/overview/getting-started.html">Authorization</a> | <a href="https://www.radix-vue.com/">Usage</a> | <a href="#contributors-✨">Contributors</a>
+ <a href="#getting-started">Getting Started</a> | <a href="#error-handling-📛">Error handling</a> | <a href="#token-refreshing">Token refreshing</a> | <a href="#pagination">Pagination</a>
 </p>
 
 ## Installation
@@ -123,7 +123,46 @@ const client = new SpotifyClient("YOUR_ACCESS_TOKEN", {
 });
 ```
 
-### Pagination
+## Authorization
+
+Soundify doesn't provide any tools for authorization, because that would require
+to write whole oauth library in here. We have many other battle-tested oauth
+solutions, like [oauth4webapi](https://github.com/panva/oauth4webapi) or
+[oidc-client-ts](https://github.com/authts/oidc-client-ts). I just don't see a
+point in reinventing the wheel 🫤.
+
+Despite this, we have a huge directory of examples, including those for
+authorization.
+[OAuth2 Examples↗](https://github.com/MellKam/soundify/tree/main/examples/oauth)
+
+### Token Refreshing
+
+```ts
+import { getCurrentUser, SpotifyClient } from "@soundify/web-api";
+
+const refresher = () => {
+	// This function should return a new access token
+	// You can use any library you want to refresh the token
+	// Or even make it yourself, we don't care
+	return Promise.resolve("YOUR_NEW_ACCESS_TOKEN");
+};
+
+const accessToken = await refresher();
+const client = new SpotifyClient(accessToken, { refresher });
+
+const me = await getCurrentUser(client);
+console.log(me);
+
+// wait some time to expire the token ...
+// 2000 YEARS LATER 🧽
+
+const me = await getCurrentUser(client);
+// client will receive 401 and call your refresher to get new token
+// you don't have to worry about it as long as your refresher is working
+console.log(me);
+```
+
+## Pagination
 
 To simplify the process of paginating through the results, we provide a
 `PageIterator` class.
@@ -148,45 +187,6 @@ for await (const track of playlistIter) {
 // or collect all tracks into an array
 const allTracks = await playlistIter.collect();
 console.log(allTracks.length);
-```
-
-## Authorization
-
-Soundify doesn't provide any tools for authorization, because that would require
-to write whole oauth library in here. We have many other battle-tested oauth
-solutions, like [oauth4webapi](https://github.com/panva/oauth4webapi) or
-[oidc-client-ts](https://github.com/authts/oidc-client-ts). I just don't see a
-point in reinventing the wheel 🫤.
-
-Despite this, we have a huge directory of examples, including those for
-authorization.
-[OAuth2 Examples↗](https://github.com/MellKam/soundify/tree/main/examples/oauth)
-
-### Token Refreshing
-
-```ts
-import { getCurrentUser, SpotifyClient } from "@soundify/web-api";
-
-const refresher = () => {
-	// This function should return a new access token
-	// You can use any library you want to refresh the token
-	// Or even make it yourself, we don't care
-	return "YOUR_NEW_ACCESS";
-};
-
-const accessToken = await refresher();
-const client = new SpotifyClient(accessToken, { refresher });
-
-const me = await getCurrentUser(client);
-console.log(me);
-
-// wait some time to expire the token ...
-// 2000 YEARS LATER 🧽
-
-const me = await getCurrentUser(client);
-// client will receive 401 and call your refresher to get new token
-// you don't have to worry about it as long as your refresher is working
-console.log(me);
 ```
 
 ## Other customizations
