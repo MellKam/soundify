@@ -1,55 +1,55 @@
 {
-  "name": "@soundify/web-api",
-  "version": "1.0.0-rc3",
-  "description": "🎧 Spotify Web API client for js/ts runtime environments",
-  "type": "module",
-  "main": "dist/mod.cjs",
-  "module": "dist/mod.js",
-  "types": "dist/mod.d.ts",
-  "license": "MIT",
-  "sideEffects": false,
-  "files": [
-    "dist/",
-    "LICENSE",
-    "package.json",
-    "README.md"
-  ],
-  "exports": {
-    ".": {
-      "import": "./dist/mod.js",
-      "require": "./dist/mod.cjs"
-    },
-    "./pagination": {
-      "import": "./dist/pagination.js",
-      "require": "./dist/pagination.cjs"
-    }
-  },
-  "scripts": {
-    "build": "tsup ./src/mod.ts ./src/pagination.ts --format esm,cjs --minify --dts --out-dir dist && rm ./dist/*.d.cts"
-  },
-  "devDependencies": {
-    "all-contributors-cli": "6.26.1",
-    "typescript": "5.3.3",
-    "tsup": "8.0.1"
-  },
-  "author": {
-    "name": "Artem Melnyk",
-    "url": "https://github.com/MellKam"
-  },
-  "repository": "github:MellKam/soundify",
-  "bugs": {
-    "url": "https://github.com/MellKam/soundify/issues"
-  },
-  "readme": "https://github.com/MellKam/soundify#readme",
-  "publishConfig": {
-    "access": "public"
-  },
-  "keywords": [
-    "spotify",
-    "web",
-    "api",
-    "music",
-    "sdk",
-    "soundify"
-  ]
+	"name": "@soundify/web-api",
+	"version": "1.0.0-rc3",
+	"description": "🎧 Spotify Web API client for js/ts runtime environments",
+	"type": "module",
+	"main": "dist/mod.cjs",
+	"module": "dist/mod.js",
+	"types": "dist/mod.d.ts",
+	"license": "MIT",
+	"sideEffects": false,
+	"files": [
+		"dist/",
+		"LICENSE",
+		"package.json",
+		"README.md"
+	],
+	"exports": {
+		".": {
+			"import": "./dist/mod.js",
+			"require": "./dist/mod.cjs"
+		},
+		"./pagination": {
+			"import": "./dist/pagination.js",
+			"require": "./dist/pagination.cjs"
+		}
+	},
+	"scripts": {
+		"build": "tsup ./mod.ts ./pagination.ts --format esm,cjs --minify --dts --out-dir dist && rm ./dist/*.d.cts"
+	},
+	"devDependencies": {
+		"all-contributors-cli": "6.26.1",
+		"typescript": "5.3.3",
+		"tsup": "8.0.1"
+	},
+	"author": {
+		"name": "Artem Melnyk",
+		"url": "https://github.com/MellKam"
+	},
+	"repository": "github:MellKam/soundify",
+	"bugs": {
+		"url": "https://github.com/MellKam/soundify/issues"
+	},
+	"readme": "https://github.com/MellKam/soundify#readme",
+	"publishConfig": {
+		"access": "public"
+	},
+	"keywords": [
+		"spotify",
+		"web",
+		"api",
+		"music",
+		"sdk",
+		"soundify"
+	]
 }
