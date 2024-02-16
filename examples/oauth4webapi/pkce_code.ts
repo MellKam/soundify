@@ -21,7 +21,7 @@ const env = z
 const issuer = new URL(SPOTIFY_AUTH_URL);
 const authServer = await oauth.processDiscoveryResponse(
 	issuer,
-	await oauth.discoveryRequest(issuer)
+	await oauth.discoveryRequest(issuer),
 );
 
 const oauthClient: oauth.Client = {
@@ -33,7 +33,7 @@ class OAuthError extends Error {
 	constructor(public readonly params: oauth.OAuth2Error) {
 		super(
 			params.error +
-				(params.error_description ? " : " + params.error_description : "")
+				(params.error_description ? " : " + params.error_description : ""),
 		);
 	}
 }
@@ -67,7 +67,7 @@ router.get("/callback", async (ctx) => {
 			authServer,
 			oauthClient,
 			ctx.request.url,
-			oauth.expectNoState
+			oauth.expectNoState,
 		);
 		if (oauth.isOAuth2Error(params)) {
 			throw new OAuthError(params);
@@ -83,12 +83,12 @@ router.get("/callback", async (ctx) => {
 			oauthClient,
 			params,
 			env.SPOTIFY_REDIRECT_URI,
-			codeVerifier
+			codeVerifier,
 		);
 		const result = await oauth.processAuthorizationCodeOAuth2Response(
 			authServer,
 			oauthClient,
-			response
+			response,
 		);
 		console.log(result);
 		if (oauth.isOAuth2Error(result)) {
@@ -116,7 +116,8 @@ router.get("/callback", async (ctx) => {
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.addEventListener("listen", (event) =>
-	console.log(`http://${event.hostname}:${event.port}/login`)
+app.addEventListener(
+	"listen",
+	(event) => console.log(`http://${event.hostname}:${event.port}/login`),
 );
 await app.listen({ port: 3000 });

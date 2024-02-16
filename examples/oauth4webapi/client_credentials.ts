@@ -1,5 +1,5 @@
 import * as oauth from "oauth4webapi";
-import { SPOTIFY_AUTH_URL, SpotifyClient, search } from "@soundify/web-api";
+import { search, SPOTIFY_AUTH_URL, SpotifyClient } from "@soundify/web-api";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
 
@@ -15,7 +15,7 @@ const env = z
 const issuer = new URL(SPOTIFY_AUTH_URL);
 const authServer = await oauth.processDiscoveryResponse(
 	issuer,
-	await oauth.discoveryRequest(issuer)
+	await oauth.discoveryRequest(issuer),
 );
 
 const oauthClient: oauth.Client = {
@@ -28,19 +28,19 @@ const refresher = async () => {
 	const res = await oauth.clientCredentialsGrantRequest(
 		authServer,
 		oauthClient,
-		{}
+		{},
 	);
 
 	const result = await oauth.processClientCredentialsResponse(
 		authServer,
 		oauthClient,
-		res
+		res,
 	);
 	if (oauth.isOAuth2Error(result)) {
 		throw new Error(
 			result.error + result.error_description
 				? " : " + result.error_description
-				: ""
+				: "",
 		);
 	}
 	return result.access_token;

@@ -8,7 +8,7 @@ Deno.test("test endpoint exports", async () => {
 			...EXPECTED_ENDPOINTS_MODULE_EXPORTS,
 			...EXPECTED_CLIENT_MODULE_EXPORTS,
 			...EXPECTED_AUTH_MODULE_EXPORTS,
-		])
+		]),
 	);
 });
 
@@ -129,7 +129,7 @@ const EXPECTED_ENDPOINTS_MODULE_EXPORTS = [
 	"checkIfAudiobookSaved",
 	// artist
 	"getArtist",
-	"getSeveralArtists",
+	"getArtists",
 	"getArtistAlbums",
 	"getArtistTopTracks",
 	"getArtistRelatedArtists",

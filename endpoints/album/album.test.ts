@@ -3,7 +3,7 @@ import { client } from "../../test_client.ts";
 import {
 	getAlbum,
 	getAlbums,
-	getNewAlbumReleases,
+	getNewReleases,
 	getSavedAlbums,
 } from "./album.endpoints.ts";
 import type {
@@ -54,7 +54,7 @@ Deno.test("getSavedAlbums", async () => {
 });
 
 Deno.test("getNewAlbumReleases", async () => {
-	const newAlbumsPage = await getNewAlbumReleases(client, { limit: 10 });
+	const newAlbumsPage = await getNewReleases(client, { limit: 10 });
 	pagingObjectSchema(simplifiedAlbumSchema).parse(newAlbumsPage);
 });
 

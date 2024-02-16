@@ -18,7 +18,7 @@ const env = z
 const issuer = new URL(SPOTIFY_AUTH_URL);
 const authServer = await oauth.processDiscoveryResponse(
 	issuer,
-	await oauth.discoveryRequest(issuer)
+	await oauth.discoveryRequest(issuer),
 );
 
 const oauthClient: oauth.Client = {
@@ -31,7 +31,7 @@ class OAuthError extends Error {
 	constructor(public readonly params: oauth.OAuth2Error) {
 		super(
 			params.error +
-				(params.error_description ? " : " + params.error_description : "")
+				(params.error_description ? " : " + params.error_description : ""),
 		);
 	}
 }
@@ -69,7 +69,7 @@ router.get("/callback", async (ctx) => {
 			authServer,
 			oauthClient,
 			ctx.request.url,
-			state
+			state,
 		);
 		if (oauth.isOAuth2Error(params)) {
 			throw new OAuthError(params);
@@ -84,10 +84,9 @@ router.get("/callback", async (ctx) => {
 				code: params.get("code")!,
 			}),
 			headers: {
-				Authorization:
-					"Basic " +
+				Authorization: "Basic " +
 					encodeBase64Url(
-						env.SPOTIFY_CLIENT_ID + ":" + env.SPOTIFY_CLIENT_SECRET
+						env.SPOTIFY_CLIENT_ID + ":" + env.SPOTIFY_CLIENT_SECRET,
 					),
 			},
 		});
@@ -95,7 +94,7 @@ router.get("/callback", async (ctx) => {
 		const result = await oauth.processAuthorizationCodeOAuth2Response(
 			authServer,
 			oauthClient,
-			response
+			response,
 		);
 
 		if (oauth.isOAuth2Error(result)) {
@@ -137,20 +136,19 @@ router.get("/refresh", async (ctx) => {
 	const response = await oauth.refreshTokenGrantRequest(
 		authServer,
 		oauthClient,
-		refreshToken
+		refreshToken,
 	);
 	const result = await oauth.processRefreshTokenResponse(
 		authServer,
 		oauthClient,
-		response
+		response,
 	);
 
 	if (oauth.isOAuth2Error(result)) {
 		ctx.response.status = 500;
-		ctx.response.body =
-			result.error + result.error_description
-				? " : " + result.error_description
-				: "";
+		ctx.response.body = result.error + result.error_description
+			? " : " + result.error_description
+			: "";
 		return;
 	}
 
@@ -162,7 +160,8 @@ router.get("/refresh", async (ctx) => {
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.addEventListener("listen", (event) =>
-	console.log(`http://${event.hostname}:${event.port}/login`)
+app.addEventListener(
+	"listen",
+	(event) => console.log(`http://${event.hostname}:${event.port}/login`),
 );
 await app.listen({ port: 3000 });

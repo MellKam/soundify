@@ -54,7 +54,7 @@ interface UserTopItemMap extends Record<UserTopItemType, UserTopItem> {
 export const getUserTopItems = async <T extends UserTopItemType>(
 	client: HTTPClient,
 	type: T,
-	options?: GetUserTopItemsOpts
+	options?: GetUserTopItemsOpts,
 ) => {
 	const res = await client.fetch("/v1/me/top/" + type, { query: options });
 	return res.json() as Promise<PagingObject<UserTopItemMap[T]>>;
@@ -70,7 +70,7 @@ export const getUserTopItems = async <T extends UserTopItemType>(
  */
 export const getUserTopArtists = async (
 	client: HTTPClient,
-	opts: GetUserTopItemsOpts
+	opts: GetUserTopItemsOpts,
 ) => {
 	return await getUserTopItems(client, "artists", opts);
 };
@@ -85,7 +85,7 @@ export const getUserTopArtists = async (
  */
 export const getUserTopTracks = async (
 	client: HTTPClient,
-	opts: GetUserTopItemsOpts
+	opts: GetUserTopItemsOpts,
 ) => {
 	return await getUserTopItems(client, "tracks", opts);
 };
@@ -114,7 +114,7 @@ export const getUser = async (client: HTTPClient, userId: string) => {
 export const followPlaylist = async (
 	client: HTTPClient,
 	playlistId: string,
-	isPublic?: boolean
+	isPublic?: boolean,
 ) => {
 	await client.fetch(`/v1/playlists/${playlistId}/followers`, {
 		method: "PUT",
@@ -132,7 +132,7 @@ export const followPlaylist = async (
  */
 export const unfollowPlaylist = async (
 	client: HTTPClient,
-	playlistId: string
+	playlistId: string,
 ) => {
 	await client.fetch(`/v1/playlists/${playlistId}/followers`, {
 		method: "DELETE",
@@ -161,7 +161,7 @@ export type GetFollowedArtistsOpts = {
  */
 export const getFollowedArtists = async (
 	client: HTTPClient,
-	options?: GetFollowedArtistsOpts
+	options?: GetFollowedArtistsOpts,
 ) => {
 	const res = await client.fetch("/v1/me/following", {
 		query: {
@@ -303,7 +303,7 @@ export const unfollowUser = (client: HTTPClient, userId: string) => {
  */
 export const checkIfUserFollowsArtists = async (
 	client: HTTPClient,
-	artistIds: string[]
+	artistIds: string[],
 ) => {
 	const res = await client.fetch("/v1/me/following/contains", {
 		query: {
@@ -324,7 +324,7 @@ export const checkIfUserFollowsArtists = async (
  */
 export const checkIfUserFollowsArtist = async (
 	client: HTTPClient,
-	artistId: string
+	artistId: string,
 ) => {
 	return (await checkIfUserFollowsArtists(client, [artistId]))[0]!;
 };
@@ -339,7 +339,7 @@ export const checkIfUserFollowsArtist = async (
  */
 export const checkIfUserFollowsUsers = async (
 	client: HTTPClient,
-	userIds: string[]
+	userIds: string[],
 ) => {
 	const res = await client.fetch("/v1/me/following/contains", {
 		query: {
@@ -360,7 +360,7 @@ export const checkIfUserFollowsUsers = async (
  */
 export const checkIfUserFollowsUser = async (
 	client: HTTPClient,
-	userId: string
+	userId: string,
 ) => {
 	return (await checkIfUserFollowsUsers(client, [userId]))[0]!;
 };
@@ -375,7 +375,7 @@ export const checkIfUserFollowsUser = async (
 export const checkIfUsersFollowPlaylist = async (
 	client: HTTPClient,
 	userIds: string[],
-	playlistId: string
+	playlistId: string,
 ) => {
 	const res = await client.fetch(
 		`/v1/playlists/${playlistId}/followers/contains`,
@@ -383,7 +383,7 @@ export const checkIfUsersFollowPlaylist = async (
 			query: {
 				ids: userIds,
 			},
-		}
+		},
 	);
 	return res.json() as Promise<boolean[]>;
 };
@@ -398,7 +398,7 @@ export const checkIfUsersFollowPlaylist = async (
 export const checkIfUserFollowsPlaylist = async (
 	client: HTTPClient,
 	userId: string,
-	playlistId: string
+	playlistId: string,
 ) => {
 	return (await checkIfUsersFollowPlaylist(client, [userId], playlistId))[0]!;
 };

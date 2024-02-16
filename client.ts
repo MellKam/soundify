@@ -18,7 +18,7 @@ export class SpotifyError extends Error {
 		message: string,
 		public readonly response: Response,
 		public readonly body: RegularErrorObject | string | null,
-		options?: ErrorOptions
+		options?: ErrorOptions,
 	) {
 		super(message, options);
 	}
@@ -45,7 +45,7 @@ const getBodyMessage = (body: RegularErrorObject | string | null) => {
 
 const createSpotifyError = async (
 	response: Response,
-	options?: ErrorOptions
+	options?: ErrorOptions,
 ) => {
 	let message = response.statusText
 		? `${response.status} ${response.statusText}`
@@ -89,7 +89,7 @@ export interface FetchLikeOptions extends Omit<RequestInit, "body"> {
 
 type FetchLike = (
 	resource: URL,
-	options: FetchLikeOptions
+	options: FetchLikeOptions,
 ) => Promise<Response>;
 export type Middleware = (next: FetchLike) => FetchLike;
 
@@ -135,7 +135,7 @@ export class SpotifyClient implements HTTPClient {
 
 	constructor(
 		private accessToken: string,
-		private readonly options: SpotifyClinetOptions = {}
+		private readonly options: SpotifyClinetOptions = {},
 	) {
 		this.baseUrl = options.baseUrl
 			? options.baseUrl
@@ -155,8 +155,8 @@ export class SpotifyClient implements HTTPClient {
 		const headers = new Headers(opts.headers);
 		headers.set("Accept", APP_JSON);
 
-		const isBodyJSON =
-			!!opts.body && (isPlainObject(opts.body) || Array.isArray(opts.body));
+		const isBodyJSON = !!opts.body &&
+			(isPlainObject(opts.body) || Array.isArray(opts.body));
 		if (isBodyJSON) {
 			headers.set(CONTENT_TYPE, APP_JSON);
 		}
@@ -169,7 +169,7 @@ export class SpotifyClient implements HTTPClient {
 
 		const wrappedFetch = (this.options.middlewares || []).reduceRight(
 			(next, mw) => mw(next),
-			(this.options.fetch || globalThis.fetch) as FetchLike
+			(this.options.fetch || globalThis.fetch) as FetchLike,
 		);
 
 		const recursiveFetch = async (): Promise<Response> => {

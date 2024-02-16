@@ -20,7 +20,7 @@ import type { Prettify } from "../../shared.ts";
 export const getTrack = async (
 	client: HTTPClient,
 	trackId: string,
-	market?: string
+	market?: string,
 ) => {
 	const res = await client.fetch("/v1/tracks/" + trackId, {
 		query: { market },
@@ -38,7 +38,7 @@ export const getTrack = async (
 export const getTracks = async (
 	client: HTTPClient,
 	trackIds: string[],
-	market?: string
+	market?: string,
 ) => {
 	const res = await client.fetch("/v1/tracks", {
 		query: {
@@ -67,7 +67,7 @@ export type GetSavedTracksOpts = Prettify<
  */
 export const getSavedTracks = async (
 	client: HTTPClient,
-	options: GetSavedTracksOpts
+	options: GetSavedTracksOpts,
 ) => {
 	const res = await client.fetch("/v1/me/tracks", {
 		query: options,
@@ -133,7 +133,7 @@ export const removeSavedTrack = (client: HTTPClient, trackId: string) => {
  */
 export const checkIfTracksSaved = async (
 	client: HTTPClient,
-	track_ids: string[]
+	track_ids: string[],
 ) => {
 	const res = await client.fetch("/v1/me/tracks/contains", {
 		query: {
@@ -151,7 +151,7 @@ export const checkIfTracksSaved = async (
  */
 export const checkIfTrackSaved = async (
 	client: HTTPClient,
-	trackId: string
+	trackId: string,
 ) => {
 	return (await checkIfTracksSaved(client, [trackId]))[0];
 };
@@ -164,7 +164,7 @@ export const checkIfTrackSaved = async (
  */
 export const getTracksAudioFeatures = async (
 	client: HTTPClient,
-	track_ids: string[]
+	track_ids: string[],
 ) => {
 	const res = await client.fetch("/v1/audio-features", {
 		query: {
@@ -183,7 +183,7 @@ export const getTracksAudioFeatures = async (
  */
 export const getTrackAudioFeatures = async (
 	client: HTTPClient,
-	trackId: string
+	trackId: string,
 ) => {
 	const res = await client.fetch("/v1/audio-features/" + trackId);
 	return res.json() as Promise<AudioFeatures>;
@@ -198,7 +198,7 @@ export const getTrackAudioFeatures = async (
  */
 export const getTracksAudioAnalysis = async (
 	client: HTTPClient,
-	trackId: string
+	trackId: string,
 ) => {
 	const res = await client.fetch("/v1/audio-analysis/" + trackId);
 	return res.json() as Promise<AudioAnalysis>;
@@ -212,7 +212,7 @@ export const getTracksAudioAnalysis = async (
  */
 export const getRecommendations = async (
 	client: HTTPClient,
-	options: RecommendationsOptions
+	options: RecommendationsOptions,
 ) => {
 	const res = await client.fetch("/v1/recommendations", {
 		query: options,

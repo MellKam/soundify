@@ -17,7 +17,7 @@ const env = z
 const issuer = new URL(SPOTIFY_AUTH_URL);
 const authServer = await oauth.processDiscoveryResponse(
 	issuer,
-	await oauth.discoveryRequest(issuer)
+	await oauth.discoveryRequest(issuer),
 );
 
 const authClient: oauth.Client = {
@@ -30,12 +30,12 @@ const refresher = async () => {
 	const res = await oauth.refreshTokenGrantRequest(
 		authServer,
 		authClient,
-		env.SPOTIFY_REFRESH_TOKEN
+		env.SPOTIFY_REFRESH_TOKEN,
 	);
 	const data = await oauth.processRefreshTokenResponse(
 		authServer,
 		authClient,
-		res
+		res,
 	);
 
 	if (oauth.isOAuth2Error(data)) {

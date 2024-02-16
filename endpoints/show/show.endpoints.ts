@@ -14,7 +14,7 @@ import type { Show, SimplifiedShow } from "./show.types.ts";
 export const getShow = async (
 	client: HTTPClient,
 	showId: string,
-	market?: string
+	market?: string,
 ) => {
 	const res = await client.fetch("/v1/shows/" + showId, { query: { market } });
 	return res.json() as Promise<Show>;
@@ -30,7 +30,7 @@ export const getShow = async (
 export const getShows = async (
 	client: HTTPClient,
 	showIds: string[],
-	market?: string
+	market?: string,
 ) => {
 	const res = await client.fetch("/v1/shows", {
 		query: { market, ids: showIds },
@@ -59,7 +59,7 @@ export type GetShowEpisodesOpts = Prettify<
 export const getShowEpisodes = async (
 	client: HTTPClient,
 	showId: string,
-	options?: GetShowEpisodesOpts
+	options?: GetShowEpisodesOpts,
 ) => {
 	const res = await client.fetch(`/v1/shows/${showId}/episodes`, {
 		query: options,
@@ -85,7 +85,7 @@ export type GetSavedShowsOpts = Prettify<
  */
 export const getSavedShows = async (
 	client: HTTPClient,
-	options?: GetSavedShowsOpts
+	options?: GetSavedShowsOpts,
 ) => {
 	const res = await client.fetch("/v1/me/shows", { query: options });
 	return res.json() as Promise<
@@ -158,7 +158,7 @@ export const removeSavedShow = (client: HTTPClient, showId: string) => {
  */
 export const checkIfShowsSaved = async (
 	client: HTTPClient,
-	showIds: string[]
+	showIds: string[],
 ) => {
 	const res = await client.fetch("/v1/me/shows/contains", {
 		query: {

@@ -122,10 +122,7 @@ export const saveAlbum = (client: HTTPClient, albumId: string) => {
  * @param client Spotify HTTPClient
  * @param albumIds List of the Spotify IDs for the albums. Maximum: 20 IDs
  */
-export const removeSavedAlbums = (
-	client: HTTPClient,
-	albumIds: string[],
-) => {
+export const removeSavedAlbums = (client: HTTPClient, albumIds: string[]) => {
 	return client.fetch("/v1/me/albums", {
 		method: "DELETE",
 		query: { ids: albumIds },
@@ -138,10 +135,7 @@ export const removeSavedAlbums = (
  * @param client Spotify HTTPClient
  * @param albumId The Spotify ID of the album
  */
-export const removeSavedAlbum = (
-	client: HTTPClient,
-	albumId: string,
-) => {
+export const removeSavedAlbum = (client: HTTPClient, albumId: string) => {
 	return removeSavedAlbums(client, [albumId]);
 };
 
@@ -191,10 +185,11 @@ export type GetNewReleasesOpts = Prettify<
  * @param client Spotify HTTPClient
  * @param options Additional option for request
  */
-export const getNewAlbumReleases = async (
+export const getNewReleases = async (
 	client: HTTPClient,
 	options?: GetNewReleasesOpts,
 ) => {
 	const res = await client.fetch("/v1/browse/new-releases", { query: options });
-	return (await res.json() as { albums: PagingObject<SimplifiedAlbum> }).albums;
+	return ((await res.json()) as { albums: PagingObject<SimplifiedAlbum> })
+		.albums;
 };

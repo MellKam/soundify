@@ -25,7 +25,7 @@ Deno.test("SpotifyClient: error handling", async () => {
 	mock("PUT@/v1/playlists/:playlistId/followers", () => {
 		return Response.json(
 			{ error: { status: 400, message: "Invalid request" } },
-			{ status: 400, statusText: "Bad Request" }
+			{ status: 400, statusText: "Bad Request" },
 		);
 	});
 

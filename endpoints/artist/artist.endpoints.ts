@@ -22,7 +22,7 @@ export const getArtist = async (client: HTTPClient, artistId: string) => {
  * @param client Spotify HTTPClient
  * @param artistIds List of the Spotify IDs for the artists. Maximum: 50 IDs.
  */
-export const getSeveralArtists = async (
+export const getArtists = async (
 	client: HTTPClient,
 	artistIds: string[],
 ) => {

@@ -41,7 +41,7 @@ export type GetPlaylistOpts = Prettify<
 export const getPlaylist = async (
 	client: HTTPClient,
 	playlistId: string,
-	options?: GetPlaylistOpts
+	options?: GetPlaylistOpts,
 ) => {
 	const res = await client.fetch("/v1/playlists/" + playlistId, {
 		query: options,
@@ -80,20 +80,21 @@ export type ChangePlaylistDetailsBody = {
 export const changePlaylistDetails = (
 	client: HTTPClient,
 	playlistId: string,
-	body: ChangePlaylistDetailsBody
+	body: ChangePlaylistDetailsBody,
 ) => {
 	return client.fetch("/v1/playlist/" + playlistId, { method: "PUT", body });
 };
 
 export type GetPlaylistTracksOpts = Prettify<
-	PlaylistFieldsOpts &
-		PagingOptions & {
-			/**
-			 * An ISO 3166-1 alpha-2 country code.
-			 * If a country code is specified, only content that is available in that market will be returned.
-			 */
-			market?: string;
-		}
+	& PlaylistFieldsOpts
+	& PagingOptions
+	& {
+		/**
+		 * An ISO 3166-1 alpha-2 country code.
+		 * If a country code is specified, only content that is available in that market will be returned.
+		 */
+		market?: string;
+	}
 >;
 
 /**
@@ -106,7 +107,7 @@ export type GetPlaylistTracksOpts = Prettify<
 export const getPlaylistTracks = async (
 	client: HTTPClient,
 	playlistId: string,
-	options?: GetPlaylistTracksOpts
+	options?: GetPlaylistTracksOpts,
 ) => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		query: options,
@@ -126,7 +127,7 @@ export const addItemsToPlaylist = async (
 	client: HTTPClient,
 	playlistId: string,
 	uris: string[],
-	position?: number
+	position?: number,
 ) => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "POST",
@@ -147,7 +148,7 @@ export const addItemToPlaylist = (
 	client: HTTPClient,
 	playlistId: string,
 	uri: string,
-	position?: number
+	position?: number,
 ) => {
 	return addItemsToPlaylist(client, playlistId, [uri], position);
 };
@@ -182,7 +183,7 @@ export type ReorderPlaylistItemsOpts = {
 export const reorderPlaylistItems = async (
 	client: HTTPClient,
 	playlistId: string,
-	options?: ReorderPlaylistItemsOpts
+	options?: ReorderPlaylistItemsOpts,
 ) => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "PUT",
@@ -202,7 +203,7 @@ export const reorderPlaylistItems = async (
 export const replacePlaylistItems = async (
 	client: HTTPClient,
 	playlistId: string,
-	uris: string[]
+	uris: string[],
 ) => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "PUT",
@@ -223,7 +224,7 @@ export const removePlaylistItems = async (
 	client: HTTPClient,
 	playlistId: string,
 	uris: string[],
-	snapshotId?: string
+	snapshotId?: string,
 ) => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "DELETE",
@@ -247,7 +248,7 @@ export const removePlaylistItem = (
 	client: HTTPClient,
 	playlistId: string,
 	uri: string,
-	snapshotId?: string
+	snapshotId?: string,
 ) => {
 	return removePlaylistItems(client, playlistId, [uri], snapshotId);
 };
@@ -260,7 +261,7 @@ export const removePlaylistItem = (
  */
 export const getCurrentUsersPlaylists = async (
 	client: HTTPClient,
-	options?: PagingOptions
+	options?: PagingOptions,
 ) => {
 	const res = await client.fetch("/v1/me/playlists", { query: options });
 	return res.json() as Promise<PagingObject<SimplifiedPlaylist>>;
@@ -276,7 +277,7 @@ export const getCurrentUsersPlaylists = async (
 export const getUsersPlaylists = async (
 	client: HTTPClient,
 	userId: string,
-	options?: PagingOptions
+	options?: PagingOptions,
 ) => {
 	const res = await client.fetch(`/v1/users/${userId}/playlists`, {
 		query: options,
@@ -313,7 +314,7 @@ export type CreatePlaylistBody = {
 export const createPlaylist = async (
 	client: HTTPClient,
 	userId: string,
-	body: CreatePlaylistBody
+	body: CreatePlaylistBody,
 ) => {
 	const res = await client.fetch(`/v1/users/${userId}/playlists`, {
 		method: "POST",
@@ -351,7 +352,7 @@ export type GetFeaturedPlaylistsOpts = Prettify<
  */
 export const getFeaturedPlaylists = async (
 	client: HTTPClient,
-	options?: GetFeaturedPlaylistsOpts
+	options?: GetFeaturedPlaylistsOpts,
 ) => {
 	const res = await client.fetch("/v1/browse/featured-playlists", {
 		query: options,
@@ -379,11 +380,11 @@ export type GetCategorysPlaylistsOpts = Prettify<
 export const getCategoryPlaylists = async (
 	client: HTTPClient,
 	categoryId: string,
-	options?: GetCategorysPlaylistsOpts
+	options?: GetCategorysPlaylistsOpts,
 ) => {
 	const res = await client.fetch(
 		`/v1/browse/categories/${categoryId}/playlists`,
-		{ query: options }
+		{ query: options },
 	);
 	return res.json() as Promise<FeaturedPlaylists>;
 };
@@ -395,7 +396,7 @@ export const getCategoryPlaylists = async (
  */
 export const getPlaylistCoverImage = async (
 	client: HTTPClient,
-	playlistId: string
+	playlistId: string,
 ) => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/images`);
 	return res.json() as Promise<NonNullableObject<Image>[]>;
@@ -410,7 +411,7 @@ export const getPlaylistCoverImage = async (
 export const uploadPlaylistCoverImage = (
 	client: HTTPClient,
 	playlistId: string,
-	image: string
+	image: string,
 ) => {
 	return client.fetch(`/v1/playlists/${playlistId}/images`, {
 		method: "PUT",

@@ -490,7 +490,8 @@ type RecommendationRequiredOptions = {
 };
 
 export type RecommendationsOptions =
-	RequireAtLeastOne<RecommendationRequiredOptions> & {
+	& RequireAtLeastOne<RecommendationRequiredOptions>
+	& {
 		/**
 		 * The target size of the list of recommended tracks.
 		 * Minimum: 1. Maximum: 100. Default: 20.

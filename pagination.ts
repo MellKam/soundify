@@ -28,7 +28,7 @@ export class ChunkIterator<TItem> {
 
 	constructor(
 		private fetcher: (opts: PagingOptions) => Promise<PagingObject<TItem>>,
-		defaults: PageIterOptions = {}
+		defaults: PageIterOptions = {},
 	) {
 		this.defaults = { ...DEFAULTS, ...defaults };
 	}
@@ -73,7 +73,7 @@ export class PageIterator<TItem> {
 
 	constructor(
 		private fetcher: (opts: PagingOptions) => Promise<PagingObject<TItem>>,
-		defaults: PageIterOptions = {}
+		defaults: PageIterOptions = {},
 	) {
 		this.defaults = { ...DEFAULTS, ...defaults };
 	}
