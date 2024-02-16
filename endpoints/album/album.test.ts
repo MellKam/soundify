@@ -6,7 +6,7 @@ import {
 	getNewAlbumReleases,
 	getSavedAlbums,
 } from "./album.endpoints.ts";
-import {
+import type {
 	Album,
 	AlbumGroup,
 	AlbumType,

@@ -1,6 +1,3 @@
-import { Episode } from "./episode/episode.types.ts";
-import { Track } from "./track/track.types.ts";
-
 export type PagingObject<TItem> = {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
@@ -183,14 +180,3 @@ export type Copyright = {
 	 */
 	type: "C" | "P";
 };
-
-export type ItemType =
-	| "artist"
-	| "album"
-	| "playlist"
-	| "track"
-	| "show"
-	| "episode"
-	| "audiobook";
-
-export type TrackItem = Track | Episode;

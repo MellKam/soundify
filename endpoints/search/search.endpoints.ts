@@ -1,4 +1,4 @@
-import type { ItemType, PagingObject } from "../general.types.ts";
+import type { PagingObject } from "../general.types.ts";
 import type { SimplifiedAlbum } from "../album/album.types.ts";
 import type { Artist } from "../artist/artist.types.ts";
 import type { Track } from "../track/track.types.ts";
@@ -7,6 +7,15 @@ import type { HTTPClient } from "../../client.ts";
 import type { SimplifiedAudiobook } from "../audiobook/audiobook.types.ts";
 import type { SimplifiedEpisode } from "../episode/episode.types.ts";
 import type { SimplifiedShow } from "../show/show.types.ts";
+
+export type ItemType =
+	| "artist"
+	| "album"
+	| "playlist"
+	| "track"
+	| "show"
+	| "episode"
+	| "audiobook";
 
 type ItemTypeToResultKey = {
 	album: "albums";
@@ -18,10 +27,12 @@ type ItemTypeToResultKey = {
 	audiobook: "audiobooks";
 };
 
-type ItemTypesToSearchResultKeys<T extends ItemType | ItemType[]> = T extends
-	ItemType[] ? Pick<ItemTypeToResultKey, T[number]>[T[number]]
-	: T extends ItemType ? ItemTypeToResultKey[T]
-	: never;
+type ItemTypesToSearchResultKeys<T extends ItemType | ItemType[]> =
+	T extends ItemType[]
+		? Pick<ItemTypeToResultKey, T[number]>[T[number]]
+		: T extends ItemType
+		? ItemTypeToResultKey[T]
+		: never;
 
 export type SearchResponse = {
 	tracks: PagingObject<Track>;
@@ -104,11 +115,14 @@ export const search = async <T extends ItemType[] | ItemType>(
 	client: HTTPClient,
 	type: T,
 	query: string | SearchQueriesFromItemTypes<T>,
-	options?: SearchOptions,
+	options?: SearchOptions
 ): Promise<Pick<SearchResponse, ItemTypesToSearchResultKeys<T>>> => {
-	const q = typeof query === "string" ? query : Object.entries(query)
-		.map(([key, value]) => (key === "q" ? value : `${key}:${value}`))
-		.join(" ");
+	const q =
+		typeof query === "string"
+			? query
+			: Object.entries(query)
+					.map(([key, value]) => (key === "q" ? value : `${key}:${value}`))
+					.join(" ");
 
 	const res = await client.fetch("/v1/search", {
 		query: { q, type, ...options },

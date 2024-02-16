@@ -1,11 +1,12 @@
+import type { Episode } from "../episode/episode.types.ts";
 import type {
 	ExternalUrls,
 	Followers,
 	Image,
 	PagingObject,
 } from "../general.types.ts";
-import type { UserPublic } from "../user/user.types.ts";
 import type { Track } from "../track/track.types.ts";
+import type { UserPublic } from "../user/user.types.ts";
 
 export type SnapshotResponse = { snapshot_id: string };
 
@@ -99,8 +100,7 @@ export interface PlaylistTrack {
 	 * Whether this track or episode is a local file or not.
 	 */
 	is_local: boolean;
-	primary_color: string | null;
-	track: Track;
+	track: Track | Episode;
 }
 
 export interface Playlist extends SimplifiedPlaylist {

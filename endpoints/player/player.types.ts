@@ -1,5 +1,6 @@
-import type { ExternalUrls, TrackItem } from "../general.types.ts";
+import type { ExternalUrls } from "../general.types.ts";
 import type { Track } from "../track/track.types.ts";
+import type { Episode } from "../episode/episode.types.ts";
 
 export type Device = {
 	/**
@@ -88,7 +89,7 @@ export type PlaybackState = {
 	progress_ms: number | null;
 	/** If something is currently playing, return true. */
 	is_playing: boolean;
-	item: TrackItem;
+	item: Track | Episode;
 	/** The object type of the currently playing item. */
 	currently_playing_type: "track" | "episode" | "ad" | "unknown";
 	/**
@@ -101,9 +102,9 @@ export type PlaybackState = {
 
 export type Queue = {
 	/** The currently playing track or episode. */
-	currently_playing: TrackItem | null;
+	currently_playing: Track | Episode | null;
 	/** The tracks or episodes in the queue. Can be empty. */
-	queue: TrackItem[];
+	queue: (Track | Episode)[];
 };
 
 export type PlayHistoryObject = {

@@ -14,18 +14,13 @@ export type RegularErrorObject = {
 export class SpotifyError extends Error {
 	name = "SpotifyError";
 
-	public readonly response: Response;
-	public readonly body: RegularErrorObject | string | null;
-
 	constructor(
 		message: string,
-		response: Response,
-		body: RegularErrorObject | string | null,
+		public readonly response: Response,
+		public readonly body: RegularErrorObject | string | null,
 		options?: ErrorOptions
 	) {
 		super(message, options);
-		this.response = response;
-		this.body = body;
 	}
 
 	get url() {
@@ -52,10 +47,15 @@ const createSpotifyError = async (
 	response: Response,
 	options?: ErrorOptions
 ) => {
-	const urlWithoutQuery = response.url.split("?")[0];
 	let message = response.statusText
-		? `${response.status} ${response.statusText} (${urlWithoutQuery})`
-		: `${response.status} (${urlWithoutQuery})`;
+		? `${response.status} ${response.statusText}`
+		: response.status.toString();
+
+	const urlWithoutQuery = response.url.split("?")[0];
+	if (urlWithoutQuery) {
+		message += ` (${urlWithoutQuery})`;
+	}
+
 	let body: RegularErrorObject | string | null = null;
 
 	if (response.body && response.type !== "opaque") {
@@ -72,11 +72,11 @@ const createSpotifyError = async (
 		} catch (_) {
 			/* Ignore errors */
 		}
-	}
 
-	const bodyMessage = getBodyMessage(body);
-	if (bodyMessage) {
-		message += " : " + bodyMessage;
+		const bodyMessage = getBodyMessage(body);
+		if (bodyMessage) {
+			message += " : " + bodyMessage;
+		}
 	}
 
 	return new SpotifyError(message, response, body, options);
@@ -94,10 +94,12 @@ type FetchLike = (
 export type Middleware = (next: FetchLike) => FetchLike;
 
 /**
- * Interface that provides a fetch method to make HTTP requests to Spotify API.
+ * Interface for making HTTP requests to the Spotify API.
+ * All Soundify endpoint functions expect the client to implement this interface.
+ * You can create a custom client by implementing this interface.
  */
 export interface HTTPClient {
-	fetch(path: string, options?: FetchLikeOptions): Promise<Response>;
+	fetch: (path: string, options?: FetchLikeOptions) => Promise<Response>;
 }
 
 const isPlainObject = (obj: unknown): obj is Record<PropertyKey, unknown> => {
@@ -109,7 +111,13 @@ const isPlainObject = (obj: unknown): obj is Record<PropertyKey, unknown> => {
 };
 
 export type SpotifyClinetOptions = {
+	/**
+	 * Use this option to provide a custom fetch function.
+	 */
 	fetch?: (input: URL, init?: RequestInit) => Promise<Response>;
+	/**
+	 * @default "https://api.spotify.com/"
+	 */
 	baseUrl?: string;
 	/**
 	 * @returns new access token
@@ -159,13 +167,15 @@ export class SpotifyClient implements HTTPClient {
 
 		let isRefreshed = false;
 
+		const wrappedFetch = (this.options.middlewares || []).reduceRight(
+			(next, mw) => mw(next),
+			(this.options.fetch || globalThis.fetch) as FetchLike
+		);
+
 		const recursiveFetch = async (): Promise<Response> => {
 			headers.set("Authorization", "Bearer " + this.accessToken);
 
-			const res = await (this.options.middlewares || []).reduceRight(
-				(next, mw) => mw(next),
-				(this.options.fetch || globalThis.fetch) as FetchLike
-			)(url, { ...opts, body, headers });
+			const res = await wrappedFetch(url, { ...opts, body, headers });
 
 			if (res.ok) return res;
 

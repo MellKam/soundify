@@ -1,8 +1,7 @@
 import * as oauth from "oauth4webapi";
-import { SPOTIFY_AUTH_URL } from "../../endpoints/mod.ts";
+import { SPOTIFY_AUTH_URL, SpotifyClient, search } from "@soundify/web-api";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
-import { search, SpotifyClient } from "../../endpoints/mod.ts";
 
 await load({ export: true });
 
