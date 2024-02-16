@@ -262,8 +262,9 @@ All contributions are very welcome ❤️
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="left" width="14.28%"><a href="http://t.me/mellkam"><img src="https://avatars.githubusercontent.com/u/51422045?v=4?s=100" width="100px;" alt="Artem Melnyk"/><br /><sub><b>Artem Melnyk</b></sub></a><br /><a href="#maintenance-MellKam" title="Maintenance">🚧</a></td>
-      <td align="center" valign="left" width="14.28%"><a href="https://github.com/danilluk1"><img src="https://avatars.githubusercontent.com/u/51733612?v=4?s=100" width="100px;" alt="danluki"/><br /><sub><b>danluki</b></sub></a><br /><a href="https://github.com/MellKam/soundify/commits?author=danilluk1" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://t.me/mellkam"><img src="https://avatars.githubusercontent.com/u/51422045?v=4?s=100" width="100px;" alt="Artem Melnyk"/><br /><sub><b>Artem Melnyk</b></sub></a><br /><a href="#maintenance-MellKam" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/danilluk1"><img src="https://avatars.githubusercontent.com/u/51733612?v=4?s=100" width="100px;" alt="danluki"/><br /><sub><b>danluki</b></sub></a><br /><a href="https://github.com/MellKam/soundify/commits?author=danilluk1" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://lwjerri.dev"><img src="https://avatars.githubusercontent.com/u/50290430?v=4?s=100" width="100px;" alt="Andrii Zontov"/><br /><sub><b>Andrii Zontov</b></sub></a><br /><a href="https://github.com/MellKam/soundify/issues?q=author%3ALWJerri" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
