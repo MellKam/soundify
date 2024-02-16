@@ -17,6 +17,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - run: deno test -A
+
       - uses: actions/setup-node@v3
         with:
           node-version: "20.x"
