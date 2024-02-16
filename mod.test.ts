@@ -144,7 +144,7 @@ const EXPECTED_ENDPOINTS_MODULE_EXPORTS = [
 	"removeSavedAlbum",
 	"checkIfAlbumsSaved",
 	"checkIfAlbumSaved",
-	"getNewAlbumReleases",
+	"getNewReleases",
 ];
 
 const EXPECTED_CLIENT_MODULE_EXPORTS = ["SpotifyClient", "SpotifyError"];

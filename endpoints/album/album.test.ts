@@ -53,7 +53,7 @@ Deno.test("getSavedAlbums", async () => {
 	pagingObjectSchema(savedAlbumSchema).parse(savedAlbumsPage);
 });
 
-Deno.test("getNewAlbumReleases", async () => {
+Deno.test("getNewReleases", async () => {
 	const newAlbumsPage = await getNewReleases(client, { limit: 10 });
 	pagingObjectSchema(simplifiedAlbumSchema).parse(newAlbumsPage);
 });
