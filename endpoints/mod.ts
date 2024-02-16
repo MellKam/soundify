@@ -7,6 +7,8 @@ export * from "./show/show.endpoints.ts";
 export * from "./search/search.endpoints.ts";
 export * from "./playlist/playlist.types.ts";
 export * from "./playlist/playlist.endpoints.ts";
+export * from "./player/player.types.ts";
+export * from "./player/player.endpoints.ts";
 export * from "./market/market.endpoints.ts";
 export * from "./genre/genre.endpoints.ts";
 export * from "./episode/episode.types.ts";
