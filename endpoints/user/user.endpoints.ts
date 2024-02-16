@@ -70,7 +70,7 @@ export const getUserTopItems = async <T extends UserTopItemType>(
  */
 export const getUserTopArtists = async (
 	client: HTTPClient,
-	opts: GetUserTopItemsOpts,
+	opts?: GetUserTopItemsOpts,
 ) => {
 	return await getUserTopItems(client, "artists", opts);
 };
@@ -85,7 +85,7 @@ export const getUserTopArtists = async (
  */
 export const getUserTopTracks = async (
 	client: HTTPClient,
-	opts: GetUserTopItemsOpts,
+	opts?: GetUserTopItemsOpts,
 ) => {
 	return await getUserTopItems(client, "tracks", opts);
 };
