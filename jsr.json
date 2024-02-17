@@ -1,0 +1,8 @@
+{
+	"name": "@soundify/web-api",
+	"version": "1.0.0-rc7",
+	"exports": {
+		".": "./mod.ts",
+		"./pagination": "./pagination.ts"
+	}
+}
