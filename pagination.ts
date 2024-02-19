@@ -82,11 +82,11 @@ export class PageIterator<TItem> {
 		this.defaults = { ...DEFAULTS, ...defaults };
 	}
 
-	asyncIterator(): AsyncGenerator<TItem, TItem, unknown> {
+	asyncIterator(): AsyncGenerator<TItem, null, unknown> {
 		return this[Symbol.asyncIterator]();
 	}
 
-	async *[Symbol.asyncIterator](): AsyncGenerator<TItem, TItem> {
+	async *[Symbol.asyncIterator](): AsyncGenerator<TItem, null, unknown> {
 		let { direction, limit, offset } = this.defaults;
 
 		while (true) {
@@ -96,10 +96,8 @@ export class PageIterator<TItem> {
 				(direction === "next" && !chunk.next) ||
 				(direction === "prev" && !chunk.previous)
 			) {
-				const last = chunk.items.pop()!;
 				for (const item of chunk.items) yield item;
-
-				return last;
+				return null;
 			}
 
 			for (const item of chunk.items) yield item;
