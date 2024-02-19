@@ -33,7 +33,11 @@ export class ChunkIterator<TItem> {
 		this.defaults = { ...DEFAULTS, ...defaults };
 	}
 
-	asyncIterator() {
+	asyncIterator(): AsyncIterator<
+		TItem[],
+		TItem[],
+		NextPageOptions | undefined
+	> {
 		return this[Symbol.asyncIterator]();
 	}
 
@@ -78,7 +82,7 @@ export class PageIterator<TItem> {
 		this.defaults = { ...DEFAULTS, ...defaults };
 	}
 
-	asyncIterator() {
+	asyncIterator(): AsyncGenerator<TItem, TItem, unknown> {
 		return this[Symbol.asyncIterator]();
 	}
 
@@ -104,7 +108,7 @@ export class PageIterator<TItem> {
 		}
 	}
 
-	async collect() {
+	async collect(): Promise<TItem[]> {
 		const items: TItem[] = [];
 		for await (const item of this) {
 			items.push(item);

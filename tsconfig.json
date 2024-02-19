@@ -12,6 +12,7 @@
 		"module": "ESNext",
 		"target": "ESNext",
 		"outDir": "dist",
+		"declaration": true,
 		"emitDeclarationOnly": true,
 		"allowImportingTsExtensions": true,
 		"forceConsistentCasingInFileNames": true,

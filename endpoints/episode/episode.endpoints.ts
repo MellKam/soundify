@@ -2,6 +2,7 @@ import type { HTTPClient } from "../../client.ts";
 import type { Episode } from "./episode.types.ts";
 import type { PagingObject, PagingOptions } from "../general.types.ts";
 import type { Prettify } from "../../shared.ts";
+import { SavedEpisode } from "./episode.types.ts";
 
 /**
  * Get Spotify catalog informnation for a single episode.
@@ -14,7 +15,7 @@ export const getEpisode = async (
 	client: HTTPClient,
 	episodeId: string,
 	market?: string,
-) => {
+): Promise<Episode> => {
 	const res = await client.fetch("/v1/episodes/" + episodeId, {
 		query: { market },
 	});
@@ -32,7 +33,7 @@ export const getEpisodes = async (
 	client: HTTPClient,
 	episodeIds: string[],
 	market?: string,
-) => {
+): Promise<Episode[]> => {
 	const res = await client.fetch("/v1/episodes", {
 		query: { market, ids: episodeIds },
 	});
@@ -58,20 +59,9 @@ export type GetSavedEpisodesOpts = Prettify<
 export const getSavedEpisodes = async (
 	client: HTTPClient,
 	options?: GetSavedEpisodesOpts,
-) => {
+): Promise<PagingObject<SavedEpisode>> => {
 	const res = await client.fetch("/v1/me/episodes", { query: options });
-	return res.json() as Promise<
-		PagingObject<{
-			/**
-			 * The date and time the episode was saved Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with a zero offset: YYYY-MM-DDTHH:MM:SSZ.
-			 */
-			added_at: string;
-			/**
-			 * Information about the episode.
-			 */
-			episode: Episode;
-		}>
-	>;
+	return res.json();
 };
 
 /**
@@ -83,7 +73,7 @@ export const getSavedEpisodes = async (
 export const saveEpisodes = (
 	client: HTTPClient,
 	episodeIds: string[],
-) => {
+): Promise<Response> => {
 	return client.fetch(`/v1/me/episodes`, {
 		method: "PUT",
 		query: { ids: episodeIds },
@@ -96,7 +86,7 @@ export const saveEpisodes = (
  * @param client Spotify HTTPClient
  * @param episodeId The Spotify ID of the episode
  */
-export const saveEpisode = (client: HTTPClient, episodeId: string) => {
+export const saveEpisode = (client: HTTPClient, episodeId: string): Promise<Response> => {
 	return saveEpisodes(client, [episodeId]);
 };
 
@@ -109,7 +99,7 @@ export const saveEpisode = (client: HTTPClient, episodeId: string) => {
 export const removeSavedEpisodes = (
 	client: HTTPClient,
 	episodeIds: string[],
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/episodes", {
 		query: { ids: episodeIds },
 	});
@@ -124,7 +114,7 @@ export const removeSavedEpisodes = (
 export const removeSavedEpisode = (
 	client: HTTPClient,
 	episodeId: string,
-) => {
+): Promise<Response> => {
 	return removeSavedEpisodes(client, [episodeId]);
 };
 
@@ -137,7 +127,7 @@ export const removeSavedEpisode = (
 export const checkIfEpisodesSaved = async (
 	client: HTTPClient,
 	episodeIds: string[],
-) => {
+): Promise<boolean[]> => {
 	const res = await client.fetch("/v1/me/episodes/contains", {
 		query: { ids: episodeIds },
 	});
@@ -153,6 +143,6 @@ export const checkIfEpisodesSaved = async (
 export const checkIfEpisodeSaved = async (
 	client: HTTPClient,
 	episodeId: string,
-) => {
+): Promise<boolean> => {
 	return (await checkIfEpisodesSaved(client, [episodeId]))[0]!;
 };

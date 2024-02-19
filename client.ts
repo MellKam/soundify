@@ -23,11 +23,11 @@ export class SpotifyError extends Error {
 		super(message, options);
 	}
 
-	get url() {
+	get url(): string {
 		return this.response.url;
 	}
 
-	get status() {
+	get status(): number {
 		return this.response.status;
 	}
 }
@@ -142,7 +142,7 @@ export class SpotifyClient implements HTTPClient {
 			: "https://api.spotify.com/";
 	}
 
-	fetch(path: string, opts: FetchLikeOptions = {}) {
+	fetch(path: string, opts: FetchLikeOptions = {}): Promise<Response> {
 		const url = new URL(path, this.baseUrl);
 		if (opts.query) {
 			for (const key in opts.query) {

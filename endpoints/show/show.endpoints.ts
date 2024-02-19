@@ -2,7 +2,7 @@ import type { HTTPClient } from "../../client.ts";
 import type { Prettify } from "../../shared.ts";
 import type { SimplifiedEpisode } from "../episode/episode.types.ts";
 import type { PagingObject, PagingOptions } from "../general.types.ts";
-import type { Show, SimplifiedShow } from "./show.types.ts";
+import type { SavedShow, Show, SimplifiedShow } from "./show.types.ts";
 
 /**
  * Get spotify catalog information for a single show by its unique Spotify ID.
@@ -15,7 +15,7 @@ export const getShow = async (
 	client: HTTPClient,
 	showId: string,
 	market?: string,
-) => {
+): Promise<Show> => {
 	const res = await client.fetch("/v1/shows/" + showId, { query: { market } });
 	return res.json() as Promise<Show>;
 };
@@ -31,7 +31,7 @@ export const getShows = async (
 	client: HTTPClient,
 	showIds: string[],
 	market?: string,
-) => {
+): Promise<SimplifiedShow> => {
 	const res = await client.fetch("/v1/shows", {
 		query: { market, ids: showIds },
 	});
@@ -60,7 +60,7 @@ export const getShowEpisodes = async (
 	client: HTTPClient,
 	showId: string,
 	options?: GetShowEpisodesOpts,
-) => {
+): Promise<PagingObject<SimplifiedEpisode>> => {
 	const res = await client.fetch(`/v1/shows/${showId}/episodes`, {
 		query: options,
 	});
@@ -86,20 +86,9 @@ export type GetSavedShowsOpts = Prettify<
 export const getSavedShows = async (
 	client: HTTPClient,
 	options?: GetSavedShowsOpts,
-) => {
+): Promise<PagingObject<SavedShow>> => {
 	const res = await client.fetch("/v1/me/shows", { query: options });
-	return res.json() as Promise<
-		PagingObject<{
-			/**
-			 * The date and time the album was saved Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with a zero offset: YYYY-MM-DDTHH:MM:SSZ.
-			 */
-			added_at: string;
-			/**
-			 * Information about the show.
-			 */
-			show: Show;
-		}>
-	>;
+	return res.json() as Promise<PagingObject<SavedShow>>;
 };
 
 /**
@@ -108,7 +97,10 @@ export const getSavedShows = async (
  * @param client Spotify HTTPClient
  * @param showIds List of the Spotify IDs for the shows. Maximum: 20
  */
-export const saveShows = (client: HTTPClient, showIds: string[]) => {
+export const saveShows = (
+	client: HTTPClient,
+	showIds: string[],
+): Promise<Response> => {
 	return client.fetch("/v1/me/shows", {
 		method: "PUT",
 		query: { ids: showIds },
@@ -121,7 +113,10 @@ export const saveShows = (client: HTTPClient, showIds: string[]) => {
  * @param client  Spotify HTTPClient
  * @param showId The Spotify ID of the show
  */
-export const saveShow = (client: HTTPClient, showId: string) => {
+export const saveShow = (
+	client: HTTPClient,
+	showId: string,
+): Promise<Response> => {
 	return saveShows(client, [showId]);
 };
 
@@ -131,7 +126,10 @@ export const saveShow = (client: HTTPClient, showId: string) => {
  * @param client Spotify HTTPClient
  * @param showIds List of the Spotify IDs for the shows. Maximum: 20
  */
-export const removeSavedShows = (client: HTTPClient, showIds: string[]) => {
+export const removeSavedShows = (
+	client: HTTPClient,
+	showIds: string[],
+): Promise<Response> => {
 	return client.fetch("/v1/me/shows", {
 		method: "DELETE",
 		query: {
@@ -146,7 +144,10 @@ export const removeSavedShows = (client: HTTPClient, showIds: string[]) => {
  * @param client Spotify HTTPClient
  * @param showId The Spotify ID of the show
  */
-export const removeSavedShow = (client: HTTPClient, showId: string) => {
+export const removeSavedShow = (
+	client: HTTPClient,
+	showId: string,
+): Promise<Response> => {
 	return removeSavedShows(client, [showId]);
 };
 
@@ -159,7 +160,7 @@ export const removeSavedShow = (client: HTTPClient, showId: string) => {
 export const checkIfShowsSaved = async (
 	client: HTTPClient,
 	showIds: string[],
-) => {
+): Promise<boolean[]> => {
 	const res = await client.fetch("/v1/me/shows/contains", {
 		query: {
 			ids: showIds,
@@ -174,6 +175,9 @@ export const checkIfShowsSaved = async (
  * @param client Spotify HTTPClient
  * @param showId The Spotify ID of the show
  */
-export const checkIfShowSaved = async (client: HTTPClient, showId: string) => {
+export const checkIfShowSaved = async (
+	client: HTTPClient,
+	showId: string,
+): Promise<boolean> => {
 	return (await checkIfShowsSaved(client, [showId]))[0]!;
 };

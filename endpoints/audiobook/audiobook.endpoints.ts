@@ -2,7 +2,7 @@ import type { SimplifiedChapter } from "../chapter/chapter.types.ts";
 import type { HTTPClient } from "../../client.ts";
 import type { Prettify } from "../../shared.ts";
 import type { PagingObject, PagingOptions } from "../general.types.ts";
-import type { Audiobook, SimplifiedAudiobook } from "./audiobook.types.ts";
+import type { Audiobook, SavedAudiobook } from "./audiobook.types.ts";
 
 /**
  * Get Spotify catalog information for a single Audiobook.
@@ -15,7 +15,7 @@ export const getAudiobook = async (
 	client: HTTPClient,
 	audiobookId: string,
 	market?: string,
-) => {
+): Promise<Audiobook> => {
 	const res = await client.fetch("/v1/audiobooks/" + audiobookId, {
 		query: { market },
 	});
@@ -33,7 +33,7 @@ export const getAudiobooks = async (
 	client: HTTPClient,
 	audiobookIds: string[],
 	market?: string,
-) => {
+): Promise<Audiobook[]> => {
 	const res = await client.fetch("/v1/audiobooks", {
 		query: { market, ids: audiobookIds },
 	});
@@ -62,7 +62,7 @@ export const getAudiobookChapters = async (
 	client: HTTPClient,
 	audiobookId: string,
 	options?: GetAudiobookChapterOpts,
-) => {
+): Promise<PagingObject<SimplifiedChapter>> => {
 	const res = await client.fetch(`/v1/audiobooks/${audiobookId}/chapters`, {
 		query: options,
 	});
@@ -88,20 +88,9 @@ export type GetSavedAudiobooksOpts = Prettify<
 export const getSavedAudiobooks = async (
 	client: HTTPClient,
 	options?: GetSavedAudiobooksOpts,
-) => {
+): Promise<PagingObject<SavedAudiobook>> => {
 	const res = await client.fetch("/v1/me/audiobooks", { query: options });
-	return res.json() as Promise<
-		PagingObject<{
-			/**
-			 * The date and time the audiobook was saved Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with a zero offset: YYYY-MM-DDTHH:MM:SSZ.
-			 */
-			added_at: string;
-			/**
-			 * Information about the audiobook.
-			 */
-			audiobook: SimplifiedAudiobook;
-		}>
-	>;
+	return res.json() as Promise<PagingObject<SavedAudiobook>>;
 };
 
 /**
@@ -113,7 +102,7 @@ export const getSavedAudiobooks = async (
 export const saveAudiobooks = (
 	client: HTTPClient,
 	audiobookIds: string[],
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/audiobooks", {
 		method: "PUT",
 		query: { ids: audiobookIds },
@@ -129,7 +118,7 @@ export const saveAudiobooks = (
 export const saveAudiobook = (
 	client: HTTPClient,
 	audiobookId: string,
-) => {
+): Promise<Response> => {
 	return saveAudiobooks(client, [audiobookId]);
 };
 
@@ -142,7 +131,7 @@ export const saveAudiobook = (
 export const removeSavedAudiobooks = (
 	client: HTTPClient,
 	audiobookIds: string[],
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/audiobooks", {
 		method: "DELETE",
 		query: { ids: audiobookIds },
@@ -158,7 +147,7 @@ export const removeSavedAudiobooks = (
 export const removeSavedAudiobook = (
 	client: HTTPClient,
 	audiobookId: string,
-) => {
+): Promise<Response> => {
 	return removeSavedAudiobooks(client, [audiobookId]);
 };
 
@@ -171,7 +160,7 @@ export const removeSavedAudiobook = (
 export const checkIfAudiobooksSaved = async (
 	client: HTTPClient,
 	audiobookIds: string[],
-) => {
+): Promise<boolean[]> => {
 	const res = await client.fetch("/v1/me/audiobooks/contains", {
 		query: { ids: audiobookIds },
 	});
@@ -187,6 +176,6 @@ export const checkIfAudiobooksSaved = async (
 export const checkIfAudiobookSaved = async (
 	client: HTTPClient,
 	audiobookId: string,
-) => {
+): Promise<boolean> => {
 	return (await checkIfAudiobooksSaved(client, [audiobookId]))[0]!;
 };

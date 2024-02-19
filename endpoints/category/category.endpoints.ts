@@ -40,7 +40,7 @@ export type GetBrowseCategoriesOpts = {
 export const getBrowseCategories = async (
 	client: HTTPClient,
 	options?: GetBrowseCategoriesOpts,
-) => {
+): Promise<PagingObject<Category>> => {
 	const res = await client.fetch("/v1/browse/categories", {
 		query: options,
 	});
@@ -73,7 +73,7 @@ export const getBrowseCategory = async (
 	client: HTTPClient,
 	categoryId: string,
 	options?: GetBrowseCategoryOpts,
-) => {
+): Promise<Category> => {
 	const res = await client.fetch("/v1/browse/categories/" + categoryId, {
 		query: options,
 	});

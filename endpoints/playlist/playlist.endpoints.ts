@@ -42,7 +42,7 @@ export const getPlaylist = async (
 	client: HTTPClient,
 	playlistId: string,
 	options?: GetPlaylistOpts,
-) => {
+): Promise<Playlist> => {
 	const res = await client.fetch("/v1/playlists/" + playlistId, {
 		query: options,
 	});
@@ -81,7 +81,7 @@ export const changePlaylistDetails = (
 	client: HTTPClient,
 	playlistId: string,
 	body: ChangePlaylistDetailsBody,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/playlist/" + playlistId, { method: "PUT", body });
 };
 
@@ -108,7 +108,7 @@ export const getPlaylistTracks = async (
 	client: HTTPClient,
 	playlistId: string,
 	options?: GetPlaylistTracksOpts,
-) => {
+): Promise<PagingObject<PlaylistTrack>> => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		query: options,
 	});
@@ -128,7 +128,7 @@ export const addItemsToPlaylist = async (
 	playlistId: string,
 	uris: string[],
 	position?: number,
-) => {
+): Promise<SnapshotResponse> => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "POST",
 		query: { uris, position },
@@ -149,7 +149,7 @@ export const addItemToPlaylist = (
 	playlistId: string,
 	uri: string,
 	position?: number,
-) => {
+): Promise<SnapshotResponse> => {
 	return addItemsToPlaylist(client, playlistId, [uri], position);
 };
 
@@ -184,7 +184,7 @@ export const reorderPlaylistItems = async (
 	client: HTTPClient,
 	playlistId: string,
 	options?: ReorderPlaylistItemsOpts,
-) => {
+): Promise<SnapshotResponse> => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "PUT",
 		body: options,
@@ -204,7 +204,7 @@ export const replacePlaylistItems = async (
 	client: HTTPClient,
 	playlistId: string,
 	uris: string[],
-) => {
+): Promise<SnapshotResponse> => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "PUT",
 		body: { uris },
@@ -225,7 +225,7 @@ export const removePlaylistItems = async (
 	playlistId: string,
 	uris: string[],
 	snapshotId?: string,
-) => {
+): Promise<SnapshotResponse> => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "DELETE",
 		body: {
@@ -249,7 +249,7 @@ export const removePlaylistItem = (
 	playlistId: string,
 	uri: string,
 	snapshotId?: string,
-) => {
+): Promise<SnapshotResponse> => {
 	return removePlaylistItems(client, playlistId, [uri], snapshotId);
 };
 
@@ -262,7 +262,7 @@ export const removePlaylistItem = (
 export const getCurrentUsersPlaylists = async (
 	client: HTTPClient,
 	options?: PagingOptions,
-) => {
+): Promise<PagingObject<SimplifiedPlaylist>> => {
 	const res = await client.fetch("/v1/me/playlists", { query: options });
 	return res.json() as Promise<PagingObject<SimplifiedPlaylist>>;
 };
@@ -278,7 +278,7 @@ export const getUsersPlaylists = async (
 	client: HTTPClient,
 	userId: string,
 	options?: PagingOptions,
-) => {
+): Promise<PagingObject<SimplifiedPlaylist>> => {
 	const res = await client.fetch(`/v1/users/${userId}/playlists`, {
 		query: options,
 	});
@@ -315,7 +315,7 @@ export const createPlaylist = async (
 	client: HTTPClient,
 	userId: string,
 	body: CreatePlaylistBody,
-) => {
+): Promise<Playlist> => {
 	const res = await client.fetch(`/v1/users/${userId}/playlists`, {
 		method: "POST",
 		body,
@@ -353,7 +353,7 @@ export type GetFeaturedPlaylistsOpts = Prettify<
 export const getFeaturedPlaylists = async (
 	client: HTTPClient,
 	options?: GetFeaturedPlaylistsOpts,
-) => {
+): Promise<FeaturedPlaylists> => {
 	const res = await client.fetch("/v1/browse/featured-playlists", {
 		query: options,
 	});
@@ -381,7 +381,7 @@ export const getCategoryPlaylists = async (
 	client: HTTPClient,
 	categoryId: string,
 	options?: GetCategorysPlaylistsOpts,
-) => {
+): Promise<FeaturedPlaylists> => {
 	const res = await client.fetch(
 		`/v1/browse/categories/${categoryId}/playlists`,
 		{ query: options },
@@ -397,7 +397,7 @@ export const getCategoryPlaylists = async (
 export const getPlaylistCoverImage = async (
 	client: HTTPClient,
 	playlistId: string,
-) => {
+): Promise<NonNullableObject<Image>[]> => {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/images`);
 	return res.json() as Promise<NonNullableObject<Image>[]>;
 };
@@ -412,7 +412,7 @@ export const uploadPlaylistCoverImage = (
 	client: HTTPClient,
 	playlistId: string,
 	image: string,
-) => {
+): Promise<Response> => {
 	return client.fetch(`/v1/playlists/${playlistId}/images`, {
 		method: "PUT",
 		headers: {

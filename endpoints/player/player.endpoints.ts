@@ -30,7 +30,7 @@ export type GetPlaybackStateOpts = {
 export const getPlaybackState = async (
 	client: HTTPClient,
 	options: GetPlaybackStateOpts = {},
-) => {
+): Promise<PlaybackState | null> => {
 	const res = await client.fetch("/v1/me/player", {
 		query: {
 			market: options.market,
@@ -38,7 +38,7 @@ export const getPlaybackState = async (
 		},
 	});
 	if (res.status === 204) return null;
-	return res.json() as Promise<PlaybackState>;
+	return res.json();
 };
 
 export type TransferPlaybackBody = {
@@ -63,7 +63,7 @@ export type TransferPlaybackBody = {
 export const transferPlayback = (
 	client: HTTPClient,
 	body: TransferPlaybackBody,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/player", { method: "PUT", body });
 };
 
@@ -72,7 +72,9 @@ export const transferPlayback = (
  *
  * @requires `user-read-playback-state`
  */
-export const getAvailableDevices = async (client: HTTPClient) => {
+export const getAvailableDevices = async (
+	client: HTTPClient,
+): Promise<Device[]> => {
 	const res = await client.fetch("/v1/me/player/devices");
 	return (await res.json() as { devices: Device[] }).devices;
 };
@@ -96,7 +98,7 @@ export type GetCurrentPlayingTrackOpts = {
 export const getCurrentPlayingTrack = async (
 	client: HTTPClient,
 	options?: GetCurrentPlayingTrackOpts,
-) => {
+): Promise<PlaybackState | null> => {
 	const res = await client.fetch("/v1/me/player/currently-playing", {
 		query: options,
 	});
@@ -152,7 +154,7 @@ export type StartResumePlaybackBody = {
 export const startPlayback = (
 	client: HTTPClient,
 	options: StartResumePlaybackBody = {},
-) => {
+): Promise<Response> => {
 	const { device_id, ...body } = options;
 	return client.fetch("/v1/me/player/play", {
 		method: "PUT",
@@ -179,7 +181,7 @@ export const resumePlayback = startPlayback;
 export const pausePlayback = (
 	client: HTTPClient,
 	deviceId?: string,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/player/pause", {
 		method: "PUT",
 		query: { device_id: deviceId },
@@ -197,7 +199,7 @@ export const pausePlayback = (
 export const skipToNext = (
 	client: HTTPClient,
 	deviceId?: string,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/player/next", {
 		method: "POST",
 		query: { device_id: deviceId },
@@ -215,7 +217,7 @@ export const skipToNext = (
 export const skipToPrevious = (
 	client: HTTPClient,
 	deviceId?: string,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/player/previous", {
 		method: "POST",
 		query: { device_id: deviceId },
@@ -235,7 +237,7 @@ export const seekToPosition = (
 	client: HTTPClient,
 	positionMs: number,
 	deviceId?: string,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/player/seek", {
 		method: "PUT",
 		query: { position_ms: positionMs, device_id: deviceId },
@@ -258,7 +260,7 @@ export const setRepeatMode = (
 	client: HTTPClient,
 	state: RepeatMode,
 	deviceId?: string,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/player/repeat", {
 		method: "PUT",
 		query: { state, device_id: deviceId },
@@ -278,7 +280,7 @@ export const togglePlaybackShuffle = (
 	client: HTTPClient,
 	state: boolean,
 	deviceId?: string,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/player/shuffle", {
 		method: "PUT",
 		query: { state, device_id: deviceId },
@@ -311,11 +313,11 @@ export type GetRecentlyPlayedTracksOpts = {
 export const getRecentPlayedTracks = async (
 	client: HTTPClient,
 	options?: GetRecentlyPlayedTracksOpts,
-) => {
+): Promise<CursorPagingObject<PlayHistoryObject>> => {
 	const res = await client.fetch("/v1/me/player/recently-played", {
 		query: options,
 	});
-	return res.json() as Promise<CursorPagingObject<PlayHistoryObject>>;
+	return res.json();
 };
 
 /**
@@ -324,7 +326,7 @@ export const getRecentPlayedTracks = async (
  * @requires `user-read-currently-playing`,
 `user-read-playback-state`
  */
-export const getUserQueue = async (client: HTTPClient) => {
+export const getUserQueue = async (client: HTTPClient): Promise<Queue> => {
 	const res = await client.fetch("/v1/me/player/queue");
 	return res.json() as Promise<Queue>;
 };
@@ -342,7 +344,7 @@ export const addItemToPlaybackQueue = (
 	client: HTTPClient,
 	uri: string,
 	deviceId?: string,
-) => {
+): Promise<Response> => {
 	return client.fetch("/v1/me/player/queue", {
 		method: "POST",
 		query: { uri, device_id: deviceId },

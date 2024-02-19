@@ -10,7 +10,7 @@ export const getChapter = async (
 	client: HTTPClient,
 	chapterId: string,
 	market?: string,
-) => {
+): Promise<Chapter> => {
 	const res = await client.fetch("/v1/chapters/" + chapterId, {
 		query: { market },
 	});
@@ -27,7 +27,7 @@ export const getChapters = async (
 	client: HTTPClient,
 	chapterIds: string[],
 	market?: string,
-) => {
+): Promise<Chapter[]> => {
 	const res = await client.fetch("/v1/chapters", {
 		query: { market, ids: chapterIds },
 	});

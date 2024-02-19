@@ -90,3 +90,14 @@ export interface Audiobook extends SimplifiedAudiobook {
 	 */
 	chapters: PagingObject<SimplifiedChapter>;
 }
+
+export type SavedAudiobook = {
+	/**
+	 * The date and time the audiobook was saved Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with a zero offset: YYYY-MM-DDTHH:MM:SSZ.
+	 */
+	added_at: string;
+	/**
+	 * Information about the audiobook.
+	 */
+	audiobook: SimplifiedAudiobook;
+};

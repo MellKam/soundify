@@ -21,7 +21,7 @@ export const getTrack = async (
 	client: HTTPClient,
 	trackId: string,
 	market?: string,
-) => {
+): Promise<Track> => {
 	const res = await client.fetch("/v1/tracks/" + trackId, {
 		query: { market },
 	});
@@ -39,7 +39,7 @@ export const getTracks = async (
 	client: HTTPClient,
 	trackIds: string[],
 	market?: string,
-) => {
+): Promise<Track[]> => {
 	const res = await client.fetch("/v1/tracks", {
 		query: {
 			ids: trackIds,
@@ -68,7 +68,7 @@ export type GetSavedTracksOpts = Prettify<
 export const getSavedTracks = async (
 	client: HTTPClient,
 	options: GetSavedTracksOpts,
-) => {
+): Promise<PagingObject<Track>> => {
 	const res = await client.fetch("/v1/me/tracks", {
 		query: options,
 	});
@@ -81,7 +81,10 @@ export const getSavedTracks = async (
  * @param client Spotify HTTPClient
  * @param trackIds List of the Spotify track IDs. Maximum 50 IDs
  */
-export const saveTracks = (client: HTTPClient, trackIds: string[]) => {
+export const saveTracks = (
+	client: HTTPClient,
+	trackIds: string[],
+): Promise<Response> => {
 	return client.fetch("/v1/me/tracks", {
 		method: "PUT",
 		query: {
@@ -96,7 +99,10 @@ export const saveTracks = (client: HTTPClient, trackIds: string[]) => {
  * @param client Spotify HTTPClient
  * @param trackId Spotify track ID
  */
-export const saveTrack = (client: HTTPClient, trackId: string) => {
+export const saveTrack = (
+	client: HTTPClient,
+	trackId: string,
+): Promise<Response> => {
 	return saveTracks(client, [trackId]);
 };
 
@@ -106,7 +112,10 @@ export const saveTrack = (client: HTTPClient, trackId: string) => {
  * @param client Spotify HTTPClient
  * @param trackIds List of the Spotify track IDs. Maximum 50 IDs
  */
-export const removeSavedTracks = (client: HTTPClient, trackIds: string[]) => {
+export const removeSavedTracks = (
+	client: HTTPClient,
+	trackIds: string[],
+): Promise<Response> => {
 	return client.fetch("/v1/me/tracks", {
 		method: "DELETE",
 		query: {
@@ -121,7 +130,10 @@ export const removeSavedTracks = (client: HTTPClient, trackIds: string[]) => {
  * @param client Spotify HTTPClient
  * @param trackId Spotify track ID
  */
-export const removeSavedTrack = (client: HTTPClient, trackId: string) => {
+export const removeSavedTrack = (
+	client: HTTPClient,
+	trackId: string,
+): Promise<Response> => {
 	return removeSavedTracks(client, [trackId]);
 };
 
@@ -134,7 +146,7 @@ export const removeSavedTrack = (client: HTTPClient, trackId: string) => {
 export const checkIfTracksSaved = async (
 	client: HTTPClient,
 	track_ids: string[],
-) => {
+): Promise<boolean[]> => {
 	const res = await client.fetch("/v1/me/tracks/contains", {
 		query: {
 			ids: track_ids,
@@ -152,7 +164,7 @@ export const checkIfTracksSaved = async (
 export const checkIfTrackSaved = async (
 	client: HTTPClient,
 	trackId: string,
-) => {
+): Promise<boolean> => {
 	return (await checkIfTracksSaved(client, [trackId]))[0];
 };
 
@@ -165,7 +177,7 @@ export const checkIfTrackSaved = async (
 export const getTracksAudioFeatures = async (
 	client: HTTPClient,
 	track_ids: string[],
-) => {
+): Promise<AudioFeatures[]> => {
 	const res = await client.fetch("/v1/audio-features", {
 		query: {
 			ids: track_ids,
@@ -184,7 +196,7 @@ export const getTracksAudioFeatures = async (
 export const getTrackAudioFeatures = async (
 	client: HTTPClient,
 	trackId: string,
-) => {
+): Promise<AudioFeatures> => {
 	const res = await client.fetch("/v1/audio-features/" + trackId);
 	return res.json() as Promise<AudioFeatures>;
 };
@@ -199,7 +211,7 @@ export const getTrackAudioFeatures = async (
 export const getTracksAudioAnalysis = async (
 	client: HTTPClient,
 	trackId: string,
-) => {
+): Promise<AudioAnalysis> => {
 	const res = await client.fetch("/v1/audio-analysis/" + trackId);
 	return res.json() as Promise<AudioAnalysis>;
 };
@@ -213,7 +225,7 @@ export const getTracksAudioAnalysis = async (
 export const getRecommendations = async (
 	client: HTTPClient,
 	options: RecommendationsOptions,
-) => {
+): Promise<Recomendations> => {
 	const res = await client.fetch("/v1/recommendations", {
 		query: options,
 	});

@@ -5,7 +5,7 @@ import type { HTTPClient } from "../../client.ts";
  *
  * @param client Spotify HTTPClient
  */
-export const getAvailableMarkets = async (client: HTTPClient) => {
+export const getAvailableMarkets = async (client: HTTPClient): Promise<string[]> => {
 	const res = await client.fetch("/v1/markets");
 	return (await res.json() as { markets: string[] }).markets;
 };

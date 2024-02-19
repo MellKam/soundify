@@ -15,7 +15,7 @@ export const getAlbum = async (
 	client: HTTPClient,
 	albumId: string,
 	market?: string,
-) => {
+): Promise<Album> => {
 	const res = await client.fetch("/v1/albums/" + albumId, {
 		query: { market },
 	});
@@ -33,7 +33,7 @@ export const getAlbums = async (
 	client: HTTPClient,
 	albumIds: string[],
 	market?: string,
-) => {
+): Promise<Album[]> => {
 	const res = await client.fetch("/v1/albums", {
 		query: { market, ids: albumIds },
 	});
@@ -62,7 +62,7 @@ export const getAlbumTracks = async (
 	client: HTTPClient,
 	albumId: string,
 	options?: GetAlbumTrackOpts,
-) => {
+): Promise<PagingObject<SimplifiedTrack>> => {
 	const res = await client.fetch(`/v1/albums/${albumId}/tracks`, {
 		query: options,
 	});
@@ -88,7 +88,7 @@ export type GetSavedAlbumsOpts = Prettify<
 export const getSavedAlbums = async (
 	client: HTTPClient,
 	options?: GetSavedAlbumsOpts,
-) => {
+): Promise<PagingObject<SavedAlbum>> => {
 	const res = await client.fetch("/v1/me/albums", { query: options });
 	return res.json() as Promise<PagingObject<SavedAlbum>>;
 };
@@ -99,7 +99,10 @@ export const getSavedAlbums = async (
  * @param client Spotify HTTPClient
  * @param albumIds List of the Spotify IDs for the albums. Maximum: 20 IDs
  */
-export const saveAlbums = (client: HTTPClient, albumIds: string[]) => {
+export const saveAlbums = (
+	client: HTTPClient,
+	albumIds: string[],
+): Promise<Response> => {
 	return client.fetch("/v1/me/albums", {
 		method: "PUT",
 		query: { ids: albumIds },
@@ -112,7 +115,10 @@ export const saveAlbums = (client: HTTPClient, albumIds: string[]) => {
  * @param client Spotify HTTPClient
  * @param albums_id The Spotify ID of the album
  */
-export const saveAlbum = (client: HTTPClient, albumId: string) => {
+export const saveAlbum = (
+	client: HTTPClient,
+	albumId: string,
+): Promise<Response> => {
 	return saveAlbums(client, [albumId]);
 };
 
@@ -122,7 +128,10 @@ export const saveAlbum = (client: HTTPClient, albumId: string) => {
  * @param client Spotify HTTPClient
  * @param albumIds List of the Spotify IDs for the albums. Maximum: 20 IDs
  */
-export const removeSavedAlbums = (client: HTTPClient, albumIds: string[]) => {
+export const removeSavedAlbums = (
+	client: HTTPClient,
+	albumIds: string[],
+): Promise<Response> => {
 	return client.fetch("/v1/me/albums", {
 		method: "DELETE",
 		query: { ids: albumIds },
@@ -135,7 +144,10 @@ export const removeSavedAlbums = (client: HTTPClient, albumIds: string[]) => {
  * @param client Spotify HTTPClient
  * @param albumId The Spotify ID of the album
  */
-export const removeSavedAlbum = (client: HTTPClient, albumId: string) => {
+export const removeSavedAlbum = (
+	client: HTTPClient,
+	albumId: string,
+): Promise<Response> => {
 	return removeSavedAlbums(client, [albumId]);
 };
 
@@ -148,7 +160,7 @@ export const removeSavedAlbum = (client: HTTPClient, albumId: string) => {
 export const checkIfAlbumsSaved = async (
 	client: HTTPClient,
 	albumIds: string[],
-) => {
+): Promise<boolean[]> => {
 	const res = await client.fetch("/v1/me/albums/contains", {
 		query: { ids: albumIds },
 	});
@@ -164,7 +176,7 @@ export const checkIfAlbumsSaved = async (
 export const checkIfAlbumSaved = async (
 	client: HTTPClient,
 	albumId: string,
-) => {
+): Promise<boolean> => {
 	return (await checkIfAlbumsSaved(client, [albumId]))[0]!;
 };
 
@@ -188,7 +200,7 @@ export type GetNewReleasesOpts = Prettify<
 export const getNewReleases = async (
 	client: HTTPClient,
 	options?: GetNewReleasesOpts,
-) => {
+): Promise<PagingObject<SimplifiedAlbum>> => {
 	const res = await client.fetch("/v1/browse/new-releases", { query: options });
 	return ((await res.json()) as { albums: PagingObject<SimplifiedAlbum> })
 		.albums;

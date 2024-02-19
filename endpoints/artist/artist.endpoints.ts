@@ -11,7 +11,10 @@ import type { Artist } from "./artist.types.ts";
  * @param client Spotify HTTPClient
  * @param artistId Spotify artist ID
  */
-export const getArtist = async (client: HTTPClient, artistId: string) => {
+export const getArtist = async (
+	client: HTTPClient,
+	artistId: string,
+): Promise<Artist> => {
 	const res = await client.fetch("/v1/artists/" + artistId);
 	return res.json() as Promise<Artist>;
 };
@@ -25,7 +28,7 @@ export const getArtist = async (client: HTTPClient, artistId: string) => {
 export const getArtists = async (
 	client: HTTPClient,
 	artistIds: string[],
-) => {
+): Promise<Artist[]> => {
 	const res = await client.fetch("/v1/artists", { query: { ids: artistIds } });
 	return ((await res.json()) as { artists: Artist[] }).artists;
 };
@@ -55,7 +58,7 @@ export const getArtistAlbums = async (
 	client: HTTPClient,
 	artistId: string,
 	options?: GetArtistAlbumsOpts,
-) => {
+): Promise<PagingObject<SimplifiedAlbum>> => {
 	const res = await client.fetch(`/v1/artists/${artistId}/albums`, {
 		query: options,
 	});
@@ -73,7 +76,7 @@ export const getArtistTopTracks = async (
 	client: HTTPClient,
 	artistId: string,
 	market?: string,
-) => {
+): Promise<Track[]> => {
 	const res = await client.fetch(`/v1/artists/${artistId}/top-tracks`, {
 		query: { market },
 	});
@@ -90,7 +93,7 @@ export const getArtistTopTracks = async (
 export const getArtistRelatedArtists = async (
 	client: HTTPClient,
 	artistId: string,
-) => {
+): Promise<Artist[]> => {
 	const res = await client.fetch(`/v1/artists/${artistId}/related-artists`);
 	return ((await res.json()) as { artists: Artist[] }).artists;
 };
