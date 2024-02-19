@@ -165,7 +165,7 @@ export const checkIfTrackSaved = async (
 	client: HTTPClient,
 	trackId: string,
 ): Promise<boolean> => {
-	return (await checkIfTracksSaved(client, [trackId]))[0];
+	return (await checkIfTracksSaved(client, [trackId]))[0]!;
 };
 
 /**
