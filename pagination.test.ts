@@ -117,7 +117,6 @@ Deno.test("CursorPageIterator: asyncIterator", async () => {
 
 	for (let i = 0; i < totalMockItems; i++) {
 		const result = await iter.next();
-		console.log(result);
 		assertEquals(result, {
 			done: false,
 			value: mockArtists[i],
