@@ -205,18 +205,21 @@ console.log(me);
 ## Pagination
 
 To simplify the process of paginating through the results, we provide a
-`PageIterator` class.
+`PageIterator` and `CursorPageIterator` classes.
 
 ```ts
 import { getPlaylistTracks, SpotifyClient } from "@soundify/web-api";
 import { PageIterator } from "@soundify/web-api/pagination";
 
-const client = new SpotifyClient("YOUR_ACCESS_TOKEN", {
-	waitForRateLimit: true,
-});
+const client = new SpotifyClient("YOUR_ACCESS_TOKEN");
 
 const playlistIter = new PageIterator(
-	(opts) => getPlaylistTracks(client, "37i9dQZEVXbMDoHDwVN2tF", opts),
+	(offset) => getPlaylistTracks(client, "37i9dQZEVXbMDoHDwVN2tF", {
+		// you can find the max limit for specific endpoint
+		// in spotify docs or in the jsdoc comments of this property
+		limit: 50,  
+		offset,
+	}),
 );
 
 // iterate over all tracks in the playlist
@@ -227,6 +230,41 @@ for await (const track of playlistIter) {
 // or collect all tracks into an array
 const allTracks = await playlistIter.collect();
 console.log(allTracks.length);
+
+// Want to get the last 100 items? No problem
+const lastHundredTracks = new PageIterator(
+	(offset) => getPlaylistTracks(
+		client, 
+		"37i9dQZEVXbMDoHDwVN2tF", 
+		{ limit: 50, offset }
+	),
+	{ initialOffset: -100 }, // this will work just as `Array.slice(-100)` 
+).collect();
+```
+
+```ts
+import { getFollowedArtists, SpotifyClient } from "@soundify/web-api";
+import { CursorPageIterator } from "@soundify/web-api/pagination";
+
+const client = new SpotifyClient("YOUR_ACCESS_TOKEN");
+
+// loop over all followed artists
+for await (const artist of new CursorPageIterator(
+	opts => getFollowedArtists(client, { limit: 50, after: opts.after })
+)) {
+	console.log(artist.name);
+}
+
+// or collect all followed artists into an array
+const artists = await new CursorPageIterator(
+	opts => getFollowedArtists(client, { limit: 50, after: opts.after })
+).collect();
+
+// get all followed artists starting from Radiohead
+const artists = await new CursorPageIterator(
+	opts => getFollowedArtists(client, { limit: 50, after: opts.after }),
+	{ initialAfter: "4Z8W4fKeB5YxbusRsdQVPb" } // let's start from Radiohead
+).collect();
 ```
 
 ## Other customizations

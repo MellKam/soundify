@@ -115,7 +115,7 @@ export type CursorPageIteratorOptions<TDirection extends Direction> =
  * ```ts
  * // get the first 100 followed artists
  * const artists = await new CursorPageIterator(
- *   opts => getFollowedArtists(client, { limit: 50, after: opts.after})
+ *   opts => getFollowedArtists(client, { limit: 50, after: opts.after })
  * ).collect(100);
  * ```
  */
@@ -164,8 +164,14 @@ export class CursorPageIterator<
 				},
 			);
 
-			for (let i = 0; i < page.items.length; i++) {
-				yield page.items[i];
+			if (direction === "forward") {
+				for (let i = 0; i < page.items.length; i++) {
+					yield page.items[i];
+				}
+			} else {
+				for (let i = page.items.length - 1; i >= 0; i--) {
+					yield page.items[i];
+				}
 			}
 
 			if (!page.next) {

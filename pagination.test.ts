@@ -128,3 +128,45 @@ Deno.test("CursorPageIterator: asyncIterator", async () => {
 		value: null,
 	});
 });
+
+Deno.test("CursorPageIterator: asyncIterator backwards", async () => {
+	const initialBefore = 30;
+	const cursorPageIterator = new CursorPageIterator((opts) => {
+		const limit = 20;
+
+		const beforeArtistIndex = mockArtists.findIndex((artist) =>
+			artist.id === opts.before
+		);
+		if (beforeArtistIndex === -1) {
+			throw new Error("Invalid cursor");
+		}
+
+		const lastIndex = beforeArtistIndex - limit - 1;
+		const hasPreviousPage = !(lastIndex < 0);
+
+		return Promise.resolve({
+			items: mockArtists.slice(
+				hasPreviousPage ? lastIndex : 0,
+				beforeArtistIndex,
+			),
+			next: hasPreviousPage ? "http://example.com" : null,
+			cursors: {
+				before: hasPreviousPage ? mockArtists.at(lastIndex)?.id : undefined,
+			},
+		});
+	}, { direction: "backward", initialBefore: initialBefore.toString() });
+
+	const iter = cursorPageIterator[Symbol.asyncIterator]();
+
+	for (let i = initialBefore - 1; i >= 0; i--) {
+		const result = await iter.next();
+		assertEquals(result, {
+			done: false,
+			value: mockArtists[i],
+		});
+	}
+	assertEquals(await iter.next(), {
+		done: true,
+		value: null,
+	});
+});
