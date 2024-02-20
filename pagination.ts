@@ -1,115 +1,198 @@
-import type { Prettify } from "./shared.ts";
-import type { PagingObject, PagingOptions } from "./endpoints/general.types.ts";
+export type PageIteratorOptions = {
+	/**
+	 * The Spotify API does not allow you to use a negative offset, but you can do so with this property. This will be useful when, for example, you want to get the last 100 elements.
+	 *
+	 * Under the hood, it will first get the total number of items by fetching with an offset of `0` and then calculate the starting offset.
+	 *
+	 * @default 0
+	 */
+	initialOffset?: number;
+};
 
 /**
- * Represents the possible directions a paginator can take, where the values of "next" and "prev" indicate whether the iterator is navigating forward or backward.
+ * A helper class which allows you to iterate over items in a paginated API response with javascript async iterators.
+ *
+ * @example
+ * ```ts
+ * const playlistIter = new PageIterator((offset) =>
+ *   getPlaylistTracks(client, "SOME_PLAYLITS_ID", { offset, limit: 50 })
+ * );
+ *
+ * // Iterate over the playlist tracks
+ * for await (const track of playlistIter) {
+ *   console.log(track);
+ * }
+ *
+ * // Collect all the tracks
+ * const tracks = await playlistIter.collect();
+ *
+ * // Collect the last 100 tracks in playlist
+ * const lastHundredTracks = new PageIterator(
+ *   (offset) =>
+ *     getPlaylistTracks(client, "SOME_PLAYLITS_ID", { offset, limit: 50 }),
+ *   { initialOffset: -100 },
+ * ).collect();
+ * ```
  */
-type PaginatorDirection = "next" | "prev";
-
-type NextPageOptions = {
-	limit?: number;
-	setOffset?: (offset: number) => number;
-};
-
-type PageIterOptions = Prettify<
-	PagingOptions & {
-		direction?: PaginatorDirection;
-	}
->;
-
-const DEFAULTS: Required<PageIterOptions> = {
-	direction: "next",
-	limit: 20,
-	offset: 0,
-};
-
-export class ChunkIterator<TItem> {
-	private defaults: Required<PageIterOptions>;
-
-	constructor(
-		private fetcher: (opts: PagingOptions) => Promise<PagingObject<TItem>>,
-		defaults: PageIterOptions = {},
-	) {
-		this.defaults = { ...DEFAULTS, ...defaults };
-	}
-
-	asyncIterator(): AsyncIterator<
-		TItem[],
-		TItem[],
-		NextPageOptions | undefined
-	> {
-		return this[Symbol.asyncIterator]();
-	}
-
-	[Symbol.asyncIterator](): AsyncIterator<
-		TItem[],
-		TItem[],
-		NextPageOptions | undefined
-	> {
-		let done = false;
-		let { direction, limit, offset } = this.defaults;
-
-		return {
-			next: async (opts = {}) => {
-				if (done) return { done, value: [] };
-				limit = opts.limit ?? this.defaults.limit;
-				offset = opts.setOffset ? opts.setOffset(offset) : offset;
-
-				const chunk = await this.fetcher({ limit, offset });
-
-				if (
-					(direction === "next" && !chunk.next) ||
-					(direction === "prev" && !chunk.previous)
-				) {
-					done = true;
-					return { value: chunk.items, done: false };
-				}
-
-				offset = direction === "next" ? offset + limit : offset - limit;
-				return { value: chunk.items, done };
-			},
-		};
-	}
-}
-
 export class PageIterator<TItem> {
-	private defaults: Required<PageIterOptions>;
+	private options: Required<PageIteratorOptions>;
 
 	constructor(
-		private fetcher: (opts: PagingOptions) => Promise<PagingObject<TItem>>,
-		defaults: PageIterOptions = {},
+		private readonly fetcher: (offset: number) => Promise<{
+			limit: number;
+			next: string | null;
+			total: number;
+			items: TItem[];
+		}>,
+		options: PageIteratorOptions = {},
 	) {
-		this.defaults = { ...DEFAULTS, ...defaults };
+		this.options = { initialOffset: 0, ...options };
 	}
 
-	asyncIterator(): AsyncGenerator<TItem, null, unknown> {
-		return this[Symbol.asyncIterator]();
-	}
+	async *[Symbol.asyncIterator](
+		initialOffset?: number,
+	): AsyncGenerator<TItem, null, void> {
+		let offset = typeof initialOffset === "number"
+			? initialOffset
+			: this.options.initialOffset;
 
-	async *[Symbol.asyncIterator](): AsyncGenerator<TItem, null, unknown> {
-		let { direction, limit, offset } = this.defaults;
+		if (offset < 0) {
+			const page = await this.fetcher(0);
+			if (page.total === 0) {
+				return null;
+			}
+			offset = page.total + offset;
+		}
 
 		while (true) {
-			const chunk = await this.fetcher({ limit, offset });
+			const page = await this.fetcher(offset);
 
-			if (
-				(direction === "next" && !chunk.next) ||
-				(direction === "prev" && !chunk.previous)
-			) {
-				for (const item of chunk.items) yield item;
+			for (let i = 0; i < page.items.length; i++) {
+				yield page.items[i];
+			}
+
+			if (!page.next) {
 				return null;
 			}
 
-			for (const item of chunk.items) yield item;
-
-			offset = direction === "next" ? offset + limit : offset - limit;
+			offset = offset + page.limit;
 		}
 	}
 
-	async collect(): Promise<TItem[]> {
+	/**
+	 * @param limit The maximum number of items to collect. By default it set to `Infinity`, which means it will collect all items.
+	 */
+	async collect(limit = Infinity): Promise<TItem[]> {
+		if (limit < 0) {
+			throw new RangeError(
+				`The limit must be a positive number, got ${limit}`,
+			);
+		}
 		const items: TItem[] = [];
 		for await (const item of this) {
 			items.push(item);
+			if (items.length >= limit) {
+				break;
+			}
+		}
+		return items;
+	}
+}
+
+type Direction = "backward" | "forward";
+
+export type CursorPageIteratorOptions<TDirection extends Direction> =
+	& {
+		direction?: TDirection;
+	}
+	& (TDirection extends "forward" ? { initialAfter?: string }
+		: { initialBefore?: string });
+
+/**
+ * A helper class which allows you to iterate over items in a cursor paginated API response with javascript async iterators.
+ *
+ * @example
+ * ```ts
+ * // get the first 100 followed artists
+ * const artists = await new CursorPageIterator(
+ *   opts => getFollowedArtists(client, { limit: 50, after: opts.after})
+ * ).collect(100);
+ * ```
+ */
+export class CursorPageIterator<
+	TItem,
+	TDirection extends "backward" | "forward" = "forward",
+> {
+	private options: CursorPageIteratorOptions<TDirection> & {
+		direction: TDirection;
+	};
+
+	constructor(
+		private readonly fetcher: (
+			options: TDirection extends "forward" ? { after?: string }
+				: { before?: string },
+		) => Promise<{
+			next: string | null;
+			cursors: {
+				after?: string;
+				before?: string;
+			} | null;
+			items: TItem[];
+		}>,
+		options: CursorPageIteratorOptions<TDirection> = {},
+	) {
+		this.options = { direction: "forward", ...options } as
+			& CursorPageIteratorOptions<TDirection>
+			& {
+				direction: TDirection;
+			};
+	}
+
+	async *[Symbol.asyncIterator](): AsyncGenerator<TItem, null, void> {
+		const direction = this.options.direction;
+		let cursor = direction === "forward"
+			? "initialAfter" in this.options ? this.options.initialAfter : undefined
+			: "initialBefore" in this.options
+			? this.options.initialBefore
+			: undefined;
+
+		while (true) {
+			const page = await this.fetcher(
+				(direction === "forward" ? { after: cursor } : { before: cursor }) as {
+					after?: string;
+					before?: string;
+				},
+			);
+
+			for (let i = 0; i < page.items.length; i++) {
+				yield page.items[i];
+			}
+
+			if (!page.next) {
+				return null;
+			}
+
+			cursor = direction === "forward"
+				? page.cursors?.after
+				: page.cursors?.before;
+		}
+	}
+
+	/**
+	 * @param limit The maximum number of items to collect. By default it set to `Infinity`, which means it will collect all items.
+	 */
+	async collect(limit = Infinity): Promise<TItem[]> {
+		if (limit < 0) {
+			throw new RangeError(
+				`The limit must be a positive number, got ${limit}`,
+			);
+		}
+		const items: TItem[] = [];
+		for await (const item of this) {
+			items.push(item);
+			if (items.length >= limit) {
+				break;
+			}
 		}
 		return items;
 	}

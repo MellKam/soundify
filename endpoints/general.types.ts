@@ -46,12 +46,12 @@ export type CursorPagingObject<TItem> = {
 		/**
 		 * The cursor to use as key to find the next page of items.
 		 */
-		after: string;
+		after?: string;
 		/**
 		 * The cursor to use as key to find the previous page of items.
 		 */
-		before: string;
-	};
+		before?: string;
+	} | null;
 	/**
 	 * The total number of items available to return.
 	 */
