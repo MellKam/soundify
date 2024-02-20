@@ -68,7 +68,7 @@ export class PageIterator<TItem> {
 			const page = await this.fetcher(offset);
 
 			for (let i = 0; i < page.items.length; i++) {
-				yield page.items[i];
+				yield page.items[i]!;
 			}
 
 			if (!page.next) {
@@ -166,11 +166,11 @@ export class CursorPageIterator<
 
 			if (direction === "forward") {
 				for (let i = 0; i < page.items.length; i++) {
-					yield page.items[i];
+					yield page.items[i]!;
 				}
 			} else {
 				for (let i = page.items.length - 1; i >= 0; i--) {
-					yield page.items[i];
+					yield page.items[i]!;
 				}
 			}
 
