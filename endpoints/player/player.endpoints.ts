@@ -22,7 +22,8 @@ export type GetPlaybackStateOpts = {
 /**
  * Get information about the user’s current playback state, including track or episode, progress, and active device.
  *
- * @requires `user-read-playback-state`
+ * @requires `user-read-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  *
  * @param client Spotify HTTPClient
  * @param options Additional options for request
@@ -58,7 +59,8 @@ export type TransferPlaybackBody = {
 /**
  * Transfer playback to a new device and optionally begin playback. The order of execution is not guaranteed when you use this API with other Player API endpoints.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  */
 export const transferPlayback = (
 	client: HTTPClient,
@@ -70,13 +72,14 @@ export const transferPlayback = (
 /**
  * Get information about a user’s available Spotify Connect devices. Some device models are not supported and will not be listed in the API response.
  *
- * @requires `user-read-playback-state`
+ * @requires `user-read-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  */
 export const getAvailableDevices = async (
 	client: HTTPClient,
 ): Promise<Device[]> => {
 	const res = await client.fetch("/v1/me/player/devices");
-	return (await res.json() as { devices: Device[] }).devices;
+	return ((await res.json()) as { devices: Device[] }).devices;
 };
 
 export type GetCurrentPlayingTrackOpts = {
@@ -93,7 +96,8 @@ export type GetCurrentPlayingTrackOpts = {
 /**
  * Get the object currently being played on the user's Spotify account.
  *
- * @requires `user-read-currently-playing`
+ * @requires `user-read-currently-playing` \
+ * **The user must have a Spotify Premium subscription.**
  */
 export const getCurrentPlayingTrack = async (
 	client: HTTPClient,
@@ -149,7 +153,8 @@ export type StartResumePlaybackBody = {
 /**
  * Start a new context or resume current playback on the user’s active device.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  */
 export const startPlayback = (
 	client: HTTPClient,
@@ -166,14 +171,16 @@ export const startPlayback = (
 /**
  * Start a new context or resume current playback on the user’s active device.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  */
 export const resumePlayback = startPlayback;
 
 /**
  * Pause playback on the user’s account.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  *
  * @param client Spotify HTTPClient
  * @param deviceId The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
@@ -191,7 +198,8 @@ export const pausePlayback = (
 /**
  * Skips to next track in the user’s queue.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  *
  * @param client Spotify HTTPClient
  * @param deviceId The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
@@ -209,7 +217,8 @@ export const skipToNext = (
 /**
  * Skips to previous track in the user’s queue.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  *
  * @param client Spotify HTTPClient
  * @param deviceId The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
@@ -227,7 +236,8 @@ export const skipToPrevious = (
 /**
  * Seeks to the given position in the user’s currently playing track.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  *
  * @param client Spotify HTTPClient
  * @param positionMs The position in milliseconds to seek to. Must be a positive number. Passing in a position that is greater than the length of the track will cause the player to start playing the next song.
@@ -247,7 +257,8 @@ export const seekToPosition = (
 /**
  * Set the repeat mode for the user's playback.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  *
  * @param client Spotify HTTPClient
  * @param state
@@ -270,7 +281,8 @@ export const setRepeatMode = (
 /**
  * Toggle shuffle on or off for user’s playback.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  *
  * @param client Spotify HTTPClient
  * @param state `true` to turn shuffle on, `false` to turn it off.
@@ -308,7 +320,8 @@ export type GetRecentlyPlayedTracksOpts = {
 /**
  * Get tracks from the current user's recently played tracks.
  *
- * @requires `user-read-recently-played`
+ * @requires `user-read-recently-played` \
+ * **The user must have a Spotify Premium subscription.**
  */
 export const getRecentPlayedTracks = async (
 	client: HTTPClient,
@@ -323,8 +336,8 @@ export const getRecentPlayedTracks = async (
 /**
  * Get the list of objects that make up the user's queue.
  *
- * @requires `user-read-currently-playing`,
-`user-read-playback-state`
+ * @requires `user-read-currently-playing`, `user-read-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  */
 export const getUserQueue = async (client: HTTPClient): Promise<Queue> => {
 	const res = await client.fetch("/v1/me/player/queue");
@@ -334,7 +347,8 @@ export const getUserQueue = async (client: HTTPClient): Promise<Queue> => {
 /**
  * Add an item to the end of the user's current playback queue.
  *
- * @requires `user-modify-playback-state`
+ * @requires `user-modify-playback-state` \
+ * **The user must have a Spotify Premium subscription.**
  *
  * @param client Spotify HTTPClient
  * @param uri The uri of the item to add to the queue. Must be a track or an episode uri.

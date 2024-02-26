@@ -86,7 +86,10 @@ export const saveEpisodes = (
  * @param client Spotify HTTPClient
  * @param episodeId The Spotify ID of the episode
  */
-export const saveEpisode = (client: HTTPClient, episodeId: string): Promise<Response> => {
+export const saveEpisode = (
+	client: HTTPClient,
+	episodeId: string,
+): Promise<Response> => {
 	return saveEpisodes(client, [episodeId]);
 };
 

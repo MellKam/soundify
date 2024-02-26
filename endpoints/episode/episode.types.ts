@@ -105,4 +105,4 @@ export type SavedEpisode = {
 	 * Information about the episode.
 	 */
 	episode: Episode;
-}
+};

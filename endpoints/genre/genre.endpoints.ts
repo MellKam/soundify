@@ -5,7 +5,9 @@ import type { HTTPClient } from "../../client.ts";
  *
  * @param client Spotify HTTPClient
  */
-export const getAvailableGenreSeeds = async (client: HTTPClient): Promise<string[]> => {
+export const getAvailableGenreSeeds = async (
+	client: HTTPClient,
+): Promise<string[]> => {
 	const res = await client.fetch("/v1/recommendations/available-genre-seeds");
 	return ((await res.json()) as { genres: string[] }).genres;
 };
