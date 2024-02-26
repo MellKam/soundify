@@ -72,22 +72,15 @@ export type PagingOptions = {
 	offset?: number;
 };
 
-/**
- * The reason for the restriction.
- *
- * "market" - The content item is not available in the given market. \
- * "product" - The content item is not available for the user's subscription type. \
- * "explicit" - The content item is explicit and the user's account is set to not play explicit content.
- */
-export type RestrictionsReason = "market" | "product" | "explicit";
-
 export type Restrictions = {
 	/**
 	 * The reason for the restriction.
 	 *
-	 * Episodes may be restricted if the content is not available in a given market, to the user's subscription type, or when the user's account is set to not play explicit content.
+	 * "market" - The content item is not available in the given market. \
+	 * "product" - The content item is not available for the user's subscription type. \
+	 * "explicit" - The content item is explicit and the user's account is set to not play explicit content.
 	 */
-	reason: RestrictionsReason;
+	reason: "market" | "product" | "explicit";
 };
 
 /**
@@ -179,4 +172,19 @@ export type Copyright = {
 	 * P = the sound recording (performance) copyright
 	 */
 	type: "C" | "P";
+};
+
+export type MarketOptions = {
+	/**
+	 * An [ISO 3166-1 alpha-2 country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+	 * If a country code is specified, only content that is available in that market will be returned.<br/>
+	 * If a valid user access token is specified in the request header, the country associated with the user account will take priority over this parameter.<br/>
+	 *
+	 * _**Note**: If neither market or user country are provided, the content is considered unavailable for the client._<br/>
+	 * Users can view the country that is associated with their account in the [account settings](https://www.spotify.com/se/account/overview/).
+	 *
+	 * @example "ES"
+	 */
+	// deno-lint-ignore ban-types
+	market?: (string & {}) | "from_token";
 };

@@ -1,34 +1,20 @@
-import type { PagingObject } from "../general.types.ts";
+import type { PagingObject, PagingOptions } from "../general.types.ts";
 import type { Category } from "./category.types.ts";
 import type { HTTPClient } from "../../client.ts";
+import type { Prettify } from "../../shared.ts";
 
-export type GetBrowseCategoriesOpts = {
-	/**
-	 * An ISO 3166-1 alpha-2 country code.
-	 * If a country code is specified, only content that is available in that market will be returned.
-	 */
-	country?: string;
-	/**
-	 * The maximum number of items to return. Minimum: 1. Maximum: 50.
-	 * @default 20
-	 */
-	limit?: number;
-	/**
-	 * The desired language, consisting of an ISO 639-1 language code and an ISO 3166-1 alpha-2 country code, joined by an underscore.
-	 *
-	 * Provide this parameter if you want the category metadata returned in a particular language.
-	 *
-	 * @example "es_MX" - meaning "Spanish (Mexico)".
-	 */
-	locale?: string;
-	/**
-	 * The index of the first item to return.
-	 * Use with limit to get the next set of items.
-	 *
-	 * @default 0
-	 */
-	offset?: number;
-};
+export type GetBrowseCategoriesOptions = Prettify<
+	PagingOptions & {
+		/**
+		 * The desired language, consisting of an [ISO 639-1](http://en.wikipedia.org/wiki/ISO_639-1) language code and an [ISO 3166-1 alpha-2 country code](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2), joined by an underscore.
+		 *
+		 * _**Note**: if `locale` is not supplied, or if the specified language is not available, the category strings returned will be in the Spotify default language (American English)._
+		 *
+		 * @example "es_MX" - meaning "Spanish (Mexico)".
+		 */
+		locale?: string;
+	}
+>;
 
 /**
  * Get a list of categories used to tag items in Spotify
@@ -37,23 +23,26 @@ export type GetBrowseCategoriesOpts = {
  * @param client Spotify HTTPClient
  * @param options Additional option for request
  */
-export const getBrowseCategories = async (
+export async function getBrowseCategories(
 	client: HTTPClient,
-	options?: GetBrowseCategoriesOpts,
-): Promise<PagingObject<Category>> => {
+	options?: GetBrowseCategoriesOptions,
+): Promise<PagingObject<Category>> {
 	const res = await client.fetch("/v1/browse/categories", {
 		query: options,
 	});
 	return (await res.json() as { categories: PagingObject<Category> })
 		.categories;
-};
+}
 
-export type GetBrowseCategoryOpts = {
+export type GetBrowseCategoryOptions = {
 	/**
-	 * An ISO 3166-1 alpha-2 country code.
-	 * Provide this parameter to ensure that the category exists for a particular country.
+	 * The desired language, consisting of an [ISO 639-1](http://en.wikipedia.org/wiki/ISO_639-1) language code and an [ISO 3166-1 alpha-2 country code](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2), joined by an underscore.
+	 *
+	 * _**Note**: if `locale` is not supplied, or if the specified language is not available, the category strings returned will be in the Spotify default language (American English)._
+	 *
+	 * @example "es_MX" - meaning "Spanish (Mexico)".
 	 */
-	country?: string;
+	locale?: string;
 	/**
 	 * The maximum number of items to return. Minimum: 1. Maximum: 50.
 	 * @default 20
@@ -69,13 +58,13 @@ export type GetBrowseCategoryOpts = {
  * @param categoryId The Spotify category ID for the category
  * @param options Additional option for request
  */
-export const getBrowseCategory = async (
+export async function getBrowseCategory(
 	client: HTTPClient,
 	categoryId: string,
-	options?: GetBrowseCategoryOpts,
-): Promise<Category> => {
+	options?: GetBrowseCategoryOptions,
+): Promise<Category> {
 	const res = await client.fetch("/v1/browse/categories/" + categoryId, {
 		query: options,
 	});
 	return res.json() as Promise<Category>;
-};
+}

@@ -2,7 +2,7 @@ import type { ExternalUrls } from "../general.types.ts";
 import type { Track } from "../track/track.types.ts";
 import type { Episode } from "../episode/episode.types.ts";
 
-export type Device = {
+export interface Device {
 	/**
 	 * The device ID. This ID is unique and persistent to some extent. However, this is not guaranteed and any cached device_id should periodically be cleared out and refetched as necessary.
 	 */
@@ -31,9 +31,9 @@ export type Device = {
 	 * If this device can be used to set the volume.
 	 */
 	supports_volume: boolean;
-};
+}
 
-export type Actions = {
+export type Disallows = {
 	/** Interrupting playback. */
 	interrupting_playback?: boolean;
 	/** Pausing. */
@@ -76,7 +76,7 @@ export type Context = {
  */
 export type RepeatMode = "off" | "track" | "context";
 
-export type PlaybackState = {
+export interface CurrentlyPlayingContext {
 	/** The device that is currently active. */
 	device: Device;
 	repeat_state: RepeatMode;
@@ -96,9 +96,9 @@ export type PlaybackState = {
 	 * Allows to update the user interface based on which playback actions are available within the current context.
 	 */
 	actions: {
-		disallows: Actions;
+		disallows: Disallows;
 	};
-};
+}
 
 export type Queue = {
 	/** The currently playing track or episode. */
@@ -107,7 +107,7 @@ export type Queue = {
 	queue: (Track | Episode)[];
 };
 
-export type PlayHistoryObject = {
+export type PlayHistory = {
 	/** The track the user listened to. */
 	track: Track;
 	/** The date and time the track was played. */

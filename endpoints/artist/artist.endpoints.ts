@@ -1,6 +1,10 @@
 import type { HTTPClient } from "../../client.ts";
 import type { Prettify } from "../../shared.ts";
-import type { PagingObject, PagingOptions } from "../general.types.ts";
+import type {
+	MarketOptions,
+	PagingObject,
+	PagingOptions,
+} from "../general.types.ts";
 import type { AlbumGroup, SimplifiedAlbum } from "../album/album.types.ts";
 import type { Track } from "../track/track.types.ts";
 import type { Artist } from "./artist.types.ts";
@@ -11,13 +15,13 @@ import type { Artist } from "./artist.types.ts";
  * @param client Spotify HTTPClient
  * @param artistId Spotify artist ID
  */
-export const getArtist = async (
+export async function getArtist(
 	client: HTTPClient,
 	artistId: string,
-): Promise<Artist> => {
+): Promise<Artist> {
 	const res = await client.fetch("/v1/artists/" + artistId);
 	return res.json() as Promise<Artist>;
-};
+}
 
 /**
  * Get Spotify catalog information for several artists based on their Spotify IDs.
@@ -25,26 +29,21 @@ export const getArtist = async (
  * @param client Spotify HTTPClient
  * @param artistIds List of the Spotify IDs for the artists. Maximum: 50 IDs.
  */
-export const getArtists = async (
+export async function getMultipleArtists(
 	client: HTTPClient,
 	artistIds: string[],
-): Promise<Artist[]> => {
+): Promise<Artist[]> {
 	const res = await client.fetch("/v1/artists", { query: { ids: artistIds } });
 	return ((await res.json()) as { artists: Artist[] }).artists;
-};
+}
 
-export type GetArtistAlbumsOpts = Prettify<
-	PagingOptions & {
+export type GetArtistAlbumsOptions = Prettify<
+	PagingOptions & MarketOptions & {
 		/**
 		 * List of keywords that will be used to filter the response.
 		 * If not supplied, all album types will be returned.
 		 */
 		include_groups?: AlbumGroup[];
-		/**
-		 * An ISO 3166-1 alpha-2 country code.
-		 * If a country code is specified, only content that is available in that market will be returned.
-		 */
-		market?: string;
 	}
 >;
 
@@ -54,16 +53,16 @@ export type GetArtistAlbumsOpts = Prettify<
  * @param client Spotify HTTPClient
  * @param artistId Spotify artist ID
  */
-export const getArtistAlbums = async (
+export async function getArtistAlbums(
 	client: HTTPClient,
 	artistId: string,
-	options?: GetArtistAlbumsOpts,
-): Promise<PagingObject<SimplifiedAlbum>> => {
+	options?: GetArtistAlbumsOptions,
+): Promise<PagingObject<SimplifiedAlbum>> {
 	const res = await client.fetch(`/v1/artists/${artistId}/albums`, {
 		query: options,
 	});
 	return res.json() as Promise<PagingObject<SimplifiedAlbum>>;
-};
+}
 
 /**
  * Get Spotify catalog information about an artist's top tracks by country.
@@ -72,16 +71,17 @@ export const getArtistAlbums = async (
  * @param artistId Spotify artist ID
  * @param market An ISO 3166-1 alpha-2 country code.
  */
-export const getArtistTopTracks = async (
+export async function getArtistTopTracks(
 	client: HTTPClient,
 	artistId: string,
-	market?: string,
-): Promise<Track[]> => {
+	// deno-lint-ignore ban-types
+	market?: (string & {}) | "from_token",
+): Promise<Track[]> {
 	const res = await client.fetch(`/v1/artists/${artistId}/top-tracks`, {
 		query: { market },
 	});
 	return ((await res.json()) as { tracks: Track[] }).tracks;
-};
+}
 
 /**
  * Get Spotify catalog information about artists similar to a given artist.
@@ -90,10 +90,10 @@ export const getArtistTopTracks = async (
  * @param client Spotify HTTPClient
  * @param artistId Spotify artist ID
  */
-export const getArtistRelatedArtists = async (
+export async function getArtistRelatedArtists(
 	client: HTTPClient,
 	artistId: string,
-): Promise<Artist[]> => {
+): Promise<Artist[]> {
 	const res = await client.fetch(`/v1/artists/${artistId}/related-artists`);
 	return ((await res.json()) as { artists: Artist[] }).artists;
-};
+}

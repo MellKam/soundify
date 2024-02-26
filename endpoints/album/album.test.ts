@@ -2,7 +2,7 @@ import { albumSchema, savedAlbumSchema } from "./album.schemas.ts";
 import { client } from "../../test_client.ts";
 import {
 	getAlbum,
-	getAlbums,
+	getMultipleAlbums,
 	getNewReleases,
 	getSavedAlbums,
 } from "./album.endpoints.ts";
@@ -44,7 +44,7 @@ Deno.test("getAlbum", async () => {
 });
 
 Deno.test("getAlbums", async () => {
-	const albums = await getAlbums(client, MOCK_ALBUM_IDS);
+	const albums = await getMultipleAlbums(client, MOCK_ALBUM_IDS);
 	z.array(albumSchema).parse(albums);
 });
 

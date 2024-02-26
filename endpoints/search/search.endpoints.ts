@@ -1,4 +1,4 @@
-import type { PagingObject } from "../general.types.ts";
+import type { MarketOptions, PagingObject } from "../general.types.ts";
 import type { SimplifiedAlbum } from "../album/album.types.ts";
 import type { Artist } from "../artist/artist.types.ts";
 import type { Track } from "../track/track.types.ts";
@@ -7,6 +7,7 @@ import type { HTTPClient } from "../../client.ts";
 import type { SimplifiedAudiobook } from "../audiobook/audiobook.types.ts";
 import type { SimplifiedEpisode } from "../episode/episode.types.ts";
 import type { SimplifiedShow } from "../show/show.types.ts";
+import type { Prettify } from "../../shared.ts";
 
 export type ItemType =
 	| "artist"
@@ -73,33 +74,30 @@ type SearchQueriesFromItemTypes<T extends ItemType[] | ItemType> = Pick<
 	ItemTypeQueries[ItemTypesToSearchResultKeys<T>]
 >;
 
-export type SearchOptions = {
-	/**
-	 * If `include_external=audio` is specified it signals that the client can play externally hosted audio content, and marks the content as playable in the response.
-	 *
-	 * By default externally hosted audio content is marked as unplayable in the response.
-	 */
-	include_external?: "audio";
-	/**
-	 * The maximum number of results to return in each item type.
-	 * Minimum: 1. Maximum: 50.
-	 *
-	 * @default 20
-	 */
-	limit?: number;
-	/**
-	 * An ISO 3166-1 alpha-2 country code.
-	 * If a country code is specified, only content that is available in that market will be returned.
-	 */
-	market?: string;
-	/**
-	 * The index of the first result to return. Use with limit to get the next page of search results.
-	 * Minimum 0. Maximum 1000.
-	 *
-	 * @default 0
-	 */
-	offset?: number;
-};
+export type SearchOptions = Prettify<
+	{
+		/**
+		 * If `include_external=audio` is specified it signals that the client can play externally hosted audio content, and marks the content as playable in the response.
+		 *
+		 * By default externally hosted audio content is marked as unplayable in the response.
+		 */
+		include_external?: "audio";
+		/**
+		 * The maximum number of results to return in each item type.
+		 * Minimum: 1. Maximum: 50.
+		 *
+		 * @default 20
+		 */
+		limit?: number;
+		/**
+		 * The index of the first result to return. Use with limit to get the next page of search results.
+		 * Minimum 0. Maximum 1000.
+		 *
+		 * @default 0
+		 */
+		offset?: number;
+	} & MarketOptions
+>;
 
 /**
  * Get Spotify catalog information about albums, artists, playlists, tracks, shows, episodes or audiobooks that match a keyword string.
@@ -109,12 +107,12 @@ export type SearchOptions = {
  * @param query Your search query
  * @param options Additional options for request
  */
-export const search = async <T extends ItemType[] | ItemType>(
+export async function search<T extends ItemType[] | ItemType>(
 	client: HTTPClient,
 	type: T,
 	query: string | SearchQueriesFromItemTypes<T>,
 	options?: SearchOptions,
-): Promise<Pick<SearchResponse, ItemTypesToSearchResultKeys<T>>> => {
+): Promise<Pick<SearchResponse, ItemTypesToSearchResultKeys<T>>> {
 	const q = typeof query === "string" ? query : Object.entries(query)
 		.map(([key, value]) => (key === "q" ? value : `${key}:${value}`))
 		.join(" ");
@@ -123,4 +121,4 @@ export const search = async <T extends ItemType[] | ItemType>(
 		query: { q, type, ...options },
 	});
 	return res.json() as Promise<SearchResponse>;
-};
+}

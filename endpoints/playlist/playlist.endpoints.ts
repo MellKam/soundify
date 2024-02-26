@@ -1,5 +1,10 @@
-import type { NonNullableObject, Prettify } from "../../shared.ts";
-import type { Image, PagingObject, PagingOptions } from "../general.types.ts";
+import type { Prettify } from "../../shared.ts";
+import type {
+	Image,
+	MarketOptions,
+	PagingObject,
+	PagingOptions,
+} from "../general.types.ts";
 import type {
 	FeaturedPlaylists,
 	Playlist,
@@ -9,7 +14,7 @@ import type {
 } from "./playlist.types.ts";
 import type { HTTPClient } from "../../client.ts";
 
-export type PlaylistFieldsOpts = {
+type PlaylistFieldsOptions = {
 	/**
 	 * List of item types that your client supports besides the default track type.
 	 */
@@ -21,14 +26,8 @@ export type PlaylistFieldsOpts = {
 	fields?: string;
 };
 
-export type GetPlaylistOpts = Prettify<
-	PlaylistFieldsOpts & {
-		/**
-		 * An ISO 3166-1 alpha-2 country code.
-		 * If a country code is specified, only content that is available in that market will be returned.
-		 */
-		market?: string;
-	}
+export type GetPlaylistOptions = Prettify<
+	PlaylistFieldsOptions & MarketOptions
 >;
 
 /**
@@ -38,16 +37,16 @@ export type GetPlaylistOpts = Prettify<
  * @param playlistId The Spotify ID of the playlist
  * @param options Additional options for request
  */
-export const getPlaylist = async (
+export async function getPlaylist(
 	client: HTTPClient,
 	playlistId: string,
-	options?: GetPlaylistOpts,
-): Promise<Playlist> => {
+	options?: GetPlaylistOptions,
+): Promise<Playlist> {
 	const res = await client.fetch("/v1/playlists/" + playlistId, {
 		query: options,
 	});
 	return res.json() as Promise<Playlist>;
-};
+}
 
 export type ChangePlaylistDetailsBody = {
 	/**
@@ -73,87 +72,70 @@ export type ChangePlaylistDetailsBody = {
 /**
  * Change a playlist's name and public/private state. (The user must, of course, own the playlist.)
  *
+ * @requires `playlist-modify-public` or `playlist-modify-private`
+ *
  * @param client Spotify HTTPClient
  * @param playlistId The Spotify ID of the playlist.
  * @param body Changes you want to make to the playlist
  */
-export const changePlaylistDetails = (
+export function changePlaylistDetails(
 	client: HTTPClient,
 	playlistId: string,
 	body: ChangePlaylistDetailsBody,
-): Promise<Response> => {
+): Promise<Response> {
 	return client.fetch("/v1/playlist/" + playlistId, { method: "PUT", body });
-};
+}
 
-export type GetPlaylistTracksOpts = Prettify<
-	& PlaylistFieldsOpts
+export type GetPlaylistTracksOptions = Prettify<
+	& PlaylistFieldsOptions
 	& PagingOptions
-	& {
-		/**
-		 * An ISO 3166-1 alpha-2 country code.
-		 * If a country code is specified, only content that is available in that market will be returned.
-		 */
-		market?: string;
-	}
+	& MarketOptions
 >;
 
 /**
  * Get full details of the items of a playlist owned by a Spotify user
  *
+ * @requires `playlist-read-private` if the playlist is private
+ *
  * @param client Spotify HTTPClient
  * @param playlistId The Spotify ID of the playlist.
  * @param options Additional options for request
  */
-export const getPlaylistTracks = async (
+export async function getPlaylistTracks(
 	client: HTTPClient,
 	playlistId: string,
-	options?: GetPlaylistTracksOpts,
-): Promise<PagingObject<PlaylistTrack>> => {
+	options?: GetPlaylistTracksOptions,
+): Promise<PagingObject<PlaylistTrack>> {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		query: options,
 	});
 	return res.json() as Promise<PagingObject<PlaylistTrack>>;
-};
+}
 
 /**
  * Add one or more items to a user's playlist
+ *
+ * @requires `playlist-modify-public` or `playlist-modify-private`
  *
  * @param client Spotify HTTPClient
  * @param playlistId The Spotify ID of the playlist
  * @param uris List of Spotify URIs to add, can be track or episode URIs
  * @param position The position to insert the items, a zero-based index
  */
-export const addItemsToPlaylist = async (
+export async function addItemsToPlaylist(
 	client: HTTPClient,
 	playlistId: string,
 	uris: string[],
 	position?: number,
-): Promise<SnapshotResponse> => {
+): Promise<SnapshotResponse> {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "POST",
 		query: { uris, position },
 	});
 	return res.json() as Promise<SnapshotResponse>;
-};
+}
 
-/**
- * Add one item to a user's playlist
- *
- * @param client Spotify HTTPClient
- * @param playlistId The Spotify ID of the playlist
- * @param uri Spotify URI to add, can be track or episode URI
- * @param position The position to insert the item, a zero-based index
- */
-export const addItemToPlaylist = (
-	client: HTTPClient,
-	playlistId: string,
-	uri: string,
-	position?: number,
-): Promise<SnapshotResponse> => {
-	return addItemsToPlaylist(client, playlistId, [uri], position);
-};
-
-export type ReorderPlaylistItemsOpts = {
+export type ReorderPlaylistItemsOptions = {
 	/**
 	 * The position of the first item to be reordered.
 	 */
@@ -176,56 +158,62 @@ export type ReorderPlaylistItemsOpts = {
 /**
  * Reorder items in a playlist depending on the request's parameters.
  *
+ * @requires `playlist-modify-public` or `playlist-modify-private`
+ *
  * @param client Spotify HTTPClient
  * @param playlistId The Spotify ID of the playlist.
  * @param options Additional options for request
  */
-export const reorderPlaylistItems = async (
+export async function reorderPlaylistItems(
 	client: HTTPClient,
 	playlistId: string,
-	options?: ReorderPlaylistItemsOpts,
-): Promise<SnapshotResponse> => {
+	options: ReorderPlaylistItemsOptions,
+): Promise<SnapshotResponse> {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "PUT",
 		body: options,
 	});
 	return res.json() as Promise<SnapshotResponse>;
-};
+}
 
 /**
  * Replace items in a playlist. Replacing items in a playlist will overwrite its existing items.
  * This operation can be used for replacing or clearing items in a playlist.
  *
+ * @requires `playlist-modify-public` or `playlist-modify-private`
+ *
  * @param client Spotify HTTPClient
  * @param playlistId The Spotify ID of the playlist.
  * @param uris List of Spotify URIs to set, can be track or episode URIs. A maximum of 100 items can be set in one request.
  */
-export const replacePlaylistItems = async (
+export async function replacePlaylistItems(
 	client: HTTPClient,
 	playlistId: string,
 	uris: string[],
-): Promise<SnapshotResponse> => {
+): Promise<SnapshotResponse> {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "PUT",
 		body: { uris },
 	});
 	return res.json() as Promise<SnapshotResponse>;
-};
+}
 
 /**
  * Remove one or more items from a user's playlist.
+ *
+ * @requires `playlist-modify-public` or `playlist-modify-private`
  *
  * @param client Spotify HTTPClient
  * @param playlistId The Spotify ID of the playlist.
  * @param uris List of Spotify URIs to set, can be track or episode URIs. A maximum of 100 items can be set in one request.
  * @param snapshotId The playlist's snapshot ID against which you want to make the changes.
  */
-export const removePlaylistItems = async (
+export async function removePlaylistItems(
 	client: HTTPClient,
 	playlistId: string,
 	uris: string[],
 	snapshotId?: string,
-): Promise<SnapshotResponse> => {
+): Promise<SnapshotResponse> {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/tracks`, {
 		method: "DELETE",
 		body: {
@@ -234,56 +222,43 @@ export const removePlaylistItems = async (
 		},
 	});
 	return res.json() as Promise<SnapshotResponse>;
-};
-
-/**
- * Remove one item from a user's playlist.
- *
- * @param client Spotify HTTPClient
- * @param playlistId The Spotify ID of the playlist.
- * @param uri Spotify URI to set, can be track or episode URIs.
- * @param snapshotId The playlist's snapshot ID against which you want to make the changes.
- */
-export const removePlaylistItem = (
-	client: HTTPClient,
-	playlistId: string,
-	uri: string,
-	snapshotId?: string,
-): Promise<SnapshotResponse> => {
-	return removePlaylistItems(client, playlistId, [uri], snapshotId);
-};
+}
 
 /**
  * Get a list of the playlists owned or followed by the current Spotify user.
  *
+ * @requires `playlist-read-private` if the playlist is private
+ *
  * @param client Spotify HTTPClient
  * @param options Additional options for request
  */
-export const getCurrentUsersPlaylists = async (
+export async function getCurrentUsersPlaylists(
 	client: HTTPClient,
 	options?: PagingOptions,
-): Promise<PagingObject<SimplifiedPlaylist>> => {
+): Promise<PagingObject<SimplifiedPlaylist>> {
 	const res = await client.fetch("/v1/me/playlists", { query: options });
 	return res.json() as Promise<PagingObject<SimplifiedPlaylist>>;
-};
+}
 
 /**
  * Get a list of the playlists owned or followed by a Spotify user.
+ *
+ * @requires `playlist-read-private` if the playlist is private or `playlist-read-collaborative` if the playlist is collaborative
  *
  * @param client Spotify HTTPClient
  * @param userId The user's Spotify user ID.
  * @param options Additional options for request
  */
-export const getUsersPlaylists = async (
+export async function getUserPlaylists(
 	client: HTTPClient,
 	userId: string,
 	options?: PagingOptions,
-): Promise<PagingObject<SimplifiedPlaylist>> => {
+): Promise<PagingObject<SimplifiedPlaylist>> {
 	const res = await client.fetch(`/v1/users/${userId}/playlists`, {
 		query: options,
 	});
 	return res.json() as Promise<PagingObject<SimplifiedPlaylist>>;
-};
+}
 
 export type CreatePlaylistBody = {
 	/**
@@ -291,7 +266,7 @@ export type CreatePlaylistBody = {
 	 */
 	name: string;
 	/**
-	 * Defaults to true. If true the playlist will be public, if false it will be private. To be able to create private playlists, the user must have granted the playlist-modify-private scope
+	 * Defaults to true. If true the playlist will be public, if false it will be private. To be able to create private playlists, the user must have granted the `playlist-modify-private` scope
 	 */
 	public?: boolean;
 	/**
@@ -306,41 +281,34 @@ export type CreatePlaylistBody = {
 
 /**
  * Create a playlist for a Spotify user. (The playlist will be empty until you add tracks.)
+ * Each user is generally limited to a maximum of 11000 playlists.
+ *
+ * @requires `playlist-modify-public` or `playlist-modify-private`
  *
  * @param client Spotify HTTPClient
  * @param userId The user's Spotify user ID.
  * @param body Data that will be assinged to new playlist
  */
-export const createPlaylist = async (
+export async function createPlaylist(
 	client: HTTPClient,
 	userId: string,
 	body: CreatePlaylistBody,
-): Promise<Playlist> => {
+): Promise<Playlist> {
 	const res = await client.fetch(`/v1/users/${userId}/playlists`, {
 		method: "POST",
 		body,
 	});
 	return res.json() as Promise<Playlist>;
-};
+}
 
-export type GetFeaturedPlaylistsOpts = Prettify<
+export type GetFeaturedPlaylistsOptions = Prettify<
 	PagingOptions & {
-		/**
-		 * A country: an ISO 3166-1 alpha-2 country code. Provide this parameter if you want the list of returned items to be relevant to a particular country. If omitted, the returned items will be relevant to all countries.
-		 */
-		country?: string;
 		/**
 		 * The desired language, consisting of a lowercase ISO 639-1 language code and an uppercase ISO 3166-1 alpha-2 country code, joined by an underscore. For example: es_MX, meaning "Spanish (Mexico)". Provide this parameter if you want the results returned in a particular language (where available).
 		 *
 		 * @example "sv_SE"
 		 */
 		locale?: string;
-		/**
-		 * A timestamp in ISO 8601 format: yyyy-MM-ddTHH:mm:ss. Use this parameter to specify the user's local time to get results tailored for that specific date and time in the day. If not provided, the response defaults to the current UTC time. Example: "2014-10-23T09:00:00" for a user whose local time is 9AM. If there were no featured playlists (or there is no data) at the specified time, the response will revert to the current UTC time.
-		 *
-		 * @example "2014-10-23T09:00:00"
-		 */
-		timestamp?: string;
 	}
 >;
 
@@ -350,25 +318,15 @@ export type GetFeaturedPlaylistsOpts = Prettify<
  * @param client Spotify HTTPClient
  * @param options Additional options for request
  */
-export const getFeaturedPlaylists = async (
+export async function getFeaturedPlaylists(
 	client: HTTPClient,
-	options?: GetFeaturedPlaylistsOpts,
-): Promise<FeaturedPlaylists> => {
+	options?: GetFeaturedPlaylistsOptions,
+): Promise<FeaturedPlaylists> {
 	const res = await client.fetch("/v1/browse/featured-playlists", {
 		query: options,
 	});
 	return res.json() as Promise<FeaturedPlaylists>;
-};
-
-export type GetCategorysPlaylistsOpts = Prettify<
-	PagingOptions & {
-		/**
-		 * A country: an ISO 3166-1 alpha-2 country code. Provide this parameter to ensure that the category exists for a particular country.
-		 * @example "SE"
-		 */
-		country: string;
-	}
->;
+}
 
 /**
  * Get a list of Spotify playlists tagged with a particular category.
@@ -377,42 +335,44 @@ export type GetCategorysPlaylistsOpts = Prettify<
  * @param categoryId The Spotify category ID for the category.
  * @param options Additional options for request
  */
-export const getCategoryPlaylists = async (
+export async function getCategoryPlaylists(
 	client: HTTPClient,
 	categoryId: string,
-	options?: GetCategorysPlaylistsOpts,
-): Promise<FeaturedPlaylists> => {
+	options?: PagingOptions,
+): Promise<FeaturedPlaylists> {
 	const res = await client.fetch(
 		`/v1/browse/categories/${categoryId}/playlists`,
 		{ query: options },
 	);
 	return res.json() as Promise<FeaturedPlaylists>;
-};
+}
 
 /**
  * Get the current image associated with a specific playlist.
  *
  * @param client Spotify HTTPClient
  */
-export const getPlaylistCoverImage = async (
+export async function getPlaylistCoverImage(
 	client: HTTPClient,
 	playlistId: string,
-): Promise<NonNullableObject<Image>[]> => {
+): Promise<Image[]> {
 	const res = await client.fetch(`/v1/playlists/${playlistId}/images`);
-	return res.json() as Promise<NonNullableObject<Image>[]>;
-};
+	return res.json() as Promise<Image[]>;
+}
 
 /**
  * Upload custom images to the playlist.
  *
+ * @requires `ugc-image-upload`, `playlist-modify-public` or `playlist-modify-private`
+ *
  * @param playlistId The Spotify ID of the playlist.
  * @param image The image should contain a Base64 encoded JPEG image data, maximum payload size is 256 KB.
  */
-export const uploadPlaylistCoverImage = (
+export function uploadPlaylistCoverImage(
 	client: HTTPClient,
 	playlistId: string,
 	image: string,
-): Promise<Response> => {
+): Promise<Response> {
 	return client.fetch(`/v1/playlists/${playlistId}/images`, {
 		method: "PUT",
 		headers: {
@@ -420,4 +380,4 @@ export const uploadPlaylistCoverImage = (
 		},
 		body: image,
 	});
-};
+}

@@ -3,11 +3,11 @@ import type { HTTPClient } from "../../client.ts";
 /**
  * Retrieve a list of available genres seed parameter values for recommendations.
  *
- * @param client Spotify HTTPClient
+ * @example ['alternative', 'samba', 'rock', ...]
  */
-export const getAvailableGenreSeeds = async (
+export async function getAvailableGenreSeeds(
 	client: HTTPClient,
-): Promise<string[]> => {
+): Promise<string[]> {
 	const res = await client.fetch("/v1/recommendations/available-genre-seeds");
 	return ((await res.json()) as { genres: string[] }).genres;
-};
+}

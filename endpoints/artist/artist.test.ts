@@ -1,8 +1,8 @@
 import {
 	getArtist,
 	getArtistAlbums,
-	getArtists,
 	getArtistTopTracks,
+	getMultipleArtists,
 } from "./artist.endpoints.ts";
 import { client } from "../../test_client.ts";
 import { artistSchema } from "./artist.schemas.ts";
@@ -30,7 +30,7 @@ Deno.test("getArtist", async () => {
 });
 
 Deno.test("getArtists", async () => {
-	const artists = await getArtists(client, MOCK_ARTIST_IDS);
+	const artists = await getMultipleArtists(client, MOCK_ARTIST_IDS);
 	z.array(artistSchema).parse(artists);
 });
 

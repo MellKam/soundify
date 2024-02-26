@@ -9,95 +9,51 @@ import type {
 } from "../general.types.ts";
 
 export interface SimplifiedAudiobook {
-	/**
-	 * The author(s) for the audiobook.
-	 */
+	/** @description The author(s) for the audiobook. */
 	authors: Author[];
-	/**
-	 * A list of the countries in which the audiobook can be played.
-	 */
+	/** @description A list of the countries in which the audiobook can be played, identified by their [ISO 3166-1 alpha-2](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. */
 	available_markets: string[];
-	/**
-	 * The copyright statements of the audiobook.
-	 */
+	/** @description The copyright statements of the audiobook. */
 	copyrights: Copyright[];
-	/**
-	 * The description of the audiobook without html tags.
-	 */
+	/** @description A description of the audiobook. HTML tags are stripped away from this field, use `html_description` field in case HTML tags are needed. */
 	description: string;
-	/**
-	 * The description of the audiobook with html tags.
-	 */
+	/** @description A description of the audiobook. This field may contain HTML tags. */
 	html_description: string;
 	/**
-	 * The edition of the audiobook.
+	 * @description The edition of the audiobook.
+	 *
+	 * @example "Unabridged"
 	 */
 	edition: string;
-	/**
-	 * Whether or not the audiobook has explicit lyrics.
-	 */
+	/** @description Whether or not the audiobook has explicit content (true = yes it does; false = no it does not OR unknown). */
 	explicit: boolean;
-	/**
-	 * External URLs for this audiobook.
-	 */
+	/** @description External URLs for this audiobook. */
 	external_urls: ExternalUrls;
-	/**
-	 * A link to the Web API endpoint providing full details of the audiobook.
-	 */
+	/** @description A link to the Web API endpoint providing full details of the audiobook. */
 	href: string;
-	/**
-	 * The Spotify ID for the audiobook.
-	 */
+	/** @description The [Spotify ID](/documentation/web-api/concepts/spotify-uris-ids) for the audiobook. */
 	id: string;
-	/**
-	 * Images of the audiobook in various sizes, widest first.
-	 */
+	/** @description The cover art for the audiobook in various sizes, widest first. */
 	images: Image[];
-	/**
-	 * A list of the languages used in the audiobook, identified by their ISO 639-1 code.
-	 */
+	/** @description A list of the languages used in the audiobook, identified by their [ISO 639](https://en.wikipedia.org/wiki/ISO_639) code. */
 	languages: string[];
-	/**
-	 * The media type of the audiobook.
-	 */
+	/** @description The media type of the audiobook. */
 	media_type: string;
-	/**
-	 * The name of the audiobook.
-	 */
+	/** @description The name of the audiobook. */
 	name: string;
-	/**
-	 * The narrator(s) for the audiobook.
-	 */
+	/** @description The narrator(s) for the audiobook. */
 	narrators: Narrator[];
-	/**
-	 * The publisher of the audiobook.
-	 */
+	/** @description The publisher of the audiobook. */
 	publisher: string;
+	/** @description The object type. */
 	type: "audiobook";
-	/**
-	 * The Spotify URI for the audiobook.
-	 */
+	/** @description The [Spotify URI](/documentation/web-api/concepts/spotify-uris-ids) for the audiobook. */
 	uri: string;
-	/**
-	 * The number of chapters in this audiobook.
-	 */
+	/** @description The number of chapters in this audiobook. */
 	total_chapters: number;
 }
 
 export interface Audiobook extends SimplifiedAudiobook {
-	/**
-	 * The chapters of the audiobook.
-	 */
+	/** @description The chapters of the audiobook. */
 	chapters: PagingObject<SimplifiedChapter>;
 }
-
-export type SavedAudiobook = {
-	/**
-	 * The date and time the audiobook was saved Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with a zero offset: YYYY-MM-DDTHH:MM:SSZ.
-	 */
-	added_at: string;
-	/**
-	 * Information about the audiobook.
-	 */
-	audiobook: SimplifiedAudiobook;
-};
