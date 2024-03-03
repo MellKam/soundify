@@ -3,7 +3,8 @@
 	"version": "1.0.0",
 	"exports": {
 		".": "./mod.ts",
-		"./pagination": "./pagination.ts"
+		"./pagination": "./pagination.ts",
+		"./auth": "./auth.ts"
 	},
 	"imports": {
 		"zod": "https://deno.land/x/zod@v3.22.4/mod.ts",

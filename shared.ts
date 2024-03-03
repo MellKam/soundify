@@ -8,16 +8,6 @@ export type RequireAtLeastOne<T> = {
 		& Partial<Pick<T, Exclude<keyof T, K>>>;
 }[keyof T];
 
-export type SearchParam =
-	| string
-	| number
-	| boolean
-	| string[]
-	| number[]
-	| boolean[]
-	| undefined;
-export type SearchParams = Record<string, SearchParam>;
-
 export type Prettify<T> =
 	& {
 		[K in keyof T]: T[K];

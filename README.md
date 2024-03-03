@@ -180,21 +180,20 @@ authorization.
 ```ts
 import { getCurrentUser, SpotifyClient } from "@soundify/web-api";
 
-const refresher = () => {
-	// This function should return a new access token
-	// You can use any library you want to refresh the token
-	// Or even make it yourself, we don't care
-	return Promise.resolve("YOUR_NEW_ACCESS_TOKEN");
-};
-
-const accessToken = await refresher();
-const client = new SpotifyClient(accessToken, { refresher });
+// if you don't have access token yet, you can pass null to first argument
+const client = new SpotifyClient(null, { 
+	// but you have to provide a function that will return a new access token
+	refresher: () => {
+	  return Promise.resolve("YOUR_NEW_ACCESS_TOKEN");
+	} 
+});
 
 const me = await getCurrentUser(client);
+// client will call your refresher to get the token 
+// and only then make the request
 console.log(me);
 
-// wait some time to expire the token ...
-// 2000 YEARS LATER 🧽
+// let's wait some time to expire the token ...
 
 const me = await getCurrentUser(client);
 // client will receive 401 and call your refresher to get new token

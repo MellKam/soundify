@@ -1,4 +1,12 @@
-import type { SearchParams } from "./shared.ts";
+type SearchParam =
+	| string
+	| number
+	| boolean
+	| string[]
+	| number[]
+	| boolean[]
+	| undefined;
+type SearchParams = Record<string, SearchParam>;
 
 /**
  * @see https://developer.spotify.com/documentation/web-api/concepts/api-calls#regular-error-object
@@ -11,42 +19,53 @@ export type RegularErrorObject = {
 	};
 };
 
+const isRegularErrorObject = (
+	obj: unknown,
+): obj is RegularErrorObject => {
+	if (typeof obj !== "object" || obj === null) return false;
+	const error = (obj as RegularErrorObject).error;
+	if (typeof error !== "object" || error === null) return false;
+	return (
+		typeof error.message === "string" &&
+		typeof error.status === "number" &&
+		(error.reason === undefined || typeof error.reason === "string")
+	);
+};
+
 export class SpotifyError extends Error {
 	name = "SpotifyError";
 
 	constructor(
 		message: string,
 		public readonly response: Response,
-		public readonly body: RegularErrorObject | string | null,
+		public readonly body: RegularErrorObject | string,
 		options?: ErrorOptions,
 	) {
 		super(message, options);
 	}
 
-	get url(): string {
-		return this.response.url;
-	}
-
+	/**
+	 * Shorthand for `error.response.status`
+	 */
 	get status(): number {
 		return this.response.status;
 	}
 }
 
 const APP_JSON = "application/json";
-const CONTENT_TYPE = "Content-Type";
 
-const getBodyMessage = (body: RegularErrorObject | string | null) => {
-	if (body === null) return null;
+const getBodyMessage = (
+	body: RegularErrorObject | string,
+): string => {
 	if (typeof body === "string") return body;
-	return (
-		body.error.message + (body.error.reason ? ` (${body.error.reason})` : "")
-	);
+	return body.error.message +
+		(body.error.reason ? ` (${body.error.reason})` : "");
 };
 
-const createSpotifyError = async (
+export async function createSpotifyError(
 	response: Response,
 	options?: ErrorOptions,
-) => {
+): Promise<SpotifyError> {
 	let message = response.statusText
 		? `${response.status} ${response.statusText}`
 		: response.status.toString();
@@ -56,21 +75,19 @@ const createSpotifyError = async (
 		message += ` (${urlWithoutQuery})`;
 	}
 
-	let body: RegularErrorObject | string | null = null;
+	let body: RegularErrorObject | string = "";
 
 	if (response.body && response.type !== "opaque") {
-		try {
-			body = await response.text();
-			const contentType = response.headers.get(CONTENT_TYPE);
-
-			if (
-				contentType &&
-				(contentType === APP_JSON || contentType.split(";")[0] === APP_JSON)
-			) {
-				body = JSON.parse(body);
+		const _body = await response.text().catch(() => null);
+		if (_body) {
+			try {
+				const json = JSON.parse(_body);
+				if (isRegularErrorObject(json)) {
+					body = json;
+				}
+			} catch (_) {
+				body = _body;
 			}
-		} catch (_) {
-			/* Ignore errors */
 		}
 
 		const bodyMessage = getBodyMessage(body);
@@ -80,18 +97,23 @@ const createSpotifyError = async (
 	}
 
 	return new SpotifyError(message, response, body, options);
-};
+}
 
 export interface FetchLikeOptions extends Omit<RequestInit, "body"> {
 	query?: SearchParams;
 	body?: BodyInit | null | Record<string, unknown> | unknown[];
 }
 
-type FetchLike = (
-	resource: URL,
-	options: FetchLikeOptions,
+interface MiddlewareOptions extends Omit<RequestInit, "headers"> {
+	query?: SearchParams;
+	headers: Headers;
+}
+
+type MiddlewareHandler = (
+	url: URL,
+	options: MiddlewareOptions,
 ) => Promise<Response>;
-export type Middleware = (next: FetchLike) => FetchLike;
+export type Middleware = (next: MiddlewareHandler) => MiddlewareHandler;
 
 /**
  * Interface for making HTTP requests to the Spotify API.
@@ -124,19 +146,53 @@ export type SpotifyClinetOptions = {
 	 */
 	refresher?: () => Promise<string>;
 	/**
+	 * Weather to wait for rate limit or not. \
+	 * Function can be used to decide dynamically based on the `retryAfter` time in seconds.
+	 *
 	 * @default false
 	 */
-	waitForRateLimit?: boolean | ((retryAfter: number) => boolean);
+	waitForRateLimit?:
+		| boolean
+		| ((retryAfter: number) => boolean);
+	/**
+	 * @example
+	 * ```ts
+	 * const middleware: Middleware = (next) => (url, options) => {
+	 *   options.headers.set("X-Custom-Header", "custom-value");
+	 *   return next(url, options);
+	 * }
+	 *
+	 * const client = new SpotifyClient("YOUR_ACCESS_TOKEN", {
+	 *   middlewares: [middleware]
+	 * });
+	 * ```
+	 */
 	middlewares?: Middleware[];
 };
 
+const createFailedToAuthorizeError = () =>
+	new Error(
+		"[SpotifyClient] accessToken or refresher is required to make requests.",
+	);
+
 export class SpotifyClient implements HTTPClient {
 	private readonly baseUrl: string;
+	private refreshInProgress: Promise<void> | null = null;
 
+	constructor(accessToken: string, options?: SpotifyClinetOptions);
 	constructor(
-		private accessToken: string,
+		accessToken: null,
+		options:
+			& SpotifyClinetOptions
+			& Required<Pick<SpotifyClinetOptions, "refresher">>,
+	);
+	constructor(
+		private accessToken: string | null,
 		private readonly options: SpotifyClinetOptions = {},
 	) {
+		if (!accessToken && !options.refresher) {
+			throw createFailedToAuthorizeError();
+		}
 		this.baseUrl = options.baseUrl
 			? options.baseUrl
 			: "https://api.spotify.com/";
@@ -158,36 +214,61 @@ export class SpotifyClient implements HTTPClient {
 		const isBodyJSON = !!opts.body &&
 			(isPlainObject(opts.body) || Array.isArray(opts.body));
 		if (isBodyJSON) {
-			headers.set(CONTENT_TYPE, APP_JSON);
+			headers.set("Content-Type", APP_JSON);
 		}
 
 		const body = isBodyJSON
 			? JSON.stringify(opts.body)
 			: (opts.body as BodyInit | null | undefined);
 
-		let isRefreshed = false;
-
 		const wrappedFetch = (this.options.middlewares || []).reduceRight(
 			(next, mw) => mw(next),
-			(this.options.fetch || globalThis.fetch) as FetchLike,
+			(this.options.fetch || globalThis.fetch) as MiddlewareHandler,
 		);
 
+		let isRefreshed = false;
+
+		if (!this.accessToken && !this.options.refresher) {
+			throw createFailedToAuthorizeError();
+		}
+
+		const getRefreshPromise = () => {
+			if (!this.options.refresher) return null;
+			if (this.refreshInProgress === null) {
+				this.refreshInProgress = new Promise((res, rej) => {
+					this.options.refresher!()
+						.then((newAccessToken) => {
+							this.accessToken = newAccessToken;
+							res();
+						})
+						.catch(rej)
+						.finally(() => this.refreshInProgress = null);
+				});
+			}
+
+			return this.refreshInProgress;
+		};
+
 		const recursiveFetch = async (): Promise<Response> => {
+			if (!this.accessToken && !isRefreshed) {
+				await getRefreshPromise();
+				isRefreshed = true;
+			}
 			headers.set("Authorization", "Bearer " + this.accessToken);
 
 			const res = await wrappedFetch(url, { ...opts, body, headers });
-
 			if (res.ok) return res;
 
 			if (res.status === 401 && this.options.refresher && !isRefreshed) {
-				this.accessToken = await this.options.refresher();
+				await getRefreshPromise();
 				isRefreshed = true;
 				return recursiveFetch();
 			}
 
 			if (res.status === 429) {
 				// time in seconds
-				const retryAfter = Number(res.headers.get("Retry-After")) || undefined;
+				const value = res.headers.get("Retry-After");
+				const retryAfter = value ? parseInt(value) || undefined : undefined;
 
 				if (retryAfter) {
 					const waitForRateLimit =
@@ -199,9 +280,8 @@ export class SpotifyClient implements HTTPClient {
 						await new Promise((resolve) =>
 							setTimeout(resolve, retryAfter * 1000)
 						);
+						return recursiveFetch();
 					}
-
-					return recursiveFetch();
 				}
 			}
 

@@ -47,18 +47,13 @@ const refresher = async () => {
 	return data.access_token;
 };
 
-const refreshOrGetCachedToken = async () => {
-	try {
-		const token = await Deno.readTextFile("/tmp/soundify_test_cache.txt");
-		return token;
-	} catch (_) {
-		return await refresher();
-	}
-};
-
-const accessToken = await refreshOrGetCachedToken();
-
-export const client = new SpotifyClient(accessToken, {
+export const client = new SpotifyClient(null, {
 	waitForRateLimit: true,
-	refresher,
+	refresher: () => {
+		try {
+			return Deno.readTextFile("/tmp/soundify_test_cache.txt");
+		} catch (_) {
+			return refresher();
+		}
+	},
 });

@@ -7,7 +7,6 @@ Deno.test("test endpoint exports", async () => {
 		new Set([
 			...EXPECTED_ENDPOINTS_MODULE_EXPORTS,
 			...EXPECTED_CLIENT_MODULE_EXPORTS,
-			...EXPECTED_AUTH_MODULE_EXPORTS,
 		]),
 	);
 });
@@ -148,4 +147,3 @@ const EXPECTED_ENDPOINTS_MODULE_EXPORTS = [
 ];
 
 const EXPECTED_CLIENT_MODULE_EXPORTS = ["SpotifyClient", "SpotifyError"];
-const EXPECTED_AUTH_MODULE_EXPORTS = ["SPOTIFY_AUTH_URL", "OAUTH_SCOPES"];

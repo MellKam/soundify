@@ -17,15 +17,22 @@
 	"exports": {
 		".": {
 			"import": "./dist/mod.js",
-			"require": "./dist/mod.cjs"
+			"require": "./dist/mod.cjs",
+			"types": "./dist/mod.d.ts"
 		},
 		"./pagination": {
 			"import": "./dist/pagination.js",
-			"require": "./dist/pagination.cjs"
+			"require": "./dist/pagination.cjs",
+			"types": "./dist/pagination.d.ts"
+		},
+		"./auth": {
+			"import": "./dist/auth.js",
+			"require": "./dist/auth.cjs",
+			"types": "./dist/auth.d.ts"
 		}
 	},
 	"scripts": {
-		"build": "tsup ./mod.ts ./pagination.ts --format esm,cjs --minify --dts --out-dir dist && rm ./dist/*.d.cts"
+		"build": "tsup ./mod.ts ./pagination.ts ./auth.ts --format esm,cjs --minify --dts --out-dir dist && rm ./dist/*.d.cts"
 	},
 	"devDependencies": {
 		"all-contributors-cli": "6.26.1",
