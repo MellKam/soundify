@@ -49,9 +49,9 @@ const refresher = async () => {
 
 export const client = new SpotifyClient(null, {
 	waitForRateLimit: true,
-	refresher: () => {
+	refresher: async () => {
 		try {
-			return Deno.readTextFile("/tmp/soundify_test_cache.txt");
+			return await Deno.readTextFile("/tmp/soundify_test_cache.txt");
 		} catch (_) {
 			return refresher();
 		}
