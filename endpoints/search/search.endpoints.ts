@@ -17,7 +17,7 @@ export type ItemType =
 	| "episode"
 	| "audiobook";
 
-type ItemTypeToResultKey = {
+interface ItemTypeToResultKey {
 	album: "albums";
 	artist: "artists";
 	playlist: "playlists";
@@ -25,14 +25,14 @@ type ItemTypeToResultKey = {
 	show: "shows";
 	episode: "episodes";
 	audiobook: "audiobooks";
-};
+}
 
 type ItemTypesToSearchResultKeys<T extends ItemType | ItemType[]> = T extends
 	ItemType[] ? Pick<ItemTypeToResultKey, T[number]>[T[number]]
 	: T extends ItemType ? ItemTypeToResultKey[T]
 	: never;
 
-export type SearchResponse = {
+export interface SearchResponse {
 	tracks: PagingObject<Track>;
 	artists: PagingObject<Artist>;
 	albums: PagingObject<SimplifiedAlbum>;
@@ -40,9 +40,9 @@ export type SearchResponse = {
 	shows: PagingObject<SimplifiedShow>;
 	audiobooks: PagingObject<SimplifiedAudiobook>;
 	episodes: PagingObject<SimplifiedEpisode>;
-};
+}
 
-export type SearchQueries = {
+export interface SearchQueries {
 	q?: string;
 	track?: string;
 	artist?: string;
@@ -56,9 +56,9 @@ export type SearchQueries = {
 	 * The `tag:new` filter will return albums released in the past two weeks and `tag:hipster` can be used to return only albums with the lowest 10% popularity.
 	 */
 	tag?: "hipster" | "new";
-};
+}
 
-type ItemTypeQueries = {
+interface ItemTypeQueries {
 	artists: "q" | "artist" | "genre" | "year";
 	tracks: "q" | "artist" | "album" | "genre" | "isrc" | "year";
 	albums: "q" | "artist" | "album" | "tag" | "year" | "upc";
@@ -66,14 +66,14 @@ type ItemTypeQueries = {
 	shows: "q";
 	audiobooks: "q";
 	episodes: "q";
-};
+}
 
 type SearchQueriesFromItemTypes<T extends ItemType[] | ItemType> = Pick<
 	SearchQueries,
 	ItemTypeQueries[ItemTypesToSearchResultKeys<T>]
 >;
 
-export type SearchOptions = {
+export interface SearchOptions {
 	/**
 	 * If `include_external=audio` is specified it signals that the client can play externally hosted audio content, and marks the content as playable in the response.
 	 *
@@ -99,7 +99,7 @@ export type SearchOptions = {
 	 * @default 0
 	 */
 	offset?: number;
-};
+}
 
 /**
  * Get Spotify catalog information about albums, artists, playlists, tracks, shows, episodes or audiobooks that match a keyword string.

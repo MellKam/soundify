@@ -1,5 +1,6 @@
 import * as oauth from "oauth4webapi";
-import { search, SPOTIFY_AUTH_URL, SpotifyClient } from "@soundify/web-api";
+import { search, SpotifyClient } from "@soundify/web-api";
+import { SPOTIFY_AUTH_URL } from "@soundify/web-api/auth";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
 
@@ -30,7 +31,6 @@ const refresher = async () => {
 		oauthClient,
 		{},
 	);
-
 	const result = await oauth.processClientCredentialsResponse(
 		authServer,
 		oauthClient,
@@ -38,17 +38,14 @@ const refresher = async () => {
 	);
 	if (oauth.isOAuth2Error(result)) {
 		throw new Error(
-			result.error + result.error_description
-				? " : " + result.error_description
-				: "",
+			result.error +
+				(result.error_description ? " : " + result.error_description : ""),
 		);
 	}
 	return result.access_token;
 };
 
-const accessToken = await refresher();
-
-const spotifyClient = new SpotifyClient(accessToken);
+const spotifyClient = new SpotifyClient(null, { refresher });
 
 const result = await search(spotifyClient, "track", "Never Gonna Give You Up");
 console.log(result.tracks.items.at(0));

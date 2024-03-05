@@ -44,7 +44,7 @@ export type UserProductType = "free" | "open" | "premium";
 /**
  * The spotify api object containing the information of explicit content.
  */
-export type ExplicitContentSettings = {
+export interface ExplicitContentSettings {
 	/**
 	 * When true, indicates that explicit content should not be played.
 	 */
@@ -54,7 +54,7 @@ export type ExplicitContentSettings = {
 	 * and can't be changed by the user.
 	 */
 	filter_locked: boolean;
-};
+}
 
 /**
  * The spotify api object containing details of a user's public and private details.

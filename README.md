@@ -181,15 +181,15 @@ authorization.
 import { getCurrentUser, SpotifyClient } from "@soundify/web-api";
 
 // if you don't have access token yet, you can pass null to first argument
-const client = new SpotifyClient(null, { 
+const client = new SpotifyClient(null, {
 	// but you have to provide a function that will return a new access token
 	refresher: () => {
-	  return Promise.resolve("YOUR_NEW_ACCESS_TOKEN");
-	} 
+		return Promise.resolve("YOUR_NEW_ACCESS_TOKEN");
+	},
 });
 
 const me = await getCurrentUser(client);
-// client will call your refresher to get the token 
+// client will call your refresher to get the token
 // and only then make the request
 console.log(me);
 

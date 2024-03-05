@@ -1,5 +1,5 @@
 import * as oauth from "oauth4webapi";
-import { OAUTH_SCOPES, SPOTIFY_AUTH_URL } from "@soundify/web-api";
+import { OAUTH_SCOPES, SPOTIFY_AUTH_URL } from "@soundify/web-api/auth";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
 import { encodeBase64Url } from "std/encoding/base64url.ts";

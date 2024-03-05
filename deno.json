@@ -12,6 +12,8 @@
 		"oak": "https://deno.land/x/oak@v12.5.0/mod.ts",
 		"std/": "https://deno.land/std@0.215.0/",
 		"@soundify/web-api": "./mod.ts",
+		"@soundify/web-api/pagination": "./pagination.ts",
+		"@soundify/web-api/auth": "./auth.ts",
 		"mock_fetch": "https://deno.land/x/mock_fetch@0.3.0/mod.ts"
 	},
 	"fmt": { "useTabs": true }

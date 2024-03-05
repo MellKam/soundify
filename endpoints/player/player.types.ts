@@ -2,7 +2,7 @@ import type { ExternalUrls } from "../general.types.ts";
 import type { Track } from "../track/track.types.ts";
 import type { Episode } from "../episode/episode.types.ts";
 
-export type Device = {
+export interface Device {
 	/**
 	 * The device ID. This ID is unique and persistent to some extent. However, this is not guaranteed and any cached device_id should periodically be cleared out and refetched as necessary.
 	 */
@@ -17,6 +17,7 @@ export type Device = {
 	is_restricted: boolean;
 	/**
 	 * A human-readable name for the device. Some devices have a name that the user can configure (e.g. "Loudest speaker") and some devices have a generic name associated with the manufacturer or device model.
+	 * @example Kitchen speaker
 	 */
 	name: string;
 	/**
@@ -31,9 +32,9 @@ export type Device = {
 	 * If this device can be used to set the volume.
 	 */
 	supports_volume: boolean;
-};
+}
 
-export type Actions = {
+export interface Disallows {
 	/** Interrupting playback. */
 	interrupting_playback?: boolean;
 	/** Pausing. */
@@ -54,12 +55,10 @@ export type Actions = {
 	toggling_repeat_track?: boolean;
 	/** Transfering playback between devices. */
 	transferring_playback?: boolean;
-};
+}
 
-export type Context = {
-	/**
-	 * The object type, e.g. "artist", "playlist", "album", "show".
-	 */
+export interface Context {
+	/** The object type, e.g. "artist", "playlist", "album", "show". */
 	type: string;
 	/** A link to the Web API endpoint providing full details of the track. */
 	href: string;
@@ -67,7 +66,7 @@ export type Context = {
 	external_urls: ExternalUrls;
 	/** The Spotify URI for the context. */
 	uri: string;
-};
+}
 
 /**
  * "track" - repeat the current track. \
@@ -76,7 +75,7 @@ export type Context = {
  */
 export type RepeatMode = "off" | "track" | "context";
 
-export type PlaybackState = {
+export interface PlaybackState {
 	/** The device that is currently active. */
 	device: Device;
 	repeat_state: RepeatMode;
@@ -96,22 +95,22 @@ export type PlaybackState = {
 	 * Allows to update the user interface based on which playback actions are available within the current context.
 	 */
 	actions: {
-		disallows: Actions;
+		disallows: Disallows;
 	};
-};
+}
 
-export type Queue = {
+export interface Queue {
 	/** The currently playing track or episode. */
 	currently_playing: Track | Episode | null;
 	/** The tracks or episodes in the queue. Can be empty. */
 	queue: (Track | Episode)[];
-};
+}
 
-export type PlayHistoryObject = {
+export interface PlayHistoryObject {
 	/** The track the user listened to. */
 	track: Track;
 	/** The date and time the track was played. */
 	played_at: string;
 	/** The context the track was played from. */
 	context: Context;
-};
+}

@@ -1,4 +1,4 @@
-export type PagingObject<TItem> = {
+export interface PagingObject<TItem> {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
@@ -24,9 +24,9 @@ export type PagingObject<TItem> = {
 	 */
 	total: number;
 	items: TItem[];
-};
+}
 
-export type CursorPagingObject<TItem> = {
+export interface CursorPagingObject<TItem> {
 	/**
 	 * A link to the Web API endpoint returning the full result of the request.
 	 */
@@ -57,9 +57,9 @@ export type CursorPagingObject<TItem> = {
 	 */
 	total: number;
 	items: TItem[];
-};
+}
 
-export type PagingOptions = {
+export interface PagingOptions {
 	/**
 	 * The maximum number of items to return. Minimum: 1. Maximum: 50.
 	 * @default 20
@@ -70,7 +70,7 @@ export type PagingOptions = {
 	 * @default 0 (the first item)
 	 */
 	offset?: number;
-};
+}
 
 /**
  * The reason for the restriction.
@@ -95,7 +95,7 @@ export type Restrictions = {
  */
 export type ReleaseDatePrecision = "year" | "month" | "day";
 
-export type Image = {
+export interface Image {
 	/**
 	 * The image height in pixels.
 	 */
@@ -108,7 +108,7 @@ export type Image = {
 	 * The image width in pixels.
 	 */
 	width: number | null;
-};
+}
 
 export type ResumePoint = {
 	/**
@@ -150,7 +150,7 @@ export type ExternalUrls = {
 	spotify: string;
 };
 
-export type ExternalIds = {
+export interface ExternalIds {
 	/**
 	 * [International Standard Recording Code](https://en.wikipedia.org/wiki/International_Standard_Recording_Code).
 	 */
@@ -163,7 +163,7 @@ export type ExternalIds = {
 	 * [Universal Product Code](http://en.wikipedia.org/wiki/Universal_Product_Code).
 	 */
 	upc?: string;
-};
+}
 
 /**
  * The copyright object contains the type and the name of copyright.

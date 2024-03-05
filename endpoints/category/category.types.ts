@@ -1,7 +1,7 @@
 import type { NonNullableObject } from "../../shared.ts";
 import type { Image } from "../general.types.ts";
 
-export type Category = {
+export interface Category {
 	/**
 	 * A link to the Web API endpoint returning full details of the category.
 	 */
@@ -18,4 +18,4 @@ export type Category = {
 	 * The name of the category.
 	 */
 	name: string;
-};
+}

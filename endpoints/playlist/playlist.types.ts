@@ -23,7 +23,6 @@ export interface SimplifiedPlaylist {
 	 * Known external URLs for this playlist.
 	 */
 	external_urls: ExternalUrls;
-
 	/**
 	 * A link to the Web API endpoint providing full details of the playlist.
 	 */
@@ -62,14 +61,14 @@ export interface SimplifiedPlaylist {
 	tracks: TracksReference;
 }
 
-export type TracksReference = {
+export interface TracksReference {
 	/**
 	 * A link to the Web API endpoint where full details of the playlist’s tracks can be retrieved.
 	 */
 	href: string;
 	/** The total number of tracks in playlist. */
 	total: number;
-};
+}
 
 /**
  * The structure containing the details of the Spotify Track in the playlist.
@@ -122,11 +121,11 @@ export interface Playlist extends SimplifiedPlaylist {
 	tracks: PagingObject<PlaylistTrack>;
 }
 
-export type FeaturedPlaylists = {
+export interface FeaturedPlaylists {
 	/** The message from the featured playlists. */
 	message: string;
 	/**
 	 * The list of the featured playlists wrapped in Paging object.
 	 */
 	playlists: PagingObject<SimplifiedPlaylist>;
-};
+}

@@ -1,10 +1,5 @@
 import * as oauth from "oauth4webapi";
-import {
-	getCurrentUser,
-	OAUTH_SCOPES,
-	SPOTIFY_AUTH_URL,
-	SpotifyClient,
-} from "@soundify/web-api";
+import { OAUTH_SCOPES } from "@soundify/web-api/auth";
 import { z } from "zod";
 import { load } from "std/dotenv/mod.ts";
 import { Application, Router } from "oak";
@@ -18,7 +13,7 @@ const env = z
 	})
 	.parse(Deno.env.toObject());
 
-const issuer = new URL(SPOTIFY_AUTH_URL);
+const issuer = new URL("https://accounts.spotify.com/");
 const authServer = await oauth.processDiscoveryResponse(
 	issuer,
 	await oauth.discoveryRequest(issuer),
@@ -26,7 +21,7 @@ const authServer = await oauth.processDiscoveryResponse(
 
 const oauthClient: oauth.Client = {
 	client_id: env.SPOTIFY_CLIENT_ID,
-	token_endpoint_auth_method: "client_secret_basic",
+	token_endpoint_auth_method: "none",
 };
 
 class OAuthError extends Error {
@@ -38,78 +33,182 @@ class OAuthError extends Error {
 	}
 }
 
+async function createAuthUrl(codeVerifier: string, state: string) {
+	const codeChallenge = await oauth.calculatePKCECodeChallenge(codeVerifier);
+
+	const authUrl = new URL(authServer.authorization_endpoint!);
+	for (
+		const [key, value] of Object.entries({
+			client_id: env.SPOTIFY_CLIENT_ID,
+			redirect_uri: env.SPOTIFY_REDIRECT_URI,
+			response_type: "code",
+			code_challenge: codeChallenge,
+			code_challenge_method: "S256",
+			state,
+			scope: Object.values(OAUTH_SCOPES).join(" "),
+		})
+	) {
+		authUrl.searchParams.set(key, value);
+	}
+
+	return authUrl;
+}
+
+async function processOAuthCallback(
+	url: URL,
+	codeVerifier: string,
+	expectedState: string,
+) {
+	const params = oauth.validateAuthResponse(
+		authServer,
+		oauthClient,
+		url,
+		expectedState,
+	);
+
+	if (oauth.isOAuth2Error(params)) {
+		throw new OAuthError(params);
+	}
+
+	const response = await oauth.authorizationCodeGrantRequest(
+		authServer,
+		oauthClient,
+		params,
+		env.SPOTIFY_REDIRECT_URI,
+		codeVerifier,
+	);
+	const result = await oauth.processAuthorizationCodeOAuth2Response(
+		authServer,
+		oauthClient,
+		response,
+	);
+
+	if (oauth.isOAuth2Error(result)) {
+		throw new OAuthError(result);
+	}
+
+	return result;
+}
+
+async function processRefresh(refreshToken: string) {
+	const response = await oauth.refreshTokenGrantRequest(
+		authServer,
+		oauthClient,
+		refreshToken,
+	);
+	const result = await oauth.processRefreshTokenResponse(
+		authServer,
+		oauthClient,
+		response,
+	);
+
+	if (oauth.isOAuth2Error(result)) {
+		throw new OAuthError(result);
+	}
+
+	return result;
+}
+
 const app = new Application();
 const router = new Router();
 
 router.get("/login", async (ctx) => {
 	const codeVerifier = oauth.generateRandomCodeVerifier();
-	const codeChallenge = await oauth.calculatePKCECodeChallenge(codeVerifier);
-
 	await ctx.cookies.set("code_verifier", codeVerifier, {
 		httpOnly: true,
 		path: "/callback",
 	});
 
-	const authUrl = new URL(authServer.authorization_endpoint!);
-	authUrl.searchParams.set("client_id", env.SPOTIFY_CLIENT_ID);
-	authUrl.searchParams.set("redirect_uri", env.SPOTIFY_REDIRECT_URI);
-	authUrl.searchParams.set("response_type", "code");
-	authUrl.searchParams.set("code_challenge", codeChallenge);
-	authUrl.searchParams.set("code_challenge_method", "S256");
-	authUrl.searchParams.set("scope", Object.values(OAUTH_SCOPES).join(" "));
+	const state = oauth.generateRandomState();
+	await ctx.cookies.set("state", state, {
+		httpOnly: true,
+		path: "/callback",
+	});
 
+	const authUrl = await createAuthUrl(codeVerifier, state);
 	return ctx.response.redirect(authUrl);
 });
 
 router.get("/callback", async (ctx) => {
+	const codeVerifier = await ctx.cookies.get("code_verifier");
+	if (!codeVerifier) {
+		ctx.response.status = 400;
+		ctx.response.body = "Missing code_verifier";
+		return;
+	}
+	const state = await ctx.cookies.get("state");
+	if (!state) {
+		ctx.response.status = 400;
+		ctx.response.body = "Missing state";
+		return;
+	}
+
 	try {
-		const params = oauth.validateAuthResponse(
-			authServer,
-			oauthClient,
+		const result = await processOAuthCallback(
 			ctx.request.url,
-			oauth.expectNoState,
-		);
-		if (oauth.isOAuth2Error(params)) {
-			throw new OAuthError(params);
-		}
-
-		const codeVerifier = await ctx.cookies.get("code_verifier");
-		if (!codeVerifier) {
-			throw new Error("no code verifier");
-		}
-
-		const response = await oauth.authorizationCodeGrantRequest(
-			authServer,
-			oauthClient,
-			params,
-			env.SPOTIFY_REDIRECT_URI,
 			codeVerifier,
+			state,
 		);
-		const result = await oauth.processAuthorizationCodeOAuth2Response(
-			authServer,
-			oauthClient,
-			response,
-		);
-		console.log(result);
-		if (oauth.isOAuth2Error(result)) {
-			throw new OAuthError(result);
+		if (!result.refresh_token) {
+			throw new Error("Missing refresh_token");
 		}
 
-		const spotifyClient = new SpotifyClient(result.access_token);
-		const user = await getCurrentUser(spotifyClient);
+		await ctx.cookies.set("refresh_token", result.refresh_token, {
+			httpOnly: true,
+			path: "/refresh",
+		});
+		await ctx.cookies.set("access_token", result.access_token, {
+			httpOnly: true,
+		});
 
 		ctx.response.type = "application/json";
-		ctx.response.body = JSON.stringify(user);
+		ctx.response.body = JSON.stringify(result);
 		ctx.response.status = 200;
 	} catch (error) {
 		console.log(error);
 		ctx.response.status = 500;
 		ctx.response.body = error.message;
 	} finally {
-		await ctx.cookies.set("code_verifier", null, {
+		await ctx.cookies.delete("code_verifier", {
 			httpOnly: true,
 			path: "/callback",
 		});
+		await ctx.cookies.delete("state", {
+			httpOnly: true,
+			path: "/callback",
+		});
+	}
+});
+
+router.get("/refresh", async (ctx) => {
+	const refreshToken = await ctx.cookies.get("refresh_token");
+	if (!refreshToken) {
+		ctx.response.status = 400;
+		ctx.response.body = "Missing refresh token";
+		return;
+	}
+
+	try {
+		const result = await processRefresh(refreshToken);
+		if (!result.refresh_token) {
+			throw new Error("Missing refresh_token");
+		}
+
+		await ctx.cookies.set("refresh_token", result.refresh_token, {
+			httpOnly: true,
+			path: "/refresh",
+		});
+		await ctx.cookies.set("access_token", result.access_token, {
+			httpOnly: true,
+		});
+
+		ctx.response.type = "application/json";
+		ctx.response.body = JSON.stringify(result);
+		ctx.response.status = 200;
+	} catch (error) {
+		console.log(error);
+		ctx.response.status = 500;
+		ctx.response.body = error.message;
 	}
 });
 
@@ -118,6 +217,6 @@ app.use(router.allowedMethods());
 
 app.addEventListener(
 	"listen",
-	(event) => console.log(`http://${event.hostname}:${event.port}/login`),
+	({ hostname, port }) => console.log(`http://${hostname}:${port}/login`),
 );
 await app.listen({ port: 3000 });

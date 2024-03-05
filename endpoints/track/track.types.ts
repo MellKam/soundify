@@ -7,7 +7,7 @@ import type {
 } from "../general.types.ts";
 import type { RequireAtLeastOne } from "../../shared.ts";
 
-export type LinkedTrack = {
+export interface LinkedTrack {
 	/**
 	 * A map of url name and the url.
 	 */
@@ -25,7 +25,7 @@ export type LinkedTrack = {
 	 * The Spotify URI for the track.
 	 */
 	uri: string;
-};
+}
 
 export interface SimplifiedTrack {
 	/**
@@ -672,10 +672,10 @@ export interface RecommendationSeed {
 	type: "artist" | "track" | "genre";
 }
 
-export type Recomendations = {
+export interface Recomendations {
 	seeds: RecommendationSeed[];
 	/**
 	 * An array of track object ordered according to the parameters supplied.
 	 */
 	tracks: Track[];
-};
+}

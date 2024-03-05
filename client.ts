@@ -11,13 +11,13 @@ type SearchParams = Record<string, SearchParam>;
 /**
  * @see https://developer.spotify.com/documentation/web-api/concepts/api-calls#regular-error-object
  */
-export type RegularErrorObject = {
+export interface RegularErrorObject {
 	error: {
 		message: string;
 		status: number;
 		reason?: string;
 	};
-};
+}
 
 const isRegularErrorObject = (
 	obj: unknown,
@@ -132,7 +132,7 @@ const isPlainObject = (obj: unknown): obj is Record<PropertyKey, unknown> => {
 	);
 };
 
-export type SpotifyClinetOptions = {
+export interface SpotifyClinetOptions {
 	/**
 	 * Use this option to provide a custom fetch function.
 	 */
@@ -168,7 +168,7 @@ export type SpotifyClinetOptions = {
 	 * ```
 	 */
 	middlewares?: Middleware[];
-};
+}
 
 const createFailedToAuthorizeError = () =>
 	new Error(
