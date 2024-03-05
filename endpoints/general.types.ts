@@ -59,7 +59,7 @@ export interface CursorPagingObject<TItem> {
 	items: TItem[];
 }
 
-export interface PagingOptions {
+export type PagingOptions = {
 	/**
 	 * The maximum number of items to return. Minimum: 1. Maximum: 50.
 	 * @default 20
@@ -70,7 +70,7 @@ export interface PagingOptions {
 	 * @default 0 (the first item)
 	 */
 	offset?: number;
-}
+};
 
 /**
  * The reason for the restriction.
