@@ -10,11 +10,19 @@
 		"zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
 		"oauth4webapi": "https://deno.land/x/oauth4webapi@v2.10.3/mod.ts",
 		"oak": "https://deno.land/x/oak@v12.5.0/mod.ts",
+		"oak/deps.ts": "https://deno.land/x/oak@v12.5.0/deps.ts",
 		"std/": "https://deno.land/std@0.215.0/",
 		"@soundify/web-api": "./mod.ts",
 		"@soundify/web-api/pagination": "./pagination.ts",
 		"@soundify/web-api/auth": "./auth.ts",
-		"mock_fetch": "https://deno.land/x/mock_fetch@0.3.0/mod.ts"
+		"mock_fetch": "https://deno.land/x/mock_fetch@0.3.0/mod.ts",
+		"preact": "https://esm.sh/preact@10.19.6",
+		"preact/": "https://esm.sh/preact@10.19.6/",
+		"preact-render-to-string": "https://esm.sh/preact-render-to-string@6.4.0?external=preact"
 	},
-	"fmt": { "useTabs": true }
+	"fmt": { "useTabs": true },
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
+	}
 }

@@ -1,7 +1,9 @@
 {
   "version": "3",
   "redirects": {
-    "https://crux.land/router@0.0.5": "https://crux.land/api/get/2KNRVU.ts"
+    "https://crux.land/router@0.0.5": "https://crux.land/api/get/2KNRVU.ts",
+    "https://esm.sh/preact": "https://esm.sh/preact@10.19.6",
+    "https://esm.sh/preact-render-to-string?external=preact": "https://esm.sh/preact-render-to-string@6.4.0?external=preact"
   },
   "remote": {
     "https://crux.land/api/get/2KNRVU.ts": "6a77d55844aba78d01520c5ff0b2f0af7f24cc1716a0de8b3bb6bd918c47b5ba",
@@ -180,7 +182,13 @@
     "https://deno.land/x/zod@v3.22.4/index.ts": "d27aabd973613985574bc31f39e45cb5d856aa122ef094a9f38a463b8ef1a268",
     "https://deno.land/x/zod@v3.22.4/locales/en.ts": "a7a25cd23563ccb5e0eed214d9b31846305ddbcdb9c5c8f508b108943366ab4c",
     "https://deno.land/x/zod@v3.22.4/mod.ts": "64e55237cb4410e17d968cd08975566059f27638ebb0b86048031b987ba251c4",
-    "https://deno.land/x/zod@v3.22.4/types.ts": "724185522fafe43ee56a52333958764c8c8cd6ad4effa27b42651df873fc151e"
+    "https://deno.land/x/zod@v3.22.4/types.ts": "724185522fafe43ee56a52333958764c8c8cd6ad4effa27b42651df873fc151e",
+    "https://esm.sh/preact-render-to-string@6.4.0?external=preact": "67ecc6b1144314e3f8544dd1fc3bcdcdcfa3a892ad5662ceb8d3b8e62b857617",
+    "https://esm.sh/preact@10.19.6": "281b115a9b79918c6b73382b4e818d6f9e48db9064b7fd4f75a45a4edee54145",
+    "https://esm.sh/preact@10.19.6/jsx-runtime": "f4c9e5f72ef18435eab846ae02e315a63da724f64fb08d806d2ddeaf08d99bd8",
+    "https://esm.sh/stable/preact@10.19.6/denonext/jsx-runtime.js": "97e9eeb40443de53a8cb3b70f264d04db2bbfc5c2298fdb15d1c471283ccd6aa",
+    "https://esm.sh/stable/preact@10.19.6/denonext/preact.mjs": "68491395d287895f4d697e403ded5b0ebb8fed0494f9e870c422bc017e5e52f5",
+    "https://esm.sh/v135/preact-render-to-string@6.4.0/X-ZS9wcmVhY3Q/denonext/preact-render-to-string.mjs": "441c6360fc6adf7c6a60f4eb61ae3a44ed6668819cb0b145d03d52514c1ca1f5"
   },
   "workspace": {
     "packageJson": {

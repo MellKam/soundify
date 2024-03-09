@@ -181,7 +181,7 @@ export class SpotifyClient implements HTTPClient {
 
 	constructor(accessToken: string, options?: SpotifyClinetOptions);
 	constructor(
-		accessToken: null,
+		accessToken: string | null,
 		options:
 			& SpotifyClinetOptions
 			& Required<Pick<SpotifyClinetOptions, "refresher">>,

@@ -1,5 +1,8 @@
 {
 	"[typescript]": {
 		"editor.defaultFormatter": "denoland.vscode-deno"
-	}
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "denoland.vscode-deno"
+	},
 }
