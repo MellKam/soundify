@@ -12,6 +12,9 @@
     <a href="https://github.com/mellkam/soundify">
       <img src="https://img.shields.io/github/stars/mellkam/soundify" alt="Github stars" />
     </a>
+		<a href="https://jsr.io/@soundify/web-api">
+			<img src="https://jsr.io/badges/@soundify/web-api/score" alt="jsr registry score" />
+		</a>
   </p>
 </div>
 
@@ -31,11 +34,7 @@ The package doesn't depend on runtime specific apis, so you should be able to
 use it without any problems everywhere.
 
 ```bash
-pnpm add @soundify/web-api
-```
-
-```bash
-bun install @soundify/web-api
+npm install @soundify/web-api
 ```
 
 ```jsonc
@@ -45,6 +44,12 @@ bun install @soundify/web-api
 		"@soundify/web-api": "https://deno.land/x/soundify/mod.ts"
 	}
 }
+```
+
+Install from [JSR registry](https://jsr.io/@soundify/web-api)
+
+```bash
+deno add @soundify/web-api
 ```
 
 ## Getting Started
