@@ -81,14 +81,14 @@ export type PagingOptions = {
  */
 export type RestrictionsReason = "market" | "product" | "explicit";
 
-export type Restrictions = {
+export interface Restrictions {
 	/**
 	 * The reason for the restriction.
 	 *
 	 * Episodes may be restricted if the content is not available in a given market, to the user's subscription type, or when the user's account is set to not play explicit content.
 	 */
 	reason: RestrictionsReason;
-};
+}
 
 /**
  * The precision with which `release_date` value is known.
@@ -110,7 +110,7 @@ export interface Image {
 	width: number | null;
 }
 
-export type ResumePoint = {
+export interface ResumePoint {
 	/**
 	 * Whether or not the episode has been fully played by the user.
 	 */
@@ -119,9 +119,9 @@ export type ResumePoint = {
 	 * The user's most recent position in the episode in milliseconds
 	 */
 	resume_position_ms: number;
-};
+}
 
-export type Followers = {
+export interface Followers {
 	/**
 	 * This will always be set to null, as the Web API does not support it at the moment.
 	 */
@@ -130,25 +130,25 @@ export type Followers = {
 	 * The total number of followers.
 	 */
 	total: number;
-};
+}
 
-export type Author = {
+export interface Author {
 	/**
 	 * The name of the author.
 	 */
 	name: string;
-};
+}
 
-export type Narrator = {
+export interface Narrator {
 	/**
 	 * The name of the narrator.
 	 */
 	name: string;
-};
+}
 
-export type ExternalUrls = {
+export interface ExternalUrls {
 	spotify: string;
-};
+}
 
 export interface ExternalIds {
 	/**
@@ -168,7 +168,7 @@ export interface ExternalIds {
 /**
  * The copyright object contains the type and the name of copyright.
  */
-export type Copyright = {
+export interface Copyright {
 	/**
 	 * The copyright text for this content.
 	 */
@@ -179,4 +179,4 @@ export type Copyright = {
 	 * P = the sound recording (performance) copyright
 	 */
 	type: "C" | "P";
-};
+}

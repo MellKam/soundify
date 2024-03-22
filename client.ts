@@ -52,8 +52,6 @@ export class SpotifyError extends Error {
 	}
 }
 
-const APP_JSON = "application/json";
-
 const getBodyMessage = (
 	body: RegularErrorObject | string,
 ): string => {
@@ -109,11 +107,11 @@ interface MiddlewareOptions extends Omit<RequestInit, "headers"> {
 	headers: Headers;
 }
 
-type MiddlewareHandler = (
+type NextMiddleware = (
 	url: URL,
 	options: MiddlewareOptions,
 ) => Promise<Response>;
-export type Middleware = (next: MiddlewareHandler) => MiddlewareHandler;
+export type Middleware = (next: NextMiddleware) => NextMiddleware;
 
 /**
  * Interface for making HTTP requests to the Spotify API.
@@ -142,12 +140,19 @@ export interface SpotifyClinetOptions {
 	 */
 	baseUrl?: string;
 	/**
-	 * @returns new access token
+	 * Function that will be called when the access token is expired.
+	 * @returns New access token.
 	 */
 	refresher?: () => Promise<string>;
 	/**
 	 * Weather to wait for rate limit or not. \
 	 * Function can be used to decide dynamically based on the `retryAfter` time in seconds.
+	 * ```ts
+	 * {
+	 *   waitForRateLimit: (retryAfter) => retryAfter < 10,
+	 * }
+	 * ```
+	 * **Be aware that this can cause a long delay in the response.**
 	 *
 	 * @default false
 	 */
@@ -175,6 +180,37 @@ const createFailedToAuthorizeError = () =>
 		"[SpotifyClient] accessToken or refresher is required to make requests.",
 	);
 
+const APP_JSON = "application/json";
+
+/**
+ * The main class that provides fetch method for making requests with build-in functionality for token refreshing, error handling and more.
+ *
+ * @example
+ * ```ts
+ * import { SpotifyClient } from "@soundify/web-api";
+ *
+ * // with access token
+ * const client = new SpotifyClient("YOUR_ACCESS_TOKEN");
+ *
+ * // with automatic token refreshing
+ * const client = new SpotifyClient(null, {
+ *   // your custom refresher here
+ *   refresher: () => Promise.resolve("NEW_ACCESS_TOKEN"),
+ * });
+ *
+ * // with custom options
+ * const client = new SpotifyClient("YOUR_ACCESS_TOKEN", {
+ *   waitForRateLimit: true,
+ *   middlewares: [(next) => (url, options) => {
+ *     options.headers.set("X-Custom-Header", "custom-value");
+ *     return next(url, options);
+ *   }],
+ * })
+ *
+ * const res = await client.fetch("/v1/me");
+ * const user = await res.json();
+ * ```
+ */
 export class SpotifyClient implements HTTPClient {
 	private readonly baseUrl: string;
 	private refreshInProgress: Promise<void> | null = null;
@@ -203,7 +239,7 @@ export class SpotifyClient implements HTTPClient {
 		if (opts.query) {
 			for (const key in opts.query) {
 				const value = opts.query[key];
-				if (typeof value !== "undefined") {
+				if (value !== undefined) {
 					url.searchParams.set(key, value.toString());
 				}
 			}
@@ -223,7 +259,7 @@ export class SpotifyClient implements HTTPClient {
 
 		const wrappedFetch = (this.options.middlewares || []).reduceRight(
 			(next, mw) => mw(next),
-			(this.options.fetch || globalThis.fetch) as MiddlewareHandler,
+			(this.options.fetch || globalThis.fetch) as NextMiddleware,
 		);
 
 		let isRefreshed = false;

@@ -1,5 +1,8 @@
 export const SPOTIFY_AUTH_URL = "https://accounts.spotify.com/";
 
+/**
+ * @see https://developer.spotify.com/documentation/web-api/concepts/scopes
+ */
 export const OAUTH_SCOPES = {
 	/**
 	 * Write access to user-provided images.

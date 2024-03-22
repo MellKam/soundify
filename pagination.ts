@@ -1,4 +1,4 @@
-export type PageIteratorOptions = {
+export interface PageIteratorOptions {
 	/**
 	 * The Spotify API does not allow you to use a negative offset, but you can do so with this property. This will be useful when, for example, you want to get the last 100 elements.
 	 *
@@ -7,7 +7,7 @@ export type PageIteratorOptions = {
 	 * @default 0
 	 */
 	initialOffset?: number;
-};
+}
 
 /**
  * A helper class which allows you to iterate over items in a paginated API response with javascript async iterators.

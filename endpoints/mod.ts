@@ -1,3 +1,9 @@
+/**
+ * @module
+ * This module contains all the endpoints and types for the Spotify Web API.
+ *
+ * @see https://developer.spotify.com/documentation/web-api
+ */
 export * from "./user/user.types.ts";
 export * from "./user/user.endpoints.ts";
 export * from "./track/track.types.ts";

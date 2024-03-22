@@ -1,4 +1,3 @@
-import type { NonNullableObject } from "../../shared.ts";
 import type { Image } from "../general.types.ts";
 
 export interface Category {
@@ -9,7 +8,7 @@ export interface Category {
 	/**
 	 * The category icon, in various sizes.
 	 */
-	icons: NonNullableObject<Image>[];
+	icons: Image[];
 	/**
 	 * The Spotify category ID of the category.
 	 */
