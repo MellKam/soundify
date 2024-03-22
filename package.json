@@ -1,6 +1,6 @@
 {
 	"name": "@soundify/web-api",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "🎧 Spotify Web API client for js/ts runtime environments",
 	"type": "module",
 	"main": "dist/mod.cjs",
