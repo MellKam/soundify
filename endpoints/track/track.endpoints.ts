@@ -68,11 +68,13 @@ export type GetSavedTracksOpts = Prettify<
 export const getSavedTracks = async (
 	client: HTTPClient,
 	options: GetSavedTracksOpts,
-): Promise<PagingObject<Track>> => {
+): Promise<PagingObject<{ added_at: string; track: Track }>> => {
 	const res = await client.fetch("/v1/me/tracks", {
 		query: options,
 	});
-	return res.json() as Promise<PagingObject<Track>>;
+	return res.json() as Promise<
+		PagingObject<{ added_at: string; track: Track }>
+	>;
 };
 
 /**
