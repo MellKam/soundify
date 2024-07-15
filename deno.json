@@ -1,10 +1,23 @@
 {
 	"name": "@soundify/web-api",
-	"version": "1.1.3",
+	"version": "1.1.4",
 	"exports": {
 		".": "./mod.ts",
 		"./pagination": "./pagination.ts",
 		"./auth": "./auth.ts"
+	},
+	"publish": {
+		"include": [
+			"client.ts",
+			"auth.ts",
+			"LICENSE",
+			"README.md",
+			"endpoints/**/*.ts",
+			"mod.ts",
+			"pagination.ts",
+			"shared.ts"
+		],
+		"exclude": ["endpoints/**.test.ts", "endpoints/**.schemas.ts"]
 	},
 	"imports": {
 		"zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
