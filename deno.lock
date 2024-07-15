@@ -194,8 +194,8 @@
     "packageJson": {
       "dependencies": [
         "npm:all-contributors-cli@6.26.1",
-        "npm:tsup@8.0.2",
-        "npm:typescript@5.3.3"
+        "npm:tsup@8.1.0",
+        "npm:typescript@5.5.3"
       ]
     }
   }

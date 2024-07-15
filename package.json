@@ -1,6 +1,6 @@
 {
 	"name": "@soundify/web-api",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "🎧 Spotify Web API client for js/ts runtime environments",
 	"type": "module",
 	"main": "dist/mod.cjs",
@@ -36,8 +36,8 @@
 	},
 	"devDependencies": {
 		"all-contributors-cli": "6.26.1",
-		"typescript": "5.3.3",
-		"tsup": "8.0.2"
+		"typescript": "5.5.3",
+		"tsup": "8.1.0"
 	},
 	"author": {
 		"name": "Artem Melnyk",
@@ -58,5 +58,6 @@
 		"music",
 		"sdk",
 		"soundify"
-	]
+	],
+	"packageManager": "pnpm@9.5.0+sha256.dbdf5961c32909fb030595a9daa1dae720162e658609a8f92f2fa99835510ca5"
 }
